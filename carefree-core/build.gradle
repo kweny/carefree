@@ -1,0 +1,14 @@
+archivesBaseName = 'carefree-core'
+
+dependencies {
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+    implementation 'com.typesafe:config:1.4.0'
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.2.5.RELEASE'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.2.5.RELEASE'
+//    implementation 'org.springframework:spring-context:5.2.4.RELEASE'
+
+    implementation 'org.springframework.cloud:spring-cloud-context:2.2.2.RELEASE'
+
+}

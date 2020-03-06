@@ -1,0 +1,51 @@
+# 目前支持三种格式的配置文件：conf、json、properties
+
+carefree:
+  enabled: true # 开启 carefree 配置，默认为 false
+
+---
+
+carefree:
+  enabled: true
+  position: classpath:/config/jdbc.conf
+# 指定一个配置文件的完整位置描述，包含路径、文件名、文件扩展名三部分，
+# 表示 classpath 中的 /config/jdbc.conf 文件，
+# 其中 classpath: 可省略，如 /config/jdbc.conf
+# 该配置将以文件名 jdbc 作为 key
+
+---
+
+carefree:
+  enabled: true
+  position: jdbc
+# 未指定路径和扩展名，将从约定目录中查找约定扩展名的文件：
+# 约定目录，优先级递增：classpath:/、classpath:/config/、file:./、file:./config/
+# 约定类型，优先级递增：.properties、.json、.conf
+# 若多个文件中存在同名属性，则以高优先级文件中的属性值为准
+# 该配置以文件名 jdbc 作为 key
+
+---
+
+carefree:
+  enabled: true
+  position: jdbc, classpath:/redis, file:/path/to/config/mongo.json
+# 指定了三个配置文件
+# 其中 jdbc 未指定路径和扩展名，将从约定目录中查找约定扩展名的文件，以 jdbc 为 key
+# classpath:/redis 将从 classpath 根中查找 redis.conf、redis.json、redis.properties 文件，以 redis 为 key
+# file:/path/to/config/mongo.json 将从文件系统目录 /path/to/config/ 中查找 mongo.json 文件，以 mongo 为key
+
+---
+
+carefree:
+  enabled: true
+  positions:
+  - name: elastic  # 文件名
+    extension: properties # 文件扩展名
+    key: elastic # 配置 key
+    path: classpath:/config/ # 文件路径
+  - name: rabbit
+    extension: json
+    override-cloud: true
+# 使用 carefree.positions 指定了两个配置文件，规则和 carefree.position 一样，若不指定 key 则使用 name 为 key
+# 若 override-cloud 属性设为 true，将覆盖 carefree-cloud 模块从远端配置中心加载的同 key 配置数据，
+# 但若配置中心的该 key 配置数据的 override-denied 为 true，则不会覆盖

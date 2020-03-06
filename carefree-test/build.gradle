@@ -1,0 +1,33 @@
+buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.2.5.RELEASE")
+    }
+}
+
+apply plugin: 'org.springframework.boot'
+
+archivesBaseName = 'carefree-test'
+
+bootJar {
+    mainClassName = 'org.apenk.carefree.test.TestApplication'
+    archiveFileName.set(archivesBaseName + ".jar")
+}
+
+configurations {
+    implementation.exclude module: 'spring-boot-starter-tomcat'
+    implementation.exclude module: 'spring-boot-starter-logging'
+    implementation.exclude module: 'tomcat-jdbc'
+}
+
+dependencies {
+    api project(':carefree-core')
+
+    implementation 'com.typesafe:config:1.4.0'
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot', version: '2.2.5.RELEASE'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.2.5.RELEASE'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: '2.2.5.RELEASE'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jetty', version: '2.2.5.RELEASE'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: '2.2.5.RELEASE'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.2.5.RELEASE'
+}

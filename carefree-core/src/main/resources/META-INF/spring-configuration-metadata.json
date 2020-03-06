@@ -1,0 +1,21 @@
+{
+  "properties": [
+    {
+      "name": "carefree.enabled",
+      "type": "java.lang.String",
+      "description": "Description for carefree.enabled."
+    },
+    {
+      "name": "carefree.position",
+      "type": "java.lang.String",
+      "description": "Description for carefree.position.",
+      "sourceType": "org.apenk.carefree.CarefreeProperties"
+    },
+    {
+      "name": "carefree.positions",
+      "type": "java.util.List<org.apenk.carefree.CarefreeProperties.Position>",
+      "description": "Description for carefree.positions.",
+      "sourceType": "org.apenk.carefree.CarefreeProperties"
+    }
+  ]
+}
