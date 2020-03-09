@@ -1,0 +1,25 @@
+{
+  "properties": [
+    {
+      "name": "carefree.cloud.enabled",
+      "type": "java.lang.String",
+      "description": "Description for carefree.cloud.enabled."
+    },
+    {
+      "name": "carefree.cloud.service-type",
+      "type": "java.lang.String",
+      "description": "Description for carefree.cloud.service-type."
+    },
+    {
+      "name": "carefree.cloud.nacos.position",
+      "type": "java.lang.String",
+      "description": "Description for carefree.cloud.nacos.position."
+    },
+    {
+      "name": "carefree.cloud.nacos.positions",
+      "type": "java.util.List<org.apenk.carefree.cloud.CarefreeCloudProperties.Nacos.Position>",
+      "description": "Description for carefree.cloud.nacos.positions.",
+      "sourceType": "org.apenk.carefree.cloud.CarefreeCloudProperties"
+    }
+  ]
+}

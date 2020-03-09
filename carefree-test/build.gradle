@@ -20,7 +20,8 @@ configurations {
 }
 
 dependencies {
-    api project(':carefree-core')
+    implementation project(':carefree-core')
+    implementation project(':carefree-cloud')
 
     implementation 'com.typesafe:config:1.4.0'
 

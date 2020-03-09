@@ -33,12 +33,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CarefreeRegistry {
     public static final String BEAN_NAME = "carefreeRegistry";
 
+    public static final CarefreeRegistry EMPTY = new CarefreeRegistry();
+
+    /** < key, 配置数据 > */
     private final Map<String, Config> configHolder;
-    private final Map<String, Boolean> overrideAllowances;
 
     public CarefreeRegistry() {
         this.configHolder = new ConcurrentHashMap<>();
-        this.overrideAllowances = new ConcurrentHashMap<>();
     }
 
     public CarefreeRegistry(Map<String, Config> configMap) {
@@ -58,16 +59,4 @@ public class CarefreeRegistry {
         return Collections.unmodifiableMap(this.configHolder);
     }
 
-    public void setOverrideAllowed(String key, boolean allowed) {
-        this.overrideAllowances.put(key, allowed);
-    }
-
-    public boolean isOverrideAllowed(String key) {
-        Boolean allow = overrideAllowances.get(key);
-        return allow == null ? true : allow;
-    }
-
-    public boolean isOverrideDenied(String key) {
-        return !isOverrideAllowed(key);
-    }
 }

@@ -1,13 +1,12 @@
-archivesBaseName = 'carefree-core'
+archivesBaseName = 'carefree-cloud'
 
 dependencies {
-    api 'org.apache.commons:commons-lang3:3.9'
-    api 'org.apache.commons:commons-collections4:4.4'
-    api 'com.typesafe:config:1.4.0'
-
-    implementation 'org.slf4j:slf4j-api:1.7.30'
+    api project(':carefree-core')
 
     implementation 'org.springframework.boot:spring-boot-starter:2.2.5.RELEASE'
     implementation 'org.springframework.boot:spring-boot-configuration-processor:2.2.5.RELEASE'
     implementation 'org.springframework.boot:spring-boot-autoconfigure:2.2.5.RELEASE'
+
+    implementation 'org.springframework.cloud:spring-cloud-context:2.2.2.RELEASE'
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:2.2.0.RELEASE'
 }

@@ -41,7 +41,7 @@ public class TestConfigurer {
     private void printCarefreeConfig() {
         carefreeRegistry.getAllConfigs().forEach((key, config) -> {
             System.out.println("===== " + key + " =====");
-            config.entrySet().forEach(entry -> System.out.println("\n" + entry.getKey() + " = " + entry.getValue().unwrapped()));
+            config.entrySet().forEach(entry -> System.out.println(entry.getKey() + " = " + entry.getValue().unwrapped()));
             System.out.println("===== " + key + " =====\n");
         });
     }

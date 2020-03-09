@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-Title: Apenk Carefree Cloud
+Automatic-Module-Name: org.apenk.carefree.cloud
+Implementation-Version: 0.0.1
+

@@ -60,18 +60,6 @@ public class CarefreeProperties {
         private String extension;
         private String key;
         private String path;
-        private boolean overrideCloud = false;
-
-        @Override
-        public String toString() {
-            return "Position{" +
-                    "name='" + name + '\'' +
-                    ", extension='" + extension + '\'' +
-                    ", key='" + key + '\'' +
-                    ", path='" + path + '\'' +
-                    ", overrideCloud=" + overrideCloud +
-                    '}';
-        }
 
         public String getName() {
             return name;
@@ -105,12 +93,5 @@ public class CarefreeProperties {
             this.path = path;
         }
 
-        public boolean isOverrideCloud() {
-            return overrideCloud;
-        }
-
-        public void setOverrideCloud(boolean overrideCloud) {
-            this.overrideCloud = overrideCloud;
-        }
     }
 }

@@ -1,3 +1,5 @@
 rootProject.name = 'carefree'
 include 'carefree-core'
+include 'carefree-cloud'
 include 'carefree-test'
+

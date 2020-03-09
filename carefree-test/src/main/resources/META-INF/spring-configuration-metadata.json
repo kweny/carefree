@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "test.nacos.namespace.develop",
+      "type": "java.lang.String",
+      "description": "Description for test.nacos.namespace.develop."
+    },
+    {
+      "name": "test.nacos.namespace.test",
+      "type": "java.lang.String",
+      "description": "Description for test.nacos.namespace.test."
+    },
+    {
+      "name": "test.nacos.namespace.product",
+      "type": "java.lang.String",
+      "description": "Description for test.nacos.namespace.product."
+    }
+  ]
+}

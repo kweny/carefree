@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * carefree 自动装配
+ * carefree 自动配置
  *
  * @author Kweny
  * @since 0.0.1
@@ -87,8 +87,8 @@ public class CarefreeAutoConfiguration implements BeanDefinitionRegistryPostProc
             // 如果已经存在 CarefreeRegistry 的 Bean（由 cloud 模块加载的配置中心的配置）
             for (Map.Entry<String, Config> entry : configCache.entrySet()) {
                 Config cloudConfig = carefreeRegistry.getConfig(entry.getKey());
-                if (cloudConfig == null || carefreeRegistry.isOverrideAllowed(entry.getKey())) {
-                    // 如果远端配置中心没有该 key 的配置，或者远端该 key 配置允许被覆盖，则加载本地同 key 配置
+                if (cloudConfig == null) {
+                    // 如果远端配置中心没有该 key 的配置，则加载本地配置
                     carefreeRegistry.register(entry.getKey(), entry.getValue());
                 }
             }
