@@ -1,8 +1,6 @@
 archivesBaseName = 'carefree-core'
 
 dependencies {
-    api 'org.apache.commons:commons-lang3:3.9'
-    api 'org.apache.commons:commons-collections4:4.4'
     api 'com.typesafe:config:1.4.0'
 
     implementation 'org.slf4j:slf4j-api:1.7.30'

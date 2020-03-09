@@ -18,7 +18,7 @@ package org.apenk.carefree;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValue;
-import org.apache.commons.collections4.MapUtils;
+import org.apenk.carefree.aide.MapAide;
 import org.springframework.core.io.Resource;
 
 import java.io.InputStreamReader;
@@ -37,7 +37,7 @@ class CarefreeConfigLoader {
     static Map<String, Config> load(Map<String, List<Resource>> resourceMap) {
         Map<String, Config> configCache = new ConcurrentHashMap<>();
 
-        if (MapUtils.isEmpty(resourceMap)) {
+        if (MapAide.isEmpty(resourceMap)) {
             return configCache;
         }
 

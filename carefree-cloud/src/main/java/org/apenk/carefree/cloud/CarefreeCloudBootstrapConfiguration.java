@@ -16,9 +16,9 @@
 package org.apenk.carefree.cloud;
 
 import com.alibaba.cloud.nacos.NacosConfigManager;
-import org.apache.commons.lang3.StringUtils;
 import org.apenk.carefree.CarefreeOrdered;
 import org.apenk.carefree.CarefreeRegistry;
+import org.apenk.carefree.aide.StringAide;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +43,7 @@ public class CarefreeCloudBootstrapConfiguration implements Ordered {
     @Bean
     public CarefreeCloudConfigLoader carefreeCloudConfigLoader(CarefreeCloudProperties carefreeCloudProperties,
                                                                @Nullable NacosConfigManager nacosConfigManager) {
-        if (StringUtils.equalsAnyIgnoreCase("nacos", carefreeCloudProperties.getServiceType())) {
+        if (StringAide.equalsAnyIgnoreCase("nacos", carefreeCloudProperties.getServiceType())) {
             return new CarefreeCloudConfigNacosLoader(carefreeCloudProperties, nacosConfigManager);
         }
         return new CarefreeCloudConfigLoader._NoLoader(carefreeCloudProperties);

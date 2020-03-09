@@ -20,9 +20,9 @@ import com.alibaba.cloud.nacos.NacosConfigProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.typesafe.config.ConfigFactory;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apenk.carefree.CarefreeRegistry;
+import org.apenk.carefree.aide.CollectionAide;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -56,7 +56,7 @@ class CarefreeCloudConfigNacosLoader extends CarefreeCloudConfigLoader {
         }
 
         List<CarefreeCloudProperties.Nacos.Position> positions = resolveConfigPositions();
-        if (CollectionUtils.isEmpty(positions)) {
+        if (CollectionAide.isEmpty(positions)) {
             logger.warn("no config of nacos found, cannot load config from nacos");
             return CarefreeRegistry.EMPTY;
         }
@@ -119,7 +119,7 @@ class CarefreeCloudConfigNacosLoader extends CarefreeCloudConfigLoader {
         }
 
         // carefree.cloud.nacos.positions
-        if (CollectionUtils.isNotEmpty(nacos.getPositions())) {
+        if (CollectionAide.isNotEmpty(nacos.getPositions())) {
             for (CarefreeCloudProperties.Nacos.Position position : nacos.getPositions()) {
                 if (StringUtils.isBlank(position.getKey())) {
                     String key = position.getDataId();
