@@ -17,8 +17,11 @@ package org.apenk.carefree.test.config;
 
 import org.apenk.carefree.CarefreeRegistry;
 import org.apenk.carefree.druid.CarefreeDruidRegistry;
+import org.apenk.carefree.redis.CarefreeRedisRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
  * carefree config
@@ -31,16 +34,19 @@ public class TestConfigurer {
 
     private final CarefreeRegistry carefreeRegistry;
     private final CarefreeDruidRegistry carefreeDruidRegistry;
+    private final CarefreeRedisRegistry carefreeRedisRegistry;
 
     @Autowired
-    public TestConfigurer(CarefreeRegistry carefreeRegistry, CarefreeDruidRegistry carefreeDruidRegistry) {
+    public TestConfigurer(CarefreeRegistry carefreeRegistry, CarefreeDruidRegistry carefreeDruidRegistry, CarefreeRedisRegistry carefreeRedisRegistry) {
         this.carefreeRegistry = carefreeRegistry;
         this.carefreeDruidRegistry = carefreeDruidRegistry;
+        this.carefreeRedisRegistry = carefreeRedisRegistry;
 
         System.out.println("TestConfigurer\n");
 
         printCarefreeConfig();
         printCarefreeDruid();
+        printCarefreeRedis();
     }
 
     private void printCarefreeConfig() {
@@ -57,5 +63,25 @@ public class TestConfigurer {
             System.out.println(druid);
             System.out.println("===== druid " + key + " =====\n");
         });
+    }
+
+    private void printCarefreeRedis() {
+        carefreeRedisRegistry.getAll().forEach((key, factory) -> {
+            System.out.println("===== redis " + key + " =====");
+            System.out.println(factory);
+            System.out.println("===== redis " + key + " =====\n");
+        });
+    }
+
+    @Bean
+    public StringRedisTemplate mainTemplate() {
+        return carefreeRedisRegistry.newStringTemplate("main");
+    }
+
+    @Bean
+    public Object test(StringRedisTemplate mainTemplate) {
+        mainTemplate.opsForValue().set("testa", "aaaa");
+        System.out.println(mainTemplate.opsForValue().get("testa"));
+        return new Object();
     }
 }

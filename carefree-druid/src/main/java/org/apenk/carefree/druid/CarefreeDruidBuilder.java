@@ -1,3 +1,18 @@
+/*
+ * Copyright 2018-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apenk.carefree.druid;
 
 import com.alibaba.druid.filter.Filter;
@@ -28,17 +43,17 @@ class CarefreeDruidBuilder {
     }
 
     void loadConfig(Config config) throws Exception {
-        Set<String> rootKeys = CarefreeAssistance.getConfigRootNames(config);
+        Set<String> rootNames = CarefreeAssistance.getConfigRootNames(config);
 
-        for (String rootKey : rootKeys) {
-            Config oneConfig = config.getConfig(rootKey);
+        for (String rootName : rootNames) {
+            Config oneConfig = config.getConfig(rootName);
             CarefreeDruidArchetype archetype = CarefreeAssistance.fromConfig(CarefreeDruidArchetype.class, oneConfig);
-            this.archetypeCache.put(rootKey, archetype);
+            this.archetypeCache.put(rootName, archetype);
         }
     }
 
-    Map<String, DruidDataSource> build() {
-        Map<String, DruidDataSource> map = new HashMap<>();
+    Map<String, CarefreeDruidWrapper> build() {
+        Map<String, CarefreeDruidWrapper> map = new HashMap<>();
         archetypeCache.forEach((key, archetype) -> {
             try {
                 if (BooleanAide.isFalse(archetype.getEnabled())) {
@@ -53,9 +68,11 @@ class CarefreeDruidBuilder {
 
                     CarefreeAssistance.loadReference(CarefreeDruidArchetype.class, archetype, refArchetype);
                 }
-                map.put(key, createDataSource(archetype));
+                CarefreeDruidWrapper wrapper = new CarefreeDruidWrapper();
+                wrapper.setDataSource(createDataSource(archetype));
+                map.put(key, wrapper);
             } catch (Exception e) {
-                throw new RuntimeException("[Carefree] error to create druid instance for config key: " + key, e);
+                throw new RuntimeException("[Carefree] error to create druid instance for config name: " + key, e);
             }
         });
         MapAide.clear(archetypeCache);

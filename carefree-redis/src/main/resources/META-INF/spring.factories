@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
+  org.apenk.carefree.redis.CarefreeRedisAutoConfigurationFilter
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.apenk.carefree.redis.CarefreeRedisAutoConfiguration

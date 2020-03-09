@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-Title: Apenk Carefree Redis
+Automatic-Module-Name: org.apenk.carefree.redis
+Implementation-Version: 0.0.1
+

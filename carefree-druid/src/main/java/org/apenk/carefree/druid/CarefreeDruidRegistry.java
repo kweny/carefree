@@ -17,7 +17,6 @@ package org.apenk.carefree.druid;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,21 +32,24 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CarefreeDruidRegistry {
     public static final String BEAN_NAME = "carefreeDruidRegistry";
 
-    public Map<String, DruidDataSource> holder;
+    public Map<String, CarefreeDruidWrapper> holder;
 
     public CarefreeDruidRegistry() {
         this.holder = new ConcurrentHashMap<>();
     }
 
-    public void register(String name, DruidDataSource dataSource) {
-        this.holder.put(name, dataSource);
+    public void register(String name, CarefreeDruidWrapper wrapper) {
+        this.holder.put(name, wrapper);
     }
 
     public DruidDataSource get(String name) {
-        return this.holder.get(name);
+        CarefreeDruidWrapper wrapper = holder.get(name);
+        return wrapper != null ? wrapper.getDataSource() : null;
     }
 
     public Map<String, DruidDataSource> getAll() {
-        return Collections.unmodifiableMap(this.holder);
+        Map<String, DruidDataSource> map = new ConcurrentHashMap<>(this.holder.size());
+        this.holder.forEach((key, value) -> map.put(key, value.getDataSource()));
+        return map;
     }
 }
