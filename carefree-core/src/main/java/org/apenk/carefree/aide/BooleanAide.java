@@ -15,24 +15,25 @@
  */
 package org.apenk.carefree.aide;
 
-import java.util.Map;
-
 /**
  * @author Kweny
  * @since 0.0.1
  */
-public class MapAide {
-    public static boolean isEmpty(final Map<?, ?> map) {
-        return map == null || map.isEmpty();
+public class BooleanAide {
+
+    public static boolean isTrue(final Boolean bool) {
+        return Boolean.TRUE.equals(bool);
     }
 
-    public static boolean isNotEmpty(final Map<?, ?> map) {
-        return !isEmpty(map);
+    public static boolean isNotTrue(final Boolean bool) {
+        return !isTrue(bool);
     }
 
-    public static <K, V> void clear(final Map<K, V> map) {
-        if (isNotEmpty(map)) {
-            map.clear();
-        }
+    public static boolean isFalse(final Boolean bool) {
+        return Boolean.FALSE.equals(bool);
+    }
+
+    public static boolean isNotFalse(final Boolean bool) {
+        return !isFalse(bool);
     }
 }

@@ -86,7 +86,7 @@ public class CarefreeAutoConfiguration implements BeanDefinitionRegistryPostProc
         if (carefreeRegistry != null) {
             // 如果已经存在 CarefreeRegistry 的 Bean（由 cloud 模块加载的配置中心的配置）
             for (Map.Entry<String, Config> entry : configCache.entrySet()) {
-                Config cloudConfig = carefreeRegistry.getConfig(entry.getKey());
+                Config cloudConfig = carefreeRegistry.get(entry.getKey());
                 if (cloudConfig == null) {
                     // 如果远端配置中心没有该 key 的配置，则加载本地配置
                     carefreeRegistry.register(entry.getKey(), entry.getValue());

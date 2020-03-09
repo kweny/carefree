@@ -35,7 +35,8 @@ import java.util.Set;
  * @since 0.0.1
  */
 public class CarefreeAssistance {
-    public static Set<String> getConfigRootKeys(Config config) {
+
+    public static Set<String> getConfigRootNames(Config config) {
         Set<String> rootKeys = new HashSet<>();
         for (Map.Entry<String, ConfigValue> entry : config.entrySet()) {
             String key = entry.getKey();

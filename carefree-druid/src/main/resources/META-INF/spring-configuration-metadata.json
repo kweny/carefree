@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "carefree.druid.enabled",
+      "type": "java.lang.String",
+      "description": "Description for carefree.druid.enabled."
+    },
+    {
+      "name": "carefree.druid.config-key",
+      "type": "java.lang.String",
+      "description": "Description for carefree.druid.config-key."
+    }
+  ]
+}

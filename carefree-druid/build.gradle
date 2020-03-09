@@ -1,9 +1,9 @@
-archivesBaseName = 'carefree-core'
+archivesBaseName = 'carefree-druid'
 
 dependencies {
-    api 'com.typesafe:config:1.4.0'
+    api project(':carefree-core')
 
-    implementation 'org.slf4j:slf4j-api:1.7.30'
+    api 'com.alibaba:druid:1.1.21'
 
     implementation 'org.springframework.boot:spring-boot-configuration-processor:2.2.5.RELEASE'
     implementation 'org.springframework.boot:spring-boot-autoconfigure:2.2.5.RELEASE'

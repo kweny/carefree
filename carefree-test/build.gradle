@@ -22,8 +22,11 @@ configurations {
 dependencies {
     implementation project(':carefree-core')
     implementation project(':carefree-cloud')
+    implementation project(':carefree-druid')
 
-    implementation 'com.typesafe:config:1.4.0'
+//    implementation 'com.typesafe:config:1.4.0'
+//    implementation 'com.alibaba:druid:1.1.21'
+    implementation 'mysql:mysql-connector-java:8.0.19'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot', version: '2.2.5.RELEASE'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.2.5.RELEASE'

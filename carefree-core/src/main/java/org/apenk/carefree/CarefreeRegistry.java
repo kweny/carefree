@@ -24,8 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 持有 carefree 配置数据，
  * 以 carefreeRegistry 为 bean name 存在于容器，
- * 可注入到应用程序中，使用 {@link #getConfig(String)} 方法获取指定配置数据，
- * 或使用 {@link #getAllConfigs()} 方法获取所有配置数据。
+ * 可注入到应用程序中，使用 {@link #get(String)} 方法获取指定配置数据，
+ * 或使用 {@link #getAll()} 方法获取所有配置数据。
  *
  * @author Kweny
  * @since 0.0.1
@@ -51,11 +51,11 @@ public class CarefreeRegistry {
         this.configHolder.put(key, config);
     }
 
-    public Config getConfig(String key) {
+    public Config get(String key) {
         return this.configHolder.get(key);
     }
 
-    public Map<String, Config> getAllConfigs() {
+    public Map<String, Config> getAll() {
         return Collections.unmodifiableMap(this.configHolder);
     }
 

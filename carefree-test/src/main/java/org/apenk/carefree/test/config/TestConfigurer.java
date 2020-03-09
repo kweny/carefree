@@ -16,6 +16,7 @@
 package org.apenk.carefree.test.config;
 
 import org.apenk.carefree.CarefreeRegistry;
+import org.apenk.carefree.druid.CarefreeDruidRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,20 +30,32 @@ import org.springframework.context.annotation.Configuration;
 public class TestConfigurer {
 
     private final CarefreeRegistry carefreeRegistry;
+    private final CarefreeDruidRegistry carefreeDruidRegistry;
 
     @Autowired
-    public TestConfigurer(CarefreeRegistry carefreeRegistry) {
-        System.out.println("TestConfigurer");
+    public TestConfigurer(CarefreeRegistry carefreeRegistry, CarefreeDruidRegistry carefreeDruidRegistry) {
         this.carefreeRegistry = carefreeRegistry;
+        this.carefreeDruidRegistry = carefreeDruidRegistry;
+
+        System.out.println("TestConfigurer\n");
 
         printCarefreeConfig();
+        printCarefreeDruid();
     }
 
     private void printCarefreeConfig() {
-        carefreeRegistry.getAllConfigs().forEach((key, config) -> {
-            System.out.println("===== " + key + " =====");
-            config.entrySet().forEach(entry -> System.out.println(entry.getKey() + " = " + entry.getValue().unwrapped()));
-            System.out.println("===== " + key + " =====\n");
+        carefreeRegistry.getAll().forEach((key, config) -> {
+            System.out.println("===== config " + key + " =====");
+            config.entrySet().forEach(entry -> System.out.println("\t" + entry.getKey() + " = " + entry.getValue().unwrapped()));
+            System.out.println("===== config " + key + " =====\n");
+        });
+    }
+
+    private void printCarefreeDruid() {
+        carefreeDruidRegistry.getAll().forEach((key, druid) -> {
+            System.out.println("===== druid " + key + " =====");
+            System.out.println(druid);
+            System.out.println("===== druid " + key + " =====\n");
         });
     }
 }
