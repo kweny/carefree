@@ -30,9 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 
@@ -52,11 +50,6 @@ public class CarefreeDruidAutoConfiguration implements ApplicationContextAware, 
 
     private ApplicationContext applicationContext;
     private Environment environment;
-    private ScopeMetadataResolver scopeMetadataResolver;
-
-    public CarefreeDruidAutoConfiguration() {
-        this.scopeMetadataResolver = new AnnotationScopeMetadataResolver();
-    }
 
     @Bean(CarefreeDruidRegistry.BEAN_NAME)
     @ConditionalOnMissingBean
