@@ -15,10 +15,13 @@
  */
 package org.apenk.carefree.druid;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,7 +33,7 @@ import java.util.Set;
  * @author Kweny
  * @since 0.0.1
  */
-public class CarefreeDruidAutoConfigurationFilter implements AutoConfigurationImportFilter {
+public class CarefreeDruidAutoConfigurationFilter implements AutoConfigurationImportFilter, EnvironmentAware {
     private static final Set<String> EXCLUSIONS = new HashSet<>(
             Arrays.asList(
                     DataSourceAutoConfiguration.class.getName(),
@@ -38,12 +41,23 @@ public class CarefreeDruidAutoConfigurationFilter implements AutoConfigurationIm
             )
     );
 
+    private Environment environment;
+
     @Override
     public boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata) {
         boolean[] matches = new boolean[autoConfigurationClasses.length];
         for (int i = 0; i < autoConfigurationClasses.length; i++) {
-            matches[i] = !EXCLUSIONS.contains(autoConfigurationClasses[i]);
+            matches[i] = !(isDruidEnabled() && EXCLUSIONS.contains(autoConfigurationClasses[i]));
         }
         return matches;
+    }
+
+    @Override
+    public void setEnvironment(@NotNull Environment environment) {
+        this.environment = environment;
+    }
+
+    public boolean isDruidEnabled() {
+        return this.environment.getProperty(CarefreeDruidAutoConfiguration.PropertyName_enabled, Boolean.class, false);
     }
 }

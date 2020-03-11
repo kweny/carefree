@@ -15,11 +15,6 @@ allprojects {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 
-//    compileOptions {
-//        sourceCompatibility JavaVersion.VERSION_1_8
-//        targetCompatibility JavaVersion.VERSION_1_8
-//    }
-
     // 中文编译乱码
     [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 

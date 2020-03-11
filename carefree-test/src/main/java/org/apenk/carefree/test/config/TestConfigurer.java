@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.lang.Nullable;
 
 /**
  * carefree config
@@ -37,7 +38,9 @@ public class TestConfigurer {
     private final CarefreeRedisRegistry carefreeRedisRegistry;
 
     @Autowired
-    public TestConfigurer(CarefreeRegistry carefreeRegistry, CarefreeDruidRegistry carefreeDruidRegistry, CarefreeRedisRegistry carefreeRedisRegistry) {
+    public TestConfigurer(@Nullable CarefreeRegistry carefreeRegistry,
+                          @Nullable CarefreeDruidRegistry carefreeDruidRegistry,
+                          @Nullable CarefreeRedisRegistry carefreeRedisRegistry) {
         this.carefreeRegistry = carefreeRegistry;
         this.carefreeDruidRegistry = carefreeDruidRegistry;
         this.carefreeRedisRegistry = carefreeRedisRegistry;
