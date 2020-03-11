@@ -16,14 +16,15 @@ public class NamingConverter {
     /**
      * 将骆驼命名法转成蛇形返回。
      * 注意：对于连续大写的情况做如下处理——
-     * <p>
-     * <li>MAC -> mac</li>
-     * <li>remoteURL -> remote_url</li>
-     * <li>remoteURLID -> remote_urlid</li>
-     * <li>randomSQLText -> random_sql_text</li>
-     * <li>ONETestString -> one_test_string</li>
-     * <li>ONEtestString -> on_etest_string</li>
-     * <li>oneTestSTRING -> one_test_string</li>
+     *     <ul>
+     *         <li>MAC - mac</li>
+     *         <li>remoteURL - remote_url</li>
+     *         <li>remoteURLID - remote_urlid</li>
+     *         <li>randomSQLText - random_sql_text</li>
+     *         <li>ONETestString - one_test_string</li>
+     *         <li>ONEtestString - on_etest_string</li>
+     *         <li>oneTestSTRING - one_test_string</li>
+     *     </ul>
      *
      * @param name 驼峰标识
      * @return 蛇形标识
@@ -35,14 +36,15 @@ public class NamingConverter {
     /**
      * 将骆驼命名法转成脊柱返回。
      * 注意：对于连续大写的情况做如下处理——
-     * <p>
-     * <li>MAC -> mac</li>
-     * <li>remoteURL -> remote-url</li>
-     * <li>remoteURLID -> remote-urlid</li>
-     * <li>randomSQLText -> random-sql-text</li>
-     * <li>ONETestString -> one-test-string</li>
-     * <li>ONEtestString -> on-etest-string</li>
-     * <li>oneTestSTRING -> one-test-string</li>
+     *     <ul>
+     *         <li>MAC - mac</li>
+     *         <li>remoteURL - remote-url</li>
+     *         <li>remoteURLID - remote-urlid</li>
+     *         <li>randomSQLText - random-sql-text</li>
+     *         <li>ONETestString - one-test-string</li>
+     *         <li>ONEtestString - on-etest-string</li>
+     *         <li>oneTestSTRING - one-test-string</li>
+     *     </ul>
      *
      * @param name 驼峰标识
      * @return 脊柱标识
@@ -54,17 +56,19 @@ public class NamingConverter {
     /**
      * 将骆驼命名法转成使用指定符号分隔的标识返回。
      * 注意：对于连续大写的情况做如下处理（假设按短横线-分隔）——
-     * <p>
-     * <li>MAC -> mac</li>
-     * <li>remoteURL -> remote-url</li>
-     * <li>remoteURLID -> remote-urlid</li>
-     * <li>randomSQLText -> random-sql-text</li>
-     * <li>ONETestString -> one-test-string</li>
-     * <li>ONEtestString -> on-etest-string</li>
-     * <li>oneTestSTRING -> one-test-string</li>
+     *     <ul>
+     *         <li>MAC - mac</li>
+     *         <li>remoteURL - remote-url</li>
+     *         <li>remoteURLID - remote-urlid</li>
+     *         <li>randomSQLText - random-sql-text</li>
+     *         <li>ONETestString - one-test-string</li>
+     *         <li>ONEtestString - on-etest-string</li>
+     *         <li>oneTestSTRING - one-test-string</li>
+     *     </ul>
      *
      * @param name 驼峰标识
-     * @return 串型（短横线）标识
+     * @param separator 分隔符
+     * @return 分隔符标识
      */
     public static String camel2Separated(String name, char separator) {
         if (StringAide.isBlank(name)) {
@@ -122,6 +126,7 @@ public class NamingConverter {
      * 将使用指定分隔符分隔的标识命名法转换成骆驼命名法返回
      *
      * @param name 指定分隔符分隔的标识
+     * @param separator 分隔符
      * @return 驼峰标识
      */
     public static String separated2Camel(String name, char separator) {

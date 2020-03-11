@@ -6,27 +6,25 @@ allprojects {
             jcenter()
             mavenCentral()
         }
+        dependencies {
+            classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+        }
     }
 
     apply plugin: 'java-library'
     apply plugin: 'idea'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
 
     // Java 版本
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = 8
+    targetCompatibility = 8
 
     // 中文编译乱码
     [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
     group 'org.apenk.carefree'
     version = '0.0.1'
-
-    // 扩展定义
-    ext {
-        buildTime = {
-            return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
-        }
-    }
 
     repositories {
         maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
@@ -49,4 +47,32 @@ allprojects {
         testImplementation group: 'junit', name: 'junit', version: '4.12'
     }
 
+    // 扩展定义
+    ext {
+        buildTime = {
+            return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
+        }
+
+        BINTRAY_REPO = 'maven'
+//        BINTRAY_NAME = 'carefree-mongodb-spring-boot-starter'
+
+        PUBLISHED_PACKAGING = 'jar'
+        PUBLISHED_GROUP_ID = 'org.apenk.carefree'
+//        PUBLISHED_ARTIFACT_ID = 'carefree-mongodb-spring-boot-starter'
+        PUBLISHED_VERSION = rootProject.version
+
+        PROJECT_NAME = 'Carefree'
+        PROJECT_DESCRIPTION = 'Some auto-configuration starters for SpringBoot.'
+        PROJECT_WEBSITE_URL = 'https://github.com/kweny/carefree'
+        PROJECT_VCS_URL = 'https://github.com/kweny/carefree.git'
+        PROJECT_ISSUE_TRACKER_URL = 'https://github.com/kweny/carefree/issues'
+
+        DEVELOPER_ID = 'kweny'
+        DEVELOPER_NAME = 'Kweny'
+        DEVELOPER_EMAIL = 'iamkweny@gmail.com'
+
+        LICENSE_NAME = 'The Apache Software License, Version 2.0'
+        LICENSE_URL = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        ALL_LICENSES = ["Apache-2.0"]
+    }
 }
