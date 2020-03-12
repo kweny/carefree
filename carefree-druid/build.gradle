@@ -10,8 +10,8 @@ dependencies {
 }
 
 ext {
-    BINTRAY_NAME = 'carefree-druid-spring-boot-starter'
-    PUBLISHED_ARTIFACT_ID = 'carefree-druid-spring-boot-starter'
+    BINTRAY_NAME = 'carefree-druid'
+    PUBLISHED_ARTIFACT_ID = 'carefree-druid'
     PROJECT_DESCRIPTION = 'Auto-configure druid in Spring Boot.'
 }
 

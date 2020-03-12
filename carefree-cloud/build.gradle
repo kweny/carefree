@@ -11,8 +11,8 @@ dependencies {
 }
 
 ext {
-    BINTRAY_NAME = 'carefree-cloud-spring-boot-starter'
-    PUBLISHED_ARTIFACT_ID = 'carefree-cloud-spring-boot-starter'
+    BINTRAY_NAME = 'carefree-cloud'
+    PUBLISHED_ARTIFACT_ID = 'carefree-cloud'
     PROJECT_DESCRIPTION = 'Auto-configure cloud config files in Spring Boot.'
 }
 

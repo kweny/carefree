@@ -3,5 +3,5 @@ include 'carefree-core'
 include 'carefree-cloud'
 include 'carefree-druid'
 include 'carefree-redis'
-include 'carefree-test'
+include 'carefree-zoo-horse'
 

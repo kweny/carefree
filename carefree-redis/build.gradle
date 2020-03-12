@@ -11,8 +11,8 @@ dependencies {
 }
 
 ext {
-    BINTRAY_NAME = 'carefree-redis-spring-boot-starter'
-    PUBLISHED_ARTIFACT_ID = 'carefree-redis-spring-boot-starter'
+    BINTRAY_NAME = 'carefree-redis'
+    PUBLISHED_ARTIFACT_ID = 'carefree-redis'
     PROJECT_DESCRIPTION = 'Auto-configure redis in Spring Boot.'
 }
 

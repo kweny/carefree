@@ -10,8 +10,8 @@ dependencies {
 }
 
 ext {
-    BINTRAY_NAME = 'carefree-core-spring-boot-starter'
-    PUBLISHED_ARTIFACT_ID = 'carefree-core-spring-boot-starter'
+    BINTRAY_NAME = 'carefree-core'
+    PUBLISHED_ARTIFACT_ID = 'carefree-core'
     PROJECT_DESCRIPTION = 'Auto-configure config files in Spring Boot.'
 }
 
