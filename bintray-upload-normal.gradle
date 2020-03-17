@@ -74,7 +74,7 @@ bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.key")
     configurations = ['archives']
-    publications = ['maven']
+//    publications = ['maven']
     publish = BINTRAY_PUBLISH
     override = BINTRAY_OVERRIDE
     dryRun = BINTRAY_DRY_RUN

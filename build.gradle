@@ -5,6 +5,7 @@ allprojects {
     buildscript {
         repositories {
             maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+            maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
             jcenter()
             mavenCentral()
         }
@@ -14,6 +15,7 @@ allprojects {
     }
 
     repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
         maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
         jcenter()
         mavenCentral()
@@ -48,7 +50,7 @@ allprojects {
             return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
         }
 
-        BINTRAY_REPO = 'apenk-maven'
+        BINTRAY_REPO = 'maven-test'
         BINTRAY_NAME = 'carefree'
         BINTRAY_PUBLISH = true
         BINTRAY_OVERRIDE = false
