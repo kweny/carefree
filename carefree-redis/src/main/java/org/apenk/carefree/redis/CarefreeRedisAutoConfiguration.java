@@ -21,12 +21,12 @@ import org.apenk.carefree.CarefreeRegistry;
 import org.apenk.carefree.aide.StringAide;
 import org.apenk.carefree.helper.CarefreeLogger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -34,6 +34,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
 
 import java.util.Arrays;
 
@@ -51,10 +52,9 @@ public class CarefreeRedisAutoConfiguration implements ApplicationContextAware, 
     private Environment environment;
 
     @Bean(CarefreeRedisRegistry.BEAN_NAME)
-    @ConditionalOnMissingBean
     @ConditionalOnProperty(name = PropertyName_enabled)
-    public CarefreeRedisRegistry carefreeRedisRegistry() {
-        return new CarefreeRedisRegistry();
+    public CarefreeRedisRegistry carefreeRedisRegistry(@Nullable ResourceLoader resourceLoader) {
+        return new CarefreeRedisRegistry(resourceLoader);
     }
 
     @Override

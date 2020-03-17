@@ -56,7 +56,8 @@ public interface CarefreeRedisBuilderClient {
         if (ObjectAide.isNotNull(archetype.getReadFrom())) {
             builder.readFrom(ReadFrom.valueOf(archetype.getReadFrom()));
         }
-        // TODO-Kweny clientOptions, clientResources, useSsl
+
+        // TODO-Kweny useSsl, verifyPeer, startTls, clientResources, clientOptions, clientName, readFrom, timeout, shutdownTimeout, shutdownQuietPeriod
         clientConfiguration = builder.build();
 
         return clientConfiguration;

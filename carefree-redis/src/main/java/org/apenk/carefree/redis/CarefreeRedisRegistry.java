@@ -17,9 +17,14 @@ package org.apenk.carefree.redis;
 
 import org.apenk.carefree.aide.BooleanAide;
 import org.apenk.carefree.aide.StringAide;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
 import java.util.Collections;
@@ -40,9 +45,13 @@ public class CarefreeRedisRegistry {
 
     private static final Map<String, RedisSerializer<?>> SERIALIZER_CACHE = new ConcurrentHashMap<>();
 
+    private ClassLoader classLoader;
     private Map<String, CarefreeRedisWrapper> holder;
 
-    public CarefreeRedisRegistry() {
+    public CarefreeRedisRegistry(ResourceLoader resourceLoader) {
+        if (resourceLoader != null) {
+            this.classLoader = resourceLoader.getClassLoader();
+        }
         this.holder = new ConcurrentHashMap<>();
     }
 
@@ -50,13 +59,13 @@ public class CarefreeRedisRegistry {
         this.holder.put(name, wrapper);
     }
 
-    public RedisConnectionFactory get(String name) {
+    public LettuceConnectionFactory get(String name) {
         CarefreeRedisWrapper wrapper = this.holder.get(name);
         return wrapper != null ? wrapper.getFactory() : null;
     }
 
-    public Map<String, RedisConnectionFactory> getAll() {
-        Map<String, RedisConnectionFactory> map = new ConcurrentHashMap<>(this.holder.size());
+    public Map<String, LettuceConnectionFactory> getAll() {
+        Map<String, LettuceConnectionFactory> map = new ConcurrentHashMap<>(this.holder.size());
         this.holder.forEach((key, value) -> map.put(key, value.getFactory()));
         return Collections.unmodifiableMap(map);
     }
@@ -91,8 +100,62 @@ public class CarefreeRedisRegistry {
         return wrapper != null ? wrapper.getHashValueSerializer() : null;
     }
 
+    public <K, V> ReactiveRedisTemplate<K, V> newReactiveRedisTemplate(String name) {
+        LettuceConnectionFactory factory = get(name);
+        if (factory == null) {
+            throw new RuntimeException("[Carefree] no redis config: " + name);
+        }
+        return new ReactiveRedisTemplate<>(factory, buildSerializationContext(name, false));
+    }
+
+    public ReactiveStringRedisTemplate newReactiveStringRedisTemplate(String name) {
+        LettuceConnectionFactory factory = get(name);
+        if (factory == null) {
+            throw new RuntimeException("[Carefree] no redis config: " + name);
+        }
+        return new ReactiveStringRedisTemplate(factory, buildSerializationContext(name, true));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <K, V> RedisSerializationContext<K, V> buildSerializationContext(String name, boolean isString) {
+        RedisSerializationContext.RedisSerializationContextBuilder<K, V> builder = RedisSerializationContext.newSerializationContext();
+
+        RedisSerializer<?> defaultSerializer;
+        if (StringAide.isNotBlank(getDefaultSerializer(name))) {
+            defaultSerializer = serializer(getDefaultSerializer(name));
+        } else {
+            defaultSerializer = isString ? RedisSerializer.string() : RedisSerializer.java(classLoader);
+        }
+
+        if (StringAide.isNotBlank(getKeySerializer(name))) {
+            builder.key((RedisSerializer<K>) serializer(getKeySerializer(name)));
+        } else {
+            builder.key((RedisSerializer<K>) defaultSerializer);
+        }
+
+        if (StringAide.isNotBlank(getValueSerializer(name))) {
+            builder.value((RedisSerializer<V>) serializer(getValueSerializer(name)));
+        } else {
+            builder.value((RedisSerializer<V>) defaultSerializer);
+        }
+
+        if (StringAide.isNotBlank(getHashKeySerializer(name))) {
+            builder.hashKey(serializer(getHashKeySerializer(name)));
+        } else {
+            builder.hashKey(defaultSerializer);
+        }
+
+        if (StringAide.isNotBlank(getHashValueSerializer(name))) {
+            builder.hashValue(serializer(getHashValueSerializer(name)));
+        } else {
+            builder.hashValue(defaultSerializer);
+        }
+
+        return builder.build();
+    }
+
     public StringRedisTemplate newStringTemplate(String name) {
-        RedisConnectionFactory factory = get(name);
+        LettuceConnectionFactory factory = get(name);
         if (factory == null) {
             throw new RuntimeException("[Carefree] no redis config: " + name);
         }

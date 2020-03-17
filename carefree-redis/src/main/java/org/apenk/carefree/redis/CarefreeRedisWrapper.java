@@ -15,14 +15,14 @@
  */
 package org.apenk.carefree.redis;
 
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 /**
  * @author Kweny
  * @since 0.0.1
  */
 class CarefreeRedisWrapper {
-    private RedisConnectionFactory factory;
+    private LettuceConnectionFactory factory;
     private boolean disableDefaultSerializer;
     private String defaultSerializer;
     private String keySerializer;
@@ -30,11 +30,11 @@ class CarefreeRedisWrapper {
     private String hashKeySerializer;
     private String hashValueSerializer;
 
-    RedisConnectionFactory getFactory() {
+    LettuceConnectionFactory getFactory() {
         return factory;
     }
 
-    void setFactory(RedisConnectionFactory factory) {
+    void setFactory(LettuceConnectionFactory factory) {
         this.factory = factory;
     }
 

@@ -110,7 +110,7 @@ class CarefreeRedisBuilder implements CarefreeRedisBuilderClient, CarefreeRedisB
     private static final String CONNECT_MODE_Socket = "Socket";
     private static final String CONNECT_MODE_StaticMasterReplica  = "StaticMasterReplica";
 
-    private RedisConnectionFactory createConnectionFactory(CarefreeRedisArchetype archetype, CarefreeRedisArchetypePool poolArchetype) {
+    private LettuceConnectionFactory createConnectionFactory(CarefreeRedisArchetype archetype, CarefreeRedisArchetypePool poolArchetype) {
         LettuceClientConfiguration clientConfiguration = createClientConfiguration(archetype, poolArchetype);
 
         LettuceConnectionFactory factory;

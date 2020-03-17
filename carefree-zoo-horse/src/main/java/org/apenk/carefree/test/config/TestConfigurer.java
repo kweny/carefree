@@ -18,11 +18,18 @@ package org.apenk.carefree.test.config;
 import org.apenk.carefree.CarefreeRegistry;
 import org.apenk.carefree.druid.CarefreeDruidRegistry;
 import org.apenk.carefree.redis.CarefreeRedisRegistry;
+import org.apenk.carefree.test.entity.Horse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.lang.Nullable;
+import reactor.core.publisher.Mono;
+
+import java.awt.*;
 
 /**
  * carefree config
@@ -77,14 +84,56 @@ public class TestConfigurer {
     }
 
     @Bean
-    public StringRedisTemplate mainTemplate() {
-        return carefreeRedisRegistry.newStringTemplate("main");
+    public StringRedisTemplate testStringTemplate() {
+        return carefreeRedisRegistry.newStringTemplate("test");
     }
 
     @Bean
-    public Object test(StringRedisTemplate mainTemplate) {
-        mainTemplate.opsForValue().set("testa", "aaaa");
-        System.out.println(mainTemplate.opsForValue().get("testa"));
+    public RedisTemplate<Point, Horse> testGenTemplate() {
+        return carefreeRedisRegistry.newTemplate("test");
+    }
+
+    @Bean
+    public ReactiveStringRedisTemplate testReactStringTemplate() {
+        return carefreeRedisRegistry.newReactiveStringRedisTemplate("test");
+    }
+
+    @Bean
+    public ReactiveRedisTemplate<Point, Horse> testReactGenTemplate() {
+        return carefreeRedisRegistry.newReactiveRedisTemplate("test");
+    }
+
+    @Bean
+    public Object testString(StringRedisTemplate testStringTemplate) {
+        testStringTemplate.opsForValue().set("testString", "testString");
+        System.out.println("testString = " + testStringTemplate.opsForValue().get("testString"));
+        return new Object();
+    }
+
+    @Bean
+    public Object testGen(RedisTemplate<Point, Horse> testGenTemplate) {
+        Point point = new Point(1, 1);
+        Horse horse = new Horse("testGen", 11);
+        testGenTemplate.opsForValue().set(point, horse);
+        Horse get = testGenTemplate.opsForValue().get(point);
+        System.out.println("testGen = " + get);
+        return new Object();
+    }
+
+    @Bean
+    public Object testReactString(ReactiveStringRedisTemplate testReactStringTemplate) {
+        testReactStringTemplate.opsForValue().set("testReactString", "testReactString").subscribe();
+        System.out.println("testReactString = " + testReactStringTemplate.opsForValue().get("testReactString").block());
+        return new Object();
+    }
+
+    @Bean
+    public Object testReactGen(ReactiveRedisTemplate<Point, Horse> testReactTemplate) {
+        Point point = new Point(2, 2);
+        Horse horse = new Horse("testReactGen", 22);
+        testReactTemplate.opsForValue().set(point, horse).subscribe();
+        Mono<Horse> mono = testReactTemplate.opsForValue().get(point);
+        System.out.println("testReactGen = " + mono.block());
         return new Object();
     }
 }
