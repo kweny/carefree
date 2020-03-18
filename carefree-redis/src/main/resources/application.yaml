@@ -1,0 +1,31 @@
+spring:
+  redis:
+    database: 0
+    url: # Connection URL. Overrides host, port, and password. User is ignored. Example: redis://user:password@example.com:6379
+    host: localhost
+    password:
+    port: 6379
+    ssl: false
+    timeout: # Duration
+    client-name:
+    sentinel:
+      master: # Name of the Redis server
+      nodes: # List<String> Comma-separated list of "host:port" pairs.
+    cluster:
+      nodes: # List<String> Comma-separated list of "host:port" pairs to bootstrap from. This represents an "initial" list of cluster nodes and is required to have at least one entry.
+      max-redirects: # Maximum number of redirects to follow when executing commands across the cluster.
+    jedis:
+      pool:
+        max-idle:
+        min-idle:
+        max-active:
+        max-wait:
+        time-between-eviction-runs:
+    lettuce:
+      shutdown-timeout:
+      pool:
+        max-idle:
+        min-idle:
+        max-active:
+        max-wait:
+        time-between-eviction-runs:
