@@ -42,6 +42,22 @@ public class CarefreeRedisArchetype1 {
      */
     private String mode;
     /**
+     * 设置在什么节点执行读取操作。
+     *
+     * master：默认，在主节点读取数据；
+     * masterPreferred：首选主节点，当主节点不可用则在副本节点读取；
+     * slave/replica：在副本节点读取；
+     * slavePreferred/replicaPreferred：首选副本节点，当副本节点不可用则在主节点读取；
+     * nearest：在集群中延迟最小的节点读取；
+     * any：在任意节点读取。
+     *
+     * 默认为 master，即从主节点读取数据，由于写操作总是会发布到主节点，因此从 master 总会读取到最新数据，可以保证强一致性。
+     * 若改为其它方式需要注意：由于节点之间的数据同步是异步的，因此无法保证能读取到最新数据。
+     *
+     * https://github.com/lettuce-io/lettuce-core/wiki/ReadFrom-Settings
+     */
+    private String readFrom;
+    /**
      * 使用 CLIENT SETNAME 命令设置客户端名称
      */
     private String clientName;
@@ -58,13 +74,13 @@ public class CarefreeRedisArchetype1 {
      */
     private String host;
     /**
-     * Redis 服务密码
-     */
-    private String password;
-    /**
      * Redis 服务端口
      */
     private Integer port;
+    /**
+     * Redis 服务密码
+     */
+    private String password;
     /**
      * 是否启用 SSL
      */
@@ -81,22 +97,6 @@ public class CarefreeRedisArchetype1 {
      * 命令执行超时时间，毫秒
      */
     private Long commandTimeout;
-    /**
-     * 设置在什么节点执行读取操作。
-     *
-     * master：默认，在主节点读取数据；
-     * masterPreferred：首选主节点，当主节点不可用则在副本节点读取；
-     * slave/replica：在副本节点读取；
-     * slavePreferred/replicaPreferred：首选副本节点，当副本节点不可用则在主节点读取；
-     * nearest：在集群中延迟最小的节点读取；
-     * any：在任意节点读取。
-     *
-     * 默认为 master，即从主节点读取数据，由于写操作总是会发布到主节点，因此从 master 总会读取到最新数据，可以保证强一致性。
-     * 若改为其它方式需要注意：由于节点之间的数据同步是异步的，因此无法保证能读取到最新数据。
-     *
-     * https://github.com/lettuce-io/lettuce-core/wiki/ReadFrom-Settings
-     */
-    private String readFrom;
     /**
      * 客户端关闭最大等待时间
      */

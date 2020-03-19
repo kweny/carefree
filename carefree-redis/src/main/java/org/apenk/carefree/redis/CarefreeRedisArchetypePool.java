@@ -15,6 +15,8 @@
  */
 package org.apenk.carefree.redis;
 
+import org.apenk.carefree.CarefreeClassWrapper;
+
 /**
  * Redis 连接池配置原型
  *
@@ -22,25 +24,131 @@ package org.apenk.carefree.redis;
  * @since 0.0.1
  */
 public class CarefreeRedisArchetypePool {
+    /**
+     * 池中可分配的最大连接数，
+     * 负值表示无限制，
+     * 默认 8
+     */
     private Integer maxTotal;
+    /**
+     * 池中允许的最大空闲连接数，
+     * 负值表示无限制，
+     * 默认 8
+     */
     private Integer maxIdle;
+    /**
+     * 池中维持的最小空闲连接数，
+     * 负值表示无效值，
+     * 默认 0
+     */
     private Integer minIdle;
+    /**
+     * 从池中获取连接时是否使用 LIFO 策略，
+     * true 表示使用 LIFO（后进先出），始终返回最近使用的空闲连接；
+     * false 表示使用 FIFO（先进先出），始终返回最旧的空闲连接，
+     * 默认 true，即 LIFO
+     */
     private Boolean lifo;
+    /**
+     * 从池中获取连接时是否启用公平锁机制，
+     * 默认 false
+     */
     private Boolean fairness;
-    private Long maxWaitMillis;
-    private Long minEvictableIdleTimeMillis;
-    private Long softMinEvictableIdleTimeMillis;
-    private Integer numTestsPerEvictionRun;
-    private String evictionPolicyClassName;
-    private Boolean testOnCreate;
-    private Boolean testOnBorrow;
-    private Boolean testOnReturn;
-    private Boolean testWhileIdle;
-    private Long timeBetweenEvictionRunsMillis;
+    /**
+     * 当连接池耗尽，从池中获取连接时是否等待，
+     * 默认 true
+     */
     private Boolean blockWhenExhausted;
+    /**
+     * 当连接池耗尽，且 {@link #blockWhenExhausted} 为 true，从池中获取连接时的最长等待时间，
+     * 单位为毫秒，负值表示无限期等待，
+     * 默认 -1
+     */
+    private Long maxWaitMillis;
+    /**
+     * 从池中获取连接时，在返回连接之前（borrow 阶段），是否对新建连接（无空闲连接时）进行验证，
+     * 若验证失败，则连接获取失败，
+     * 默认 false
+     */
+    private Boolean testOnCreate;
+    /**
+     * 从池中获取连接时，在返回之前（borrow 阶段），是否进行验证，
+     * 若验证失败，则将其从池中删除并销毁，并且尝试重新获取，
+     * 默认 false
+     */
+    private Boolean testOnBorrow;
+    /**
+     * 从池中获取连接时，在返回阶段（borrow 之后），是否进行验证，
+     * 若验证失败，则将该连接销毁，而不是放回池中，
+     * 默认 false
+     */
+    private Boolean testOnReturn;
+    /**
+     * 当“空闲连接剔除线程”（如果有）判断一个空闲连接不需要移除时，是否对其进行验证，
+     * 若验证失败，则依然将其移除并销毁，
+     * 默认 false
+     */
+    private Boolean testWhileIdle;
+    /**
+     * “空闲连接剔除线程”两次运行之间的间隔时间，
+     * 单位为毫秒，当取 0 或负值时则不运行“空闲连接剔除线程”，
+     * 默认 -1
+     */
+    private Long timeBetweenEvictionRunsMillis;
+    /**
+     * “空闲连接剔除线程”（如果有）每次运行期间检查的最大连接数，
+     * 如果为正值，则每次检查的真实数量为：min(该值, 池中空闲连接数)，
+     * 如果为负值，则每次检查的真实数量为：ceil(池中空闲连接数 / abs(该值))，
+     * 默认 3
+     */
+    private Integer numTestsPerEvictionRun;
+    /**
+     * 一个连接的空闲时间至少达到该值才允许被剔除，
+     * 单位为毫秒，当取 0 或负值时，则不会仅仅因为空闲时间达标而剔除连接，除非有其它原因（如连接失效），
+     * 默认 ‭1800000（1000L * 60L * 30L）‬，即 30 分钟
+     */
+    private Long minEvictableIdleTimeMillis;
+    /**
+     * 当一个连接的空闲时间至少达到该值，且池中当前的空闲连接数多于 {@link #minIdle} 选项所设置的最小空闲数，才允许被剔除，
+     * 单位为毫秒，当取 0 或负值时，则不会仅仅因为前述条件而剔除连接，除非有其它原因（如连接失效），
+     * 仅当 {@link #minEvictableIdleTimeMillis} 取 0 或 负值时，该选项才生效，
+     * 默认 -1
+     */
+    private Long softMinEvictableIdleTimeMillis;
+    /**
+     * 当连接池关闭时，等待其持有的“空闲连接剔除线程（Evictor）”关闭的超时时间，
+     * 此外在运行时重设 timeBetweenEvictionRunsMillis 选项将关闭旧有的 Evictor 而创建一个新的来替代，
+     * 此时该选项值也将用于旧有 Evictor 的关闭等待时间，
+     * 默认 10000（10L * 1000L），即 10 秒钟
+     */
+    private Long evictorShutdownTimeoutMillis;
+    /**
+     * 自定义剔除策略接口 {@link org.apache.commons.pool2.impl.EvictionPolicy} 的实现类描述符，
+     * 优先于 {@link #evictionPolicyClassName}
+     * 默认 null
+     */
+    private CarefreeClassWrapper evictionPolicy;
+    /**
+     * 自定义剔除策略接口 {@link org.apache.commons.pool2.impl.EvictionPolicy} 的实现类全名，
+     * 默认 “org.apache.commons.pool2.impl.DefaultEvictionPolicy”
+     */
+    private String evictionPolicyClassName;
+    /**
+     * 是否启用 JMX 管理和监视连接池
+     * true
+     */
     private Boolean jmxEnabled;
-    private String jmxNamePrefix;
+    /**
+     * 用于组装 JMX MBean 的 Object Name，组装规则为：jmxNameBase + jmxNamePrefix + i，
+     * jmxNameBase 为包括 domain、type 的基础部分，当空或不合法时，则使用 "org.apache.commons.pool2:type=GenericObjectPool,name="，
+     */
     private String jmxNameBase;
+    /**
+     * 用于组装 JMX MBean 的 Object Name，组装规则为：jmxNameBase + jmxNamePrefix + i，
+     * jmxNamePrefix 为 name 段的前缀，
+     * 默认 “pool”
+     */
+    private String jmxNamePrefix;
 
     public Integer getMaxTotal() {
         return maxTotal;
@@ -98,6 +206,14 @@ public class CarefreeRedisArchetypePool {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
+    public Long getEvictorShutdownTimeoutMillis() {
+        return evictorShutdownTimeoutMillis;
+    }
+
+    public void setEvictorShutdownTimeoutMillis(Long evictorShutdownTimeoutMillis) {
+        this.evictorShutdownTimeoutMillis = evictorShutdownTimeoutMillis;
+    }
+
     public Long getSoftMinEvictableIdleTimeMillis() {
         return softMinEvictableIdleTimeMillis;
     }
@@ -112,6 +228,14 @@ public class CarefreeRedisArchetypePool {
 
     public void setNumTestsPerEvictionRun(Integer numTestsPerEvictionRun) {
         this.numTestsPerEvictionRun = numTestsPerEvictionRun;
+    }
+
+    public CarefreeClassWrapper getEvictionPolicy() {
+        return evictionPolicy;
+    }
+
+    public void setEvictionPolicy(CarefreeClassWrapper evictionPolicy) {
+        this.evictionPolicy = evictionPolicy;
     }
 
     public String getEvictionPolicyClassName() {

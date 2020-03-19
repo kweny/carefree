@@ -52,6 +52,9 @@ public class CarefreeAssistance {
         BeanInfo targetBean = IntrospectAide.getBeanInfo(clazz, Object.class);
         PropertyDescriptor[] beanProperties = targetBean.getPropertyDescriptors();
         for (PropertyDescriptor beanProperty : beanProperties) {
+//            if (StringAide.equals("reference", beanProperty.getName())) {
+//                continue;
+//            }
             Method writeMethod = beanProperty.getWriteMethod();
             Method readMethod = beanProperty.getReadMethod();
             if (writeMethod == null || readMethod == null) {

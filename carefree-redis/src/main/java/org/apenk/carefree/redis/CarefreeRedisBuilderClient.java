@@ -80,26 +80,14 @@ public interface CarefreeRedisBuilderClient {
         if (ObjectAide.isNotNull(poolArchetype.getFairness())) {
             poolConfig.setFairness(poolArchetype.getFairness());
         }
+        if (ObjectAide.isNotNull(poolArchetype.getBlockWhenExhausted())) {
+            poolConfig.setBlockWhenExhausted(poolArchetype.getBlockWhenExhausted());
+        }
         if (ObjectAide.isNotNull(poolArchetype.getMaxWaitMillis())) {
             poolConfig.setMaxWaitMillis(poolArchetype.getMaxWaitMillis());
         }
-        if (ObjectAide.isNotNull(poolArchetype.getMinEvictableIdleTimeMillis())) {
-            poolConfig.setMinEvictableIdleTimeMillis(poolArchetype.getMinEvictableIdleTimeMillis());
-        }
-        if (ObjectAide.isNotNull(poolArchetype.getSoftMinEvictableIdleTimeMillis())) {
-            poolConfig.setSoftMinEvictableIdleTimeMillis(poolArchetype.getSoftMinEvictableIdleTimeMillis());
-        }
-        if (ObjectAide.isNotNull(poolArchetype.getNumTestsPerEvictionRun())) {
-            poolConfig.setNumTestsPerEvictionRun(poolArchetype.getNumTestsPerEvictionRun());
-        }
-        if (ObjectAide.isNotNull(poolArchetype.getEvictionPolicyClassName())) {
-            poolConfig.setEvictionPolicyClassName(poolArchetype.getEvictionPolicyClassName());
-        }
         if (ObjectAide.isNotNull(poolArchetype.getTestOnCreate())) {
             poolConfig.setTestOnCreate(poolArchetype.getTestOnCreate());
-        }
-        if (ObjectAide.isNotNull(poolArchetype.getTestWhileIdle())) {
-            poolConfig.setTestWhileIdle(poolArchetype.getTestWhileIdle());
         }
         if (ObjectAide.isNotNull(poolArchetype.getTestOnBorrow())) {
             poolConfig.setTestOnBorrow(poolArchetype.getTestOnBorrow());
@@ -107,20 +95,36 @@ public interface CarefreeRedisBuilderClient {
         if (ObjectAide.isNotNull(poolArchetype.getTestOnReturn())) {
             poolConfig.setTestOnReturn(poolArchetype.getTestOnReturn());
         }
+        if (ObjectAide.isNotNull(poolArchetype.getTestWhileIdle())) {
+            poolConfig.setTestWhileIdle(poolArchetype.getTestWhileIdle());
+        }
         if (ObjectAide.isNotNull(poolArchetype.getTimeBetweenEvictionRunsMillis())) {
             poolConfig.setTimeBetweenEvictionRunsMillis(poolArchetype.getTimeBetweenEvictionRunsMillis());
         }
-        if (ObjectAide.isNotNull(poolArchetype.getBlockWhenExhausted())) {
-            poolConfig.setBlockWhenExhausted(poolArchetype.getBlockWhenExhausted());
+        if (ObjectAide.isNotNull(poolArchetype.getNumTestsPerEvictionRun())) {
+            poolConfig.setNumTestsPerEvictionRun(poolArchetype.getNumTestsPerEvictionRun());
+        }
+        if (ObjectAide.isNotNull(poolArchetype.getMinEvictableIdleTimeMillis())) {
+            poolConfig.setMinEvictableIdleTimeMillis(poolArchetype.getMinEvictableIdleTimeMillis());
+        }
+        if (ObjectAide.isNotNull(poolArchetype.getSoftMinEvictableIdleTimeMillis())) {
+            poolConfig.setSoftMinEvictableIdleTimeMillis(poolArchetype.getSoftMinEvictableIdleTimeMillis());
+        }
+        if (ObjectAide.isNotNull(poolArchetype.getEvictorShutdownTimeoutMillis())) {
+            poolConfig.setEvictorShutdownTimeoutMillis(poolArchetype.getEvictorShutdownTimeoutMillis());
+        }
+        // TODO-Kweny CarefreeClassWrapper evictionPolicy
+        if (ObjectAide.isNotNull(poolArchetype.getEvictionPolicyClassName())) {
+            poolConfig.setEvictionPolicyClassName(poolArchetype.getEvictionPolicyClassName());
         }
         if (ObjectAide.isNotNull(poolArchetype.getJmxEnabled())) {
             poolConfig.setJmxEnabled(poolArchetype.getJmxEnabled());
         }
-        if (ObjectAide.isNotNull(poolArchetype.getJmxNamePrefix())) {
-            poolConfig.setJmxNamePrefix(poolArchetype.getJmxNamePrefix());
-        }
         if (ObjectAide.isNotNull(poolArchetype.getJmxNameBase())) {
             poolConfig.setJmxNameBase(poolArchetype.getJmxNameBase());
+        }
+        if (ObjectAide.isNotNull(poolArchetype.getJmxNamePrefix())) {
+            poolConfig.setJmxNamePrefix(poolArchetype.getJmxNamePrefix());
         }
         return poolConfig;
     }

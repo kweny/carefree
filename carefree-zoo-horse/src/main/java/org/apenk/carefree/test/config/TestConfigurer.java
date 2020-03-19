@@ -84,6 +84,18 @@ public class TestConfigurer {
     }
 
     @Bean
+    public StringRedisTemplate mainStringTemplate() {
+        return carefreeRedisRegistry.newStringTemplate("main");
+    }
+
+    @Bean
+    public Object testMainString(StringRedisTemplate mainStringTemplate) {
+        mainStringTemplate.opsForValue().set("mainKey", "mainValue");
+        System.out.println(mainStringTemplate.opsForValue().get("mainKey"));
+        return new Object();
+    }
+
+    @Bean
     public StringRedisTemplate testStringTemplate() {
         return carefreeRedisRegistry.newStringTemplate("test");
     }
