@@ -15,6 +15,7 @@
  */
 package org.apenk.carefree.redis;
 
+import org.apenk.carefree.redis.archetype.CarefreeRedisArchetype;
 import org.springframework.data.redis.connection.*;
 
 import java.util.Arrays;

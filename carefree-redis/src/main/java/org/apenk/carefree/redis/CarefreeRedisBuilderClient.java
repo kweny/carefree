@@ -19,6 +19,8 @@ import io.lettuce.core.ReadFrom;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apenk.carefree.aide.BooleanAide;
 import org.apenk.carefree.aide.ObjectAide;
+import org.apenk.carefree.redis.archetype.CarefreeRedisArchetype;
+import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypePool;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 
@@ -113,7 +115,6 @@ public interface CarefreeRedisBuilderClient {
         if (ObjectAide.isNotNull(poolArchetype.getEvictorShutdownTimeoutMillis())) {
             poolConfig.setEvictorShutdownTimeoutMillis(poolArchetype.getEvictorShutdownTimeoutMillis());
         }
-        // TODO-Kweny CarefreeClassWrapper evictionPolicy
         if (ObjectAide.isNotNull(poolArchetype.getEvictionPolicyClassName())) {
             poolConfig.setEvictionPolicyClassName(poolArchetype.getEvictionPolicyClassName());
         }

@@ -18,6 +18,9 @@ package org.apenk.carefree.redis;
 import com.typesafe.config.Config;
 import org.apenk.carefree.aide.*;
 import org.apenk.carefree.helper.CarefreeAssistance;
+import org.apenk.carefree.redis.archetype.CarefreeRedisArchetype;
+import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypePool;
+import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypeResources;
 import org.springframework.data.redis.connection.*;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -52,11 +55,22 @@ class CarefreeRedisBuilder implements CarefreeRedisBuilderClient, CarefreeRedisB
             Config oneConfig = config.getConfig(rootName);
             CarefreeRedisArchetype archetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetype.class, oneConfig);
             CarefreeRedisArchetypePool poolArchetype;
+            CarefreeRedisArchetypeResources resourcesArchetype;
             if (oneConfig.hasPath("pool")) {
                 Config poolConfig = oneConfig.getConfig("pool");
                 poolArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypePool.class, poolConfig);
             } else {
                 poolArchetype = new CarefreeRedisArchetypePool();
+            }
+            if (oneConfig.hasPath("resources")) {
+                Config resourcesConfig = oneConfig.getConfig("resources");
+                resourcesArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypeResources.class, resourcesConfig);
+            } else {
+                resourcesArchetype = new CarefreeRedisArchetypeResources();
+            }
+            if (oneConfig.hasPath("options")) {
+                Config optionsConfig = oneConfig.getConfig("options");
+
             }
             this.archetypeCache.put(rootName, GenericPair.newInstance(archetype, poolArchetype));
         }

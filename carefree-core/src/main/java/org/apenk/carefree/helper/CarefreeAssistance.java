@@ -134,7 +134,14 @@ public class CarefreeAssistance {
             }
 
             Class<?> propertyType = beanProperty.getPropertyType();
-            if (propertyType == String.class) {
+            if (propertyType == CarefreeClassWrapper.class) {
+
+                Config wrapperConfig = config.getConfig(propertyPath);
+                CarefreeClassWrapper wrapper = new CarefreeClassWrapper();
+                loadBeanProperties(CarefreeClassWrapper.class, wrapper, wrapperConfig, null, null);
+                writeMethod.invoke(bean, wrapper);
+
+            } else if (propertyType == String.class) {
 
                 writeMethod.invoke(bean, config.getString(propertyPath));
 
@@ -169,6 +176,14 @@ public class CarefreeAssistance {
             } else if (propertyType == Character.class || "char".equals(propertyType.getName())) {
 
                 writeMethod.invoke(bean, config.getString(propertyPath).charAt(0));
+
+            } else if (propertyType.isArray()) {
+
+                writeMethod.invoke(bean, (Object) config.getAnyRefList(propertyPath).toArray());
+
+            } else {
+
+                writeMethod.invoke(bean, config.getAnyRef(propertyPath));
 
             }
         }

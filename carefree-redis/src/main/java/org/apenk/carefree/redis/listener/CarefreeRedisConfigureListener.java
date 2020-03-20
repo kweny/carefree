@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apenk.carefree.redis;
-
-import org.springframework.data.redis.connection.RedisConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+package org.apenk.carefree.redis.listener;
 
 /**
- * TODO-Kweny CarefreeRedisAutoConfigurationListener
+ * TODO-Kweny CarefreeRedisConfigureListener
  *
  * @author Kweny
  * @since 0.0.1
  */
-public interface CarefreeRedisAutoConfigurationListener {
-    void archetype();
-    void configuration(LettuceClientConfiguration clientConfiguration, RedisConfiguration redisConfiguration);
+public interface CarefreeRedisConfigureListener {
 }

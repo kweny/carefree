@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apenk.carefree.redis;
+package org.apenk.carefree.redis.archetype;
 
 /**
  * Redis 配置
@@ -105,4 +105,16 @@ public class CarefreeRedisArchetype1 {
      * 客户端优雅关闭静默时间，必须 <= shutdownTimeout
      */
     private Long shutdownQuietPeriod;
+
+    public static class Sentinel {
+
+    }
+
+    public static class Cluster {
+
+    }
+
+    public static class StaticMasterReplica {
+
+    }
 }

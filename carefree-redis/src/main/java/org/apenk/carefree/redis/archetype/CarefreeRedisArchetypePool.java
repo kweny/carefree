@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apenk.carefree.redis;
-
-import org.apenk.carefree.CarefreeClassWrapper;
+package org.apenk.carefree.redis.archetype;
 
 /**
  * Redis 连接池配置原型
@@ -123,12 +121,6 @@ public class CarefreeRedisArchetypePool {
      */
     private Long evictorShutdownTimeoutMillis;
     /**
-     * 自定义剔除策略接口 {@link org.apache.commons.pool2.impl.EvictionPolicy} 的实现类描述符，
-     * 优先于 {@link #evictionPolicyClassName}
-     * 默认 null
-     */
-    private CarefreeClassWrapper evictionPolicy;
-    /**
      * 自定义剔除策略接口 {@link org.apache.commons.pool2.impl.EvictionPolicy} 的实现类全名，
      * 默认 “org.apache.commons.pool2.impl.DefaultEvictionPolicy”
      */
@@ -228,14 +220,6 @@ public class CarefreeRedisArchetypePool {
 
     public void setNumTestsPerEvictionRun(Integer numTestsPerEvictionRun) {
         this.numTestsPerEvictionRun = numTestsPerEvictionRun;
-    }
-
-    public CarefreeClassWrapper getEvictionPolicy() {
-        return evictionPolicy;
-    }
-
-    public void setEvictionPolicy(CarefreeClassWrapper evictionPolicy) {
-        this.evictionPolicy = evictionPolicy;
     }
 
     public String getEvictionPolicyClassName() {

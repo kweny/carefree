@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apenk.carefree.redis;
+package org.apenk.carefree.redis.archetype;
 
 import io.lettuce.core.event.EventBus;
 import io.lettuce.core.resource.ClientResources;
-import org.apenk.carefree.CarefreeClassWrapper;
+import org.apenk.carefree.helper.CarefreeClassWrapper;
 
 /**
  * {@link ClientResources} configuration
@@ -31,11 +31,11 @@ public class CarefreeRedisArchetypeResources {
     /**
      * 用于 I/O 操作的线程池大小，默认为可用 CPU 数量，必须大于 0
      */
-    private int ioThreadPoolSize;
+    private Integer ioThreadPoolSize;
     /**
      * 用于计算操作的线程池大小，默认为可用 CPU 数量，必须大于 0
      */
-    private int computationThreadPoolSize;
+    private Integer computationThreadPoolSize;
 
     /**
      * {@link io.lettuce.core.resource.EventLoopGroupProvider} 接口的实现类的构造描述符。
@@ -187,19 +187,19 @@ public class CarefreeRedisArchetypeResources {
      */
     private String tracingClassName;
 
-    public int getIoThreadPoolSize() {
+    public Integer getIoThreadPoolSize() {
         return ioThreadPoolSize;
     }
 
-    public void setIoThreadPoolSize(int ioThreadPoolSize) {
+    public void setIoThreadPoolSize(Integer ioThreadPoolSize) {
         this.ioThreadPoolSize = ioThreadPoolSize;
     }
 
-    public int getComputationThreadPoolSize() {
+    public Integer getComputationThreadPoolSize() {
         return computationThreadPoolSize;
     }
 
-    public void setComputationThreadPoolSize(int computationThreadPoolSize) {
+    public void setComputationThreadPoolSize(Integer computationThreadPoolSize) {
         this.computationThreadPoolSize = computationThreadPoolSize;
     }
 

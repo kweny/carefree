@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 持有 carefree druid 配置及 {@link RedisConnectionFactory} 对象，
+ * 持有 carefree redis 配置及 {@link RedisConnectionFactory} 对象，
  * 以 carefreeDruidRegistry 为 bean name 存在于容器，
  * 可注入到应用程序中，使用 {@link #get(String)} 方法获取指定 {@link RedisConnectionFactory} 对象，
  * 或使用 {@link #getAll()} 方法获取所有 {@link RedisConnectionFactory} 对象。
