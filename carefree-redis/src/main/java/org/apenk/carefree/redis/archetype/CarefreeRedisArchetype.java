@@ -15,6 +15,10 @@
  */
 package org.apenk.carefree.redis.archetype;
 
+import org.apenk.carefree.helper.CarefreeClassDeclaration;
+
+import java.util.List;
+
 /**
  * Redis 配置原型
  *
@@ -23,6 +27,11 @@ package org.apenk.carefree.redis.archetype;
  */
 public class CarefreeRedisArchetype {
     /**
+     * carefree redis 自动装配过程监听器，
+     * {@link org.apenk.carefree.redis.listener.CarefreeRedisConfigureListener} 接口的实现
+     */
+    private CarefreeClassDeclaration configureListener;
+    /**
      * 是否启用本配置，若 false 则不会创建对应的 RedisConnectionFactory 对象，但仍然可以被其它配置引用，默认为 true
      */
     private Boolean enabled = true;
@@ -30,31 +39,113 @@ public class CarefreeRedisArchetype {
      * 引用的另一个配置的 key，若本实例的某个属性未配置，则使用所引用配置的相应属性作为默认值
      */
     private String reference;
+
     /**
-     * Standalone/Cluster/Sentinel/Socket/StaticMasterReplica
+     * Redis 服务高可用及连接方式
+     *
+     * Standalone：单节点
+     * Socket：使用 unix socket 方式连接
+     * Sentinel：哨兵模式 https://github.com/lettuce-io/lettuce-core/wiki/Redis-Sentinel
+     * Cluster：集群分片 https://github.com/lettuce-io/lettuce-core/wiki/Redis-Cluster
+     * StaticMasterReplica：静态主从 https://github.com/lettuce-io/lettuce-core/wiki/Master-Replica
      */
     private String mode;
-    private String clientName;
-    private String host;
-    private Integer port;
-    private String nodes;
-    private Integer maxRedirects;
-    private String password;
-    private Integer database;
-    private Long commandTimeout;
-    private Long shutdownTimeout;
-    private Boolean usePooling;
-    private Boolean useSsl;
     /**
-     * master/masterPreferred/slave/slavePreferred/nearest
+     * 设置在什么节点执行读取操作。
+     *
+     * master：默认，在主节点读取数据；
+     * masterPreferred：首选主节点，当主节点不可用则在副本节点读取；
+     * slave/replica：在副本节点读取；
+     * slavePreferred/replicaPreferred：首选副本节点，当副本节点不可用则在主节点读取；
+     * nearest：在集群中延迟最小的节点读取；
+     * any：在任意节点读取。
+     *
+     * 默认为 master，即从主节点读取数据，由于写操作总是会发布到主节点，因此从 master 总会读取到最新数据，可以保证强一致性。
+     * 若改为其它方式需要注意：由于节点之间的数据同步是异步的，因此无法保证能读取到最新数据。
+     *
+     * https://github.com/lettuce-io/lettuce-core/wiki/ReadFrom-Settings
      */
     private String readFrom;
-    private boolean disableDefaultSerializer;
-    private String defaultSerializer;
-    private String keySerializer;
-    private String valueSerializer;
-    private String hashKeySerializer;
-    private String hashValueSerializer;
+    /**
+     * 使用 CLIENT SETNAME 命令设置客户端名称
+     */
+    private String clientName;
+    /**
+     * database 索引
+     */
+    private Integer database;
+    /**
+     * 连接 URL，将覆盖 host、port、password，如：redis://user:password@example.com:6379，忽略其中的 user 部分。
+     */
+    private String url;
+    /**
+     * Redis 服务地址
+     */
+    private String host;
+    /**
+     * Redis 服务端口
+     */
+    private Integer port;
+    /**
+     * Redis 服务密码
+     */
+    private String password;
+    /**
+     * 当 {@link #mode} 取值 Socket 时有效，默认 /tmp/redis.sock
+     */
+    private String socket;
+    /**
+     * 采用 sentinel HA 方案时，指定 master 名称，
+     * 当 {@link #mode} 取值 Sentinel 时有效。
+     */
+    private String master;
+    /**
+     * Redis 服务节点列表，每个节点为 “host[:port]” 格式，其中 port 缺省为 6379，
+     * 当 {@link #mode} 取值 Sentinel/Cluster/StaticMasterReplica 时有效。
+     */
+    private List<String> nodes;
+    /**
+     * 一条 Redis 命令在整个集群中的最大重定向次数，
+     * 当 {@link #mode} 取值 Cluster 时有效。
+     */
+    private Integer maxRedirects;
+    /**
+     * 采用 sentinel HA 方案时，Redis Sentinel 的密码，
+     * 当 {@link #mode} 取值 Sentinel 时有效。
+     */
+    private String sentinelPassword;
+    /**
+     * 是否启用 SSL
+     */
+    private Boolean ssl;
+    /**
+     * 是否启用对等验证
+     */
+    private Boolean verifyPeer;
+    /**
+     * 是否启用 StartTLS
+     */
+    private Boolean startTls;
+    /**
+     * 命令执行超时时间，毫秒
+     */
+    private Long commandTimeout;
+    /**
+     * 客户端关闭最大等待时间
+     */
+    private Long shutdownTimeout;
+    /**
+     * 客户端优雅关闭静默时间，必须 <= shutdownTimeout
+     */
+    private Long shutdownQuietPeriod;
+
+    public CarefreeClassDeclaration getConfigureListener() {
+        return configureListener;
+    }
+
+    public void setConfigureListener(CarefreeClassDeclaration configureListener) {
+        this.configureListener = configureListener;
+    }
 
     public Boolean getEnabled() {
         return enabled;
@@ -80,12 +171,36 @@ public class CarefreeRedisArchetype {
         this.mode = mode;
     }
 
+    public String getReadFrom() {
+        return readFrom;
+    }
+
+    public void setReadFrom(String readFrom) {
+        this.readFrom = readFrom;
+    }
+
     public String getClientName() {
         return clientName;
     }
 
     public void setClientName(String clientName) {
         this.clientName = clientName;
+    }
+
+    public Integer getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(Integer database) {
+        this.database = database;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getHost() {
@@ -104,11 +219,35 @@ public class CarefreeRedisArchetype {
         this.port = port;
     }
 
-    public String getNodes() {
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getSocket() {
+        return socket;
+    }
+
+    public void setSocket(String socket) {
+        this.socket = socket;
+    }
+
+    public String getMaster() {
+        return master;
+    }
+
+    public void setMaster(String master) {
+        this.master = master;
+    }
+
+    public List<String> getNodes() {
         return nodes;
     }
 
-    public void setNodes(String nodes) {
+    public void setNodes(List<String> nodes) {
         this.nodes = nodes;
     }
 
@@ -120,20 +259,36 @@ public class CarefreeRedisArchetype {
         this.maxRedirects = maxRedirects;
     }
 
-    public String getPassword() {
-        return password;
+    public String getSentinelPassword() {
+        return sentinelPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setSentinelPassword(String sentinelPassword) {
+        this.sentinelPassword = sentinelPassword;
     }
 
-    public Integer getDatabase() {
-        return database;
+    public Boolean getSsl() {
+        return ssl;
     }
 
-    public void setDatabase(Integer database) {
-        this.database = database;
+    public void setSsl(Boolean ssl) {
+        this.ssl = ssl;
+    }
+
+    public Boolean getVerifyPeer() {
+        return verifyPeer;
+    }
+
+    public void setVerifyPeer(Boolean verifyPeer) {
+        this.verifyPeer = verifyPeer;
+    }
+
+    public Boolean getStartTls() {
+        return startTls;
+    }
+
+    public void setStartTls(Boolean startTls) {
+        this.startTls = startTls;
     }
 
     public Long getCommandTimeout() {
@@ -152,75 +307,11 @@ public class CarefreeRedisArchetype {
         this.shutdownTimeout = shutdownTimeout;
     }
 
-    public Boolean getUsePooling() {
-        return usePooling;
+    public Long getShutdownQuietPeriod() {
+        return shutdownQuietPeriod;
     }
 
-    public void setUsePooling(Boolean usePooling) {
-        this.usePooling = usePooling;
-    }
-
-    public Boolean getUseSsl() {
-        return useSsl;
-    }
-
-    public void setUseSsl(Boolean useSsl) {
-        this.useSsl = useSsl;
-    }
-
-    public String getReadFrom() {
-        return readFrom;
-    }
-
-    public void setReadFrom(String readFrom) {
-        this.readFrom = readFrom;
-    }
-
-    public boolean isDisableDefaultSerializer() {
-        return disableDefaultSerializer;
-    }
-
-    public void setDisableDefaultSerializer(boolean disableDefaultSerializer) {
-        this.disableDefaultSerializer = disableDefaultSerializer;
-    }
-
-    public String getDefaultSerializer() {
-        return defaultSerializer;
-    }
-
-    public void setDefaultSerializer(String defaultSerializer) {
-        this.defaultSerializer = defaultSerializer;
-    }
-
-    public String getKeySerializer() {
-        return keySerializer;
-    }
-
-    public void setKeySerializer(String keySerializer) {
-        this.keySerializer = keySerializer;
-    }
-
-    public String getValueSerializer() {
-        return valueSerializer;
-    }
-
-    public void setValueSerializer(String valueSerializer) {
-        this.valueSerializer = valueSerializer;
-    }
-
-    public String getHashKeySerializer() {
-        return hashKeySerializer;
-    }
-
-    public void setHashKeySerializer(String hashKeySerializer) {
-        this.hashKeySerializer = hashKeySerializer;
-    }
-
-    public String getHashValueSerializer() {
-        return hashValueSerializer;
-    }
-
-    public void setHashValueSerializer(String hashValueSerializer) {
-        this.hashValueSerializer = hashValueSerializer;
+    public void setShutdownQuietPeriod(Long shutdownQuietPeriod) {
+        this.shutdownQuietPeriod = shutdownQuietPeriod;
     }
 }

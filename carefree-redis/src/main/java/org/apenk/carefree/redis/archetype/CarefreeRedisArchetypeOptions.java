@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apenk.carefree.aide;
-
-import java.util.Objects;
+package org.apenk.carefree.redis.archetype;
 
 /**
+ * TODO-Kweny CarefreeRedisArchetypeOptions
+ *
  * @author Kweny
  * @since 0.0.1
  */
-public class ObjectAide {
-
-
+public class CarefreeRedisArchetypeOptions {
 }

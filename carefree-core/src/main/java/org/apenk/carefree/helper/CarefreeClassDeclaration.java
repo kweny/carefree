@@ -15,9 +15,6 @@
  */
 package org.apenk.carefree.helper;
 
-import org.apenk.carefree.aide.ArrayAide;
-import org.apenk.carefree.aide.StringAide;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Map;
@@ -27,7 +24,7 @@ import java.util.WeakHashMap;
  * @author Kweny
  * @since 0.0.1
  */
-public class CarefreeClassWrapper {
+public class CarefreeClassDeclaration {
     private static final Map<String, Object> INSTANCE_CACHE = Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
@@ -55,22 +52,25 @@ public class CarefreeClassWrapper {
      */
     private Object[] staticFactoryArgs;
 
-    public <T> T newInstance() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-        if (StringAide.isBlank(className)) {
+    public <T> T instance() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        if (CarefreeAide.isBlank(className)) {
             return null;
         }
-        Class<?> clazz = Class.forName(className);
-        Object instance;
-        if (StringAide.isNotBlank(staticFactoryMethod)) {
-            Class<?>[] parameterTypes = getParameterTypes(staticFactoryArgs);
-            instance = clazz.getMethod(staticFactoryMethod, parameterTypes).invoke(null, staticFactoryArgs);
-        } else {
-            Class<?>[] parameterTypes = getParameterTypes(constructorArgs);
-            instance = clazz.getConstructor(parameterTypes).newInstance(constructorArgs);
-        }
-        if (StringAide.isNotBlank(initializeMethod) && instance != null) {
-            Class<?>[] parameterTypes = getParameterTypes(initializeArgs);
-            clazz.getMethod(initializeMethod, parameterTypes).invoke(instance, initializeArgs);
+        Object instance = INSTANCE_CACHE.get(className);
+        if (instance == null) {
+            Class<?> clazz = Class.forName(className);
+            if (CarefreeAide.isNotBlank(staticFactoryMethod)) { // 优先使用静态工厂方法进行实例化
+                Class<?>[] parameterTypes = getParameterTypes(staticFactoryArgs);
+                instance = clazz.getMethod(staticFactoryMethod, parameterTypes).invoke(null, staticFactoryArgs);
+            } else { // 若无工厂方法则使用构造方法
+                Class<?>[] parameterTypes = getParameterTypes(constructorArgs);
+                instance = clazz.getConstructor(parameterTypes).newInstance(constructorArgs);
+            }
+            if (CarefreeAide.isNotBlank(initializeMethod) && instance != null) { // 实例化后调用初始化方法（若存在）
+                Class<?>[] parameterTypes = getParameterTypes(initializeArgs);
+                clazz.getMethod(initializeMethod, parameterTypes).invoke(instance, initializeArgs);
+            }
+            INSTANCE_CACHE.put(className, instance);
         }
         @SuppressWarnings("unchecked")
         final T result = (T) instance;
@@ -79,7 +79,7 @@ public class CarefreeClassWrapper {
 
     private Class<?>[] getParameterTypes(Object[] args) {
         Class<?>[] parameterTypes = null;
-        if (ArrayAide.isNotEmpty(args)) {
+        if (CarefreeAide.isNotEmpty(args)) {
             parameterTypes = new Class[args.length];
             for (int i = 0; i < args.length; i++) {
                 parameterTypes[i] = args[i].getClass();

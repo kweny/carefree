@@ -15,11 +15,107 @@
  */
 package org.apenk.carefree.redis.listener;
 
+import org.apenk.carefree.redis.archetype.*;
+import org.springframework.data.redis.connection.RedisConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+
 /**
- * TODO-Kweny CarefreeRedisConfigureEvent
- *
  * @author Kweny
  * @since 0.0.1
  */
 public class CarefreeRedisConfigureEvent {
+    private String key;
+    private String root;
+
+    private CarefreeRedisArchetype redisArchetype;
+    private CarefreeRedisArchetypePool poolArchetype;
+    private CarefreeRedisArchetypeResources resourcesArchetype;
+    private CarefreeRedisArchetypeOptions optionsArchetype;
+    private CarefreeRedisArchetypeSerializer serializerArchetype;
+
+    private LettuceClientConfiguration clientConfiguration;
+    private RedisConfiguration redisConfiguration;
+
+    private LettuceConnectionFactory connectionFactory;
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getRoot() {
+        return root;
+    }
+
+    public void setRoot(String root) {
+        this.root = root;
+    }
+
+    public CarefreeRedisArchetype getRedisArchetype() {
+        return redisArchetype;
+    }
+
+    public void setRedisArchetype(CarefreeRedisArchetype redisArchetype) {
+        this.redisArchetype = redisArchetype;
+    }
+
+    public CarefreeRedisArchetypePool getPoolArchetype() {
+        return poolArchetype;
+    }
+
+    public void setPoolArchetype(CarefreeRedisArchetypePool poolArchetype) {
+        this.poolArchetype = poolArchetype;
+    }
+
+    public CarefreeRedisArchetypeResources getResourcesArchetype() {
+        return resourcesArchetype;
+    }
+
+    public void setResourcesArchetype(CarefreeRedisArchetypeResources resourcesArchetype) {
+        this.resourcesArchetype = resourcesArchetype;
+    }
+
+    public CarefreeRedisArchetypeOptions getOptionsArchetype() {
+        return optionsArchetype;
+    }
+
+    public void setOptionsArchetype(CarefreeRedisArchetypeOptions optionsArchetype) {
+        this.optionsArchetype = optionsArchetype;
+    }
+
+    public CarefreeRedisArchetypeSerializer getSerializerArchetype() {
+        return serializerArchetype;
+    }
+
+    public void setSerializerArchetype(CarefreeRedisArchetypeSerializer serializerArchetype) {
+        this.serializerArchetype = serializerArchetype;
+    }
+
+    public LettuceClientConfiguration getClientConfiguration() {
+        return clientConfiguration;
+    }
+
+    public void setClientConfiguration(LettuceClientConfiguration clientConfiguration) {
+        this.clientConfiguration = clientConfiguration;
+    }
+
+    public RedisConfiguration getRedisConfiguration() {
+        return redisConfiguration;
+    }
+
+    public void setRedisConfiguration(RedisConfiguration redisConfiguration) {
+        this.redisConfiguration = redisConfiguration;
+    }
+
+    public LettuceConnectionFactory getConnectionFactory() {
+        return connectionFactory;
+    }
+
+    public void setConnectionFactory(LettuceConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
 }

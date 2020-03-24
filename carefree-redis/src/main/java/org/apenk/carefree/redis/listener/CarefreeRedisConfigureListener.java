@@ -16,10 +16,15 @@
 package org.apenk.carefree.redis.listener;
 
 /**
- * TODO-Kweny CarefreeRedisConfigureListener
- *
  * @author Kweny
  * @since 0.0.1
  */
 public interface CarefreeRedisConfigureListener {
+
+    default void archetype(CarefreeRedisConfigureEvent event) {}
+
+    default void configuration(CarefreeRedisConfigureEvent event) {}
+
+    default void factory(CarefreeRedisConfigureEvent event) {}
+
 }

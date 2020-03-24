@@ -15,25 +15,10 @@
  */
 package org.apenk.carefree.aide;
 
-import java.lang.reflect.Array;
-
 /**
  * @author Kweny
  * @since 0.0.1
  */
 public class ArrayAide {
-    public static int getLength(final Object array) {
-        if (array == null) {
-            return 0;
-        }
-        return Array.getLength(array);
-    }
-
-    public static <T> boolean isEmpty(final T[] array) {
-        return getLength(array) == 0;
-    }
-
-    public static <T> boolean isNotEmpty(final T[] array) {
-        return !isEmpty(array);
-    }
+    
 }

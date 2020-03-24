@@ -15,6 +15,10 @@
  */
 package org.apenk.carefree.redis.archetype;
 
+import org.apenk.carefree.helper.CarefreeClassDeclaration;
+
+import java.util.List;
+
 /**
  * Redis 配置
  *
@@ -22,6 +26,11 @@ package org.apenk.carefree.redis.archetype;
  * @since 0.0.1
  */
 public class CarefreeRedisArchetype1 {
+    /**
+     * carefree redis 自动装配过程监听器，
+     * {@link org.apenk.carefree.redis.listener.CarefreeRedisConfigureListener} 接口的实现
+     */
+    private CarefreeClassDeclaration configureListener;
     /**
      * 是否启用本配置，若 false 则不会创建对应的 RedisConnectionFactory 对象，但仍然可以被其它配置引用，默认为 true
      */
@@ -82,6 +91,30 @@ public class CarefreeRedisArchetype1 {
      */
     private String password;
     /**
+     * 当 {@link #mode} 取值 Socket 时有效，默认 /tmp/redis.sock
+     */
+    private String socket;
+    /**
+     * 采用 sentinel HA 方案时，指定 master 名称，
+     * 当 {@link #mode} 取值 Sentinel 时有效。
+     */
+    private String master;
+    /**
+     * Redis 服务节点列表，每个节点为 “host[:port]” 格式，其中 port 缺省为 6379，
+     * 当 {@link #mode} 取值 Sentinel/Cluster/StaticMasterReplica 时有效。
+     */
+    private List<String> nodes;
+    /**
+     * 一条 Redis 命令在整个集群中的最大重定向次数，
+     * 当 {@link #mode} 取值 Cluster 时有效。
+     */
+    private Integer maxRedirects;
+    /**
+     * 采用 sentinel HA 方案时，Redis Sentinel 的密码，
+     * 当 {@link #mode} 取值 Sentinel 时有效。
+     */
+    private String sentinelPassword;
+    /**
      * 是否启用 SSL
      */
     private Boolean ssl;
@@ -106,15 +139,179 @@ public class CarefreeRedisArchetype1 {
      */
     private Long shutdownQuietPeriod;
 
-    public static class Sentinel {
-
+    public CarefreeClassDeclaration getConfigureListener() {
+        return configureListener;
     }
 
-    public static class Cluster {
-
+    public void setConfigureListener(CarefreeClassDeclaration configureListener) {
+        this.configureListener = configureListener;
     }
 
-    public static class StaticMasterReplica {
+    public Boolean getEnabled() {
+        return enabled;
+    }
 
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public String getReadFrom() {
+        return readFrom;
+    }
+
+    public void setReadFrom(String readFrom) {
+        this.readFrom = readFrom;
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
+
+    public Integer getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(Integer database) {
+        this.database = database;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getSocket() {
+        return socket;
+    }
+
+    public void setSocket(String socket) {
+        this.socket = socket;
+    }
+
+    public String getMaster() {
+        return master;
+    }
+
+    public void setMaster(String master) {
+        this.master = master;
+    }
+
+    public List<String> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(List<String> nodes) {
+        this.nodes = nodes;
+    }
+
+    public Integer getMaxRedirects() {
+        return maxRedirects;
+    }
+
+    public void setMaxRedirects(Integer maxRedirects) {
+        this.maxRedirects = maxRedirects;
+    }
+
+    public String getSentinelPassword() {
+        return sentinelPassword;
+    }
+
+    public void setSentinelPassword(String sentinelPassword) {
+        this.sentinelPassword = sentinelPassword;
+    }
+
+    public Boolean getSsl() {
+        return ssl;
+    }
+
+    public void setSsl(Boolean ssl) {
+        this.ssl = ssl;
+    }
+
+    public Boolean getVerifyPeer() {
+        return verifyPeer;
+    }
+
+    public void setVerifyPeer(Boolean verifyPeer) {
+        this.verifyPeer = verifyPeer;
+    }
+
+    public Boolean getStartTls() {
+        return startTls;
+    }
+
+    public void setStartTls(Boolean startTls) {
+        this.startTls = startTls;
+    }
+
+    public Long getCommandTimeout() {
+        return commandTimeout;
+    }
+
+    public void setCommandTimeout(Long commandTimeout) {
+        this.commandTimeout = commandTimeout;
+    }
+
+    public Long getShutdownTimeout() {
+        return shutdownTimeout;
+    }
+
+    public void setShutdownTimeout(Long shutdownTimeout) {
+        this.shutdownTimeout = shutdownTimeout;
+    }
+
+    public Long getShutdownQuietPeriod() {
+        return shutdownQuietPeriod;
+    }
+
+    public void setShutdownQuietPeriod(Long shutdownQuietPeriod) {
+        this.shutdownQuietPeriod = shutdownQuietPeriod;
     }
 }

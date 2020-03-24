@@ -22,17 +22,5 @@ import java.util.Map;
  * @since 0.0.1
  */
 public class MapAide {
-    public static boolean isEmpty(final Map<?, ?> map) {
-        return map == null || map.isEmpty();
-    }
 
-    public static boolean isNotEmpty(final Map<?, ?> map) {
-        return !isEmpty(map);
-    }
-
-    public static <K, V> void clear(final Map<K, V> map) {
-        if (isNotEmpty(map)) {
-            map.clear();
-        }
-    }
 }

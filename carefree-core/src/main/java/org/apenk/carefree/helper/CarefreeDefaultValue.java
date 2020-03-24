@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apenk.carefree.aide;
-
-import java.util.Objects;
+package org.apenk.carefree.helper;
 
 /**
+ * TODO-Kweny CarefreeDefaultValue
+ *
  * @author Kweny
  * @since 0.0.1
  */
-public class ObjectAide {
-
-
+public class CarefreeDefaultValue {
+    public static final String DEFAULT_String = String.valueOf(527558829);
+    public static final Integer DEFAULT_Integer = new Integer(527558829);
+    public static final Long DEFAULT_Long = new Long(527558829);
 }

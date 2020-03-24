@@ -15,8 +15,7 @@
  */
 package org.apenk.carefree.redis;
 
-import org.apenk.carefree.aide.BooleanAide;
-import org.apenk.carefree.aide.StringAide;
+import org.apenk.carefree.helper.CarefreeAide;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -72,7 +71,7 @@ public class CarefreeRedisRegistry {
 
     public boolean isDisableDefaultSerializer(String name) {
         CarefreeRedisWrapper wrapper = this.holder.get(name);
-        return wrapper != null && BooleanAide.isTrue(wrapper.isDisableDefaultSerializer());
+        return wrapper != null && CarefreeAide.isTrue(wrapper.isDisableDefaultSerializer());
     }
 
     public String getDefaultSerializer(String name) {
@@ -121,31 +120,31 @@ public class CarefreeRedisRegistry {
         RedisSerializationContext.RedisSerializationContextBuilder<K, V> builder = RedisSerializationContext.newSerializationContext();
 
         RedisSerializer<?> defaultSerializer;
-        if (StringAide.isNotBlank(getDefaultSerializer(name))) {
+        if (CarefreeAide.isNotBlank(getDefaultSerializer(name))) {
             defaultSerializer = serializer(getDefaultSerializer(name));
         } else {
             defaultSerializer = isString ? RedisSerializer.string() : RedisSerializer.java(classLoader);
         }
 
-        if (StringAide.isNotBlank(getKeySerializer(name))) {
+        if (CarefreeAide.isNotBlank(getKeySerializer(name))) {
             builder.key((RedisSerializer<K>) serializer(getKeySerializer(name)));
         } else {
             builder.key((RedisSerializer<K>) defaultSerializer);
         }
 
-        if (StringAide.isNotBlank(getValueSerializer(name))) {
+        if (CarefreeAide.isNotBlank(getValueSerializer(name))) {
             builder.value((RedisSerializer<V>) serializer(getValueSerializer(name)));
         } else {
             builder.value((RedisSerializer<V>) defaultSerializer);
         }
 
-        if (StringAide.isNotBlank(getHashKeySerializer(name))) {
+        if (CarefreeAide.isNotBlank(getHashKeySerializer(name))) {
             builder.hashKey(serializer(getHashKeySerializer(name)));
         } else {
             builder.hashKey(defaultSerializer);
         }
 
-        if (StringAide.isNotBlank(getHashValueSerializer(name))) {
+        if (CarefreeAide.isNotBlank(getHashValueSerializer(name))) {
             builder.hashValue(serializer(getHashValueSerializer(name)));
         } else {
             builder.hashValue(defaultSerializer);
@@ -170,7 +169,7 @@ public class CarefreeRedisRegistry {
     }
 
     public <K, V> RedisTemplate<K, V> newTemplate(String name) {
-        RedisConnectionFactory factory = get(name);
+        LettuceConnectionFactory factory = get(name);
         if (factory == null) {
             throw new RuntimeException("[Carefree] no redis config: " + name);
         }
@@ -189,19 +188,19 @@ public class CarefreeRedisRegistry {
             template.setEnableDefaultSerializer(false);
         }
 
-        if (StringAide.isNotBlank(getDefaultSerializer(name))) {
+        if (CarefreeAide.isNotBlank(getDefaultSerializer(name))) {
             template.setDefaultSerializer(serializer(getDefaultSerializer(name)));
         }
-        if (StringAide.isNotBlank(getKeySerializer(name))) {
+        if (CarefreeAide.isNotBlank(getKeySerializer(name))) {
             template.setKeySerializer(serializer(getKeySerializer(name)));
         }
-        if (StringAide.isNotBlank(getValueSerializer(name))) {
+        if (CarefreeAide.isNotBlank(getValueSerializer(name))) {
             template.setValueSerializer(serializer(getValueSerializer(name)));
         }
-        if (StringAide.isNotBlank(getHashKeySerializer(name))) {
+        if (CarefreeAide.isNotBlank(getHashKeySerializer(name))) {
             template.setHashKeySerializer(serializer(getHashKeySerializer(name)));
         }
-        if (StringAide.isNotBlank(getHashValueSerializer(name))) {
+        if (CarefreeAide.isNotBlank(getHashValueSerializer(name))) {
             template.setHashValueSerializer(serializer(getHashValueSerializer(name)));
         }
     }

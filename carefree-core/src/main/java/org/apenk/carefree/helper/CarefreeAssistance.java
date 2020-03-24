@@ -17,16 +17,13 @@ package org.apenk.carefree.helper;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
-import org.apenk.carefree.aide.IntrospectAide;
-import org.apenk.carefree.aide.ObjectAide;
-import org.apenk.carefree.aide.StringAide;
 
 import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * carefree 工具方法
@@ -36,7 +33,30 @@ import java.util.Set;
  */
 public class CarefreeAssistance {
 
-    public static Set<String> getConfigRootNames(Config config) {
+    private static final Map<String, BeanInfo> BEAN_INFO_CACHE = Collections.synchronizedMap(new WeakHashMap<>());
+
+    public static BeanInfo getBeanInfo(Class<?> beanClass, Class<?> stopClass) throws IntrospectionException {
+        if (stopClass == null) {
+            stopClass = beanClass.getSuperclass();
+        }
+        String key = beanClass.getName() + "-" + stopClass.getName();
+        BeanInfo beanInfo = BEAN_INFO_CACHE.get(key);
+
+        if (beanInfo == null) {
+            beanInfo = Introspector.getBeanInfo(beanClass, stopClass);
+            BEAN_INFO_CACHE.put(key, beanInfo);
+
+            Class<?> classForFlush = beanClass;
+            do {
+                Introspector.flushFromCaches(classForFlush);
+                classForFlush = classForFlush.getSuperclass();
+            } while (classForFlush != null);
+        }
+
+        return beanInfo;
+    }
+
+    public static Set<String> getConfigRoots(Config config) {
         Set<String> rootKeys = new HashSet<>();
         for (Map.Entry<String, ConfigValue> entry : config.entrySet()) {
             String key = entry.getKey();
@@ -49,7 +69,7 @@ public class CarefreeAssistance {
     }
 
     public static <T> void loadReference(Class<T> clazz, T target, T another) throws Exception {
-        BeanInfo targetBean = IntrospectAide.getBeanInfo(clazz, Object.class);
+        BeanInfo targetBean = getBeanInfo(clazz, Object.class);
         PropertyDescriptor[] beanProperties = targetBean.getPropertyDescriptors();
         for (PropertyDescriptor beanProperty : beanProperties) {
 //            if (StringAide.equals("reference", beanProperty.getName())) {
@@ -62,9 +82,9 @@ public class CarefreeAssistance {
             }
 
             Object value = readMethod.invoke(target);
-            if (ObjectAide.isNull(value)) {
+            if (CarefreeAide.isNull(value)) {
                 Object anotherValue = readMethod.invoke(another);
-                if (ObjectAide.isNotNull(anotherValue)) {
+                if (CarefreeAide.isNotNull(anotherValue)) {
                     writeMethod.invoke(target, anotherValue);
                 }
             }
@@ -90,7 +110,7 @@ public class CarefreeAssistance {
     }
 
     public static void loadBeanProperties(Class<?> clazz, Object bean, Config config, String prefix, String defaultPrefix) throws Exception {
-        BeanInfo targetBean = IntrospectAide.getBeanInfo(clazz, Object.class);
+        BeanInfo targetBean = getBeanInfo(clazz, Object.class);
         PropertyDescriptor[] beanProperties = targetBean.getPropertyDescriptors();
         for (PropertyDescriptor beanProperty : beanProperties) {
             Method writeMethod = beanProperty.getWriteMethod();
@@ -100,8 +120,8 @@ public class CarefreeAssistance {
             String name = beanProperty.getName();
             String propertyPath;
 
-            String newPrefix = StringAide.isNotBlank(prefix) ? prefix + "." : "";
-            String newDefaultPrefix = StringAide.isNotBlank(defaultPrefix) ? defaultPrefix + "." : "";
+            String newPrefix = CarefreeAide.isNotBlank(prefix) ? prefix + "." : "";
+            String newDefaultPrefix = CarefreeAide.isNotBlank(defaultPrefix) ? defaultPrefix + "." : "";
 
             String kebabName = NamingConverter.camel2spinal(name);
             String snakeName = NamingConverter.camel2Snake(name);
@@ -119,7 +139,7 @@ public class CarefreeAssistance {
                 propertyPath = specifiedPropertyPathKebab;
             } else if (config.hasPath(specifiedPropertyPathSnake)) {
                 propertyPath = specifiedPropertyPathSnake;
-            } else if (StringAide.isNotBlank(newDefaultPrefix)) {
+            } else if (CarefreeAide.isNotBlank(newDefaultPrefix)) {
                 if (config.hasPath(defaultPropertyPath)) {
                     propertyPath = defaultPropertyPath;
                 } else if (config.hasPath(defaultPropertyPathKebab)) {
@@ -133,12 +153,22 @@ public class CarefreeAssistance {
                 continue;
             }
 
-            Class<?> propertyType = beanProperty.getPropertyType();
-            if (propertyType == CarefreeClassWrapper.class) {
+            Object configValue = config.getValue(propertyPath).unwrapped();
+            if ((configValue instanceof String) && CarefreeAide.equalsIgnoreCase("force-default", String.valueOf(configValue))) {
+                continue;
+            }
 
-                Config wrapperConfig = config.getConfig(propertyPath);
-                CarefreeClassWrapper wrapper = new CarefreeClassWrapper();
-                loadBeanProperties(CarefreeClassWrapper.class, wrapper, wrapperConfig, null, null);
+            Class<?> propertyType = beanProperty.getPropertyType();
+            if (propertyType == CarefreeClassDeclaration.class) {
+
+                CarefreeClassDeclaration wrapper = new CarefreeClassDeclaration();
+                Object configAny = config.getAnyRef(propertyPath);
+                if (configAny instanceof String) {
+                    wrapper.setClassName((String) configAny);
+                } else {
+                    Config wrapperConfig = config.getConfig(propertyPath);
+                    loadBeanProperties(CarefreeClassDeclaration.class, wrapper, wrapperConfig, null, null);
+                }
                 writeMethod.invoke(bean, wrapper);
 
             } else if (propertyType == String.class) {

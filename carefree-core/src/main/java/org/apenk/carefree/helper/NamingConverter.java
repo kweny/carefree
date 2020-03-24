@@ -1,7 +1,5 @@
 package org.apenk.carefree.helper;
 
-import org.apenk.carefree.aide.StringAide;
-
 /**
  * 命名规范转换器
  * <p>
@@ -71,7 +69,7 @@ public class NamingConverter {
      * @return 分隔符标识
      */
     public static String camel2Separated(String name, char separator) {
-        if (StringAide.isBlank(name)) {
+        if (CarefreeAide.isBlank(name)) {
             return null;
         }
 
@@ -130,17 +128,17 @@ public class NamingConverter {
      * @return 驼峰标识
      */
     public static String separated2Camel(String name, char separator) {
-        if (StringAide.isBlank(name)) {
+        if (CarefreeAide.isBlank(name)) {
             return null;
         }
-        name = StringAide.lowerCase(name);
+        name = CarefreeAide.lowerCase(name);
         // 去掉开头的
-        while (StringAide.startsWith(name, String.valueOf(separator))) {
-            name = StringAide.substring(name, 1);
+        while (CarefreeAide.startsWith(name, String.valueOf(separator))) {
+            name = CarefreeAide.substring(name, 1);
         }
         // 去掉最后的
-        while (StringAide.endsWith(name, String.valueOf(separator))) {
-            name = StringAide.substring(name, 0, name.length() - 1);
+        while (CarefreeAide.endsWith(name, String.valueOf(separator))) {
+            name = CarefreeAide.substring(name, 0, name.length() - 1);
         }
 
         // 去掉中间的，后面首字母大写

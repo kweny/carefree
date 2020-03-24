@@ -18,7 +18,7 @@ package org.apenk.carefree.redis;
 import com.typesafe.config.Config;
 import org.apenk.carefree.CarefreeOrdered;
 import org.apenk.carefree.CarefreeRegistry;
-import org.apenk.carefree.aide.StringAide;
+import org.apenk.carefree.helper.CarefreeAide;
 import org.apenk.carefree.helper.CarefreeLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,7 +69,7 @@ public class CarefreeRedisAutoConfiguration implements ApplicationContextAware, 
         }
 
         String configKey = environment.getProperty(PropertyName_Config, String.class, "");
-        if (StringAide.isBlank(configKey)) {
+        if (CarefreeAide.isBlank(configKey)) {
             logger.warn("please specify a redis config key: carefree.redis.config-key=xxx[,yyy]");
             return;
         }
@@ -82,7 +82,7 @@ public class CarefreeRedisAutoConfiguration implements ApplicationContextAware, 
         CarefreeRegistry carefreeRegistry = applicationContext.getBean(CarefreeRegistry.BEAN_NAME, CarefreeRegistry.class);
 
         String[] keys = configKey.split(",");
-        Arrays.stream(keys).filter(StringAide::isNotBlank).forEach(key -> {
+        Arrays.stream(keys).filter(CarefreeAide::isNotBlank).forEach(key -> {
             Config config = carefreeRegistry.get(key);
             if (config == null) {
                 logger.warn("no redis config for key: {}", key);
