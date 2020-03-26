@@ -45,7 +45,4 @@ carefree:
     path: classpath:/config/ # 文件路径
   - name: rabbit
     extension: json
-    override-cloud: true
 # 使用 carefree.positions 指定了两个配置文件，规则和 carefree.position 一样，若不指定 key 则使用 name 为 key
-# 若 override-cloud 属性设为 true，将覆盖 carefree-cloud 模块从远端配置中心加载的同 key 配置数据，
-# 但若配置中心的该 key 配置数据的 override-denied 为 true，则不会覆盖

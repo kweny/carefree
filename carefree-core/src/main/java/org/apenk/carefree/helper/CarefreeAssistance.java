@@ -153,59 +153,62 @@ public class CarefreeAssistance {
                 continue;
             }
 
+
             Object configValue = config.getValue(propertyPath).unwrapped();
-            if ((configValue instanceof String) && TempCarefreeAide.equalsIgnoreCase("force-default", String.valueOf(configValue))) {
-                continue;
-            }
+            boolean forceDefault =  (configValue instanceof String) && CarefreeAide.isForceDefault((String) configValue);
 
             Class<?> propertyType = beanProperty.getPropertyType();
             if (propertyType == CarefreeClassDeclaration.class) {
 
-                CarefreeClassDeclaration wrapper = new CarefreeClassDeclaration();
-                Object configAny = config.getAnyRef(propertyPath);
-                if (configAny instanceof String) {
-                    wrapper.setClassName((String) configAny);
+                if (forceDefault) {
+                    writeMethod.invoke(bean, CarefreeAide.DEFAULT_Declaration);
                 } else {
-                    Config wrapperConfig = config.getConfig(propertyPath);
-                    loadBeanProperties(CarefreeClassDeclaration.class, wrapper, wrapperConfig, null, null);
+                    CarefreeClassDeclaration wrapper = new CarefreeClassDeclaration();
+                    Object configAny = config.getAnyRef(propertyPath);
+                    if (configAny instanceof String) {
+                        wrapper.setClassName((String) configAny);
+                    } else {
+                        Config wrapperConfig = config.getConfig(propertyPath);
+                        loadBeanProperties(CarefreeClassDeclaration.class, wrapper, wrapperConfig, null, null);
+                    }
+                    writeMethod.invoke(bean, wrapper);
                 }
-                writeMethod.invoke(bean, wrapper);
 
             } else if (propertyType == String.class) {
 
-                writeMethod.invoke(bean, config.getString(propertyPath));
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_String : config.getString(propertyPath));
 
             } else if (propertyType == Byte.class || "byte".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, config.getNumber(propertyPath).byteValue());
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Byte : config.getNumber(propertyPath).byteValue());
 
             } else if (propertyType == Short.class || "short".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, config.getNumber(propertyPath).shortValue());
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Short : config.getNumber(propertyPath).shortValue());
 
             } else if (propertyType == Integer.class || "int".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, config.getInt(propertyPath));
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Integer : config.getInt(propertyPath));
 
             } else if (propertyType == Long.class || "long".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, config.getLong(propertyPath));
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Long : config.getLong(propertyPath));
 
             } else if (propertyType == Float.class || "float".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, config.getNumber(propertyPath).floatValue());
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Float : config.getNumber(propertyPath).floatValue());
 
             } else if (propertyType == Double.class || "double".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, config.getDouble(propertyPath));
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Double : config.getDouble(propertyPath));
 
             } else if (propertyType == Boolean.class || "boolean".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, config.getBoolean(propertyPath));
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Boolean : config.getBoolean(propertyPath));
 
             } else if (propertyType == Character.class || "char".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, config.getString(propertyPath).charAt(0));
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Character : config.getString(propertyPath).charAt(0));
 
             } else if (propertyType.isArray()) {
 

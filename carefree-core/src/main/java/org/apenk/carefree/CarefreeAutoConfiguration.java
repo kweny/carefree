@@ -16,6 +16,7 @@
 package org.apenk.carefree;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigValue;
 import org.apenk.carefree.helper.TempCarefreeAide;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
@@ -88,8 +89,16 @@ public class CarefreeAutoConfiguration implements BeanDefinitionRegistryPostProc
             for (Map.Entry<String, Config> entry : configCache.entrySet()) {
                 Config cloudConfig = carefreeRegistry.get(entry.getKey());
                 if (cloudConfig == null) {
-                    // 如果远端配置中心没有该 key 的配置，则加载本地配置
+                    // 如果远端配置中心没有该 key 的配置，加载整个本地配置
                     carefreeRegistry.register(entry.getKey(), entry.getValue());
+                } else {
+                    // 如果远端配置中心存在该 key 的配置，加载远端没有的选项
+                    for (Map.Entry<String, ConfigValue> localOption : entry.getValue().entrySet()) {
+                        if (!cloudConfig.hasPath(localOption.getKey())) {
+                            cloudConfig = cloudConfig.withValue(localOption.getKey(), localOption.getValue());
+                        }
+                    }
+                    carefreeRegistry.register(entry.getKey(), cloudConfig);
                 }
             }
         } else {

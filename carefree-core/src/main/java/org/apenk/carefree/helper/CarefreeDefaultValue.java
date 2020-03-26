@@ -22,8 +22,5 @@ package org.apenk.carefree.helper;
  * @since 0.0.1
  */
 public class CarefreeDefaultValue {
-    public static final String DEFAULT_String = String.valueOf(527558829);
-    public static final Integer DEFAULT_Integer = new Integer(527558829);
-    public static final Long DEFAULT_Long = new Long(527558829);
-    public static final CarefreeClassDeclaration DEFAULT_Declaration = new CarefreeClassDeclaration();
+
 }
