@@ -82,9 +82,9 @@ public class CarefreeAssistance {
             }
 
             Object value = readMethod.invoke(target);
-            if (CarefreeAide.isNull(value)) {
+            if (TempCarefreeAide.isNull(value)) {
                 Object anotherValue = readMethod.invoke(another);
-                if (CarefreeAide.isNotNull(anotherValue)) {
+                if (TempCarefreeAide.isNotNull(anotherValue)) {
                     writeMethod.invoke(target, anotherValue);
                 }
             }
@@ -120,8 +120,8 @@ public class CarefreeAssistance {
             String name = beanProperty.getName();
             String propertyPath;
 
-            String newPrefix = CarefreeAide.isNotBlank(prefix) ? prefix + "." : "";
-            String newDefaultPrefix = CarefreeAide.isNotBlank(defaultPrefix) ? defaultPrefix + "." : "";
+            String newPrefix = TempCarefreeAide.isNotBlank(prefix) ? prefix + "." : "";
+            String newDefaultPrefix = TempCarefreeAide.isNotBlank(defaultPrefix) ? defaultPrefix + "." : "";
 
             String kebabName = NamingConverter.camel2spinal(name);
             String snakeName = NamingConverter.camel2Snake(name);
@@ -139,7 +139,7 @@ public class CarefreeAssistance {
                 propertyPath = specifiedPropertyPathKebab;
             } else if (config.hasPath(specifiedPropertyPathSnake)) {
                 propertyPath = specifiedPropertyPathSnake;
-            } else if (CarefreeAide.isNotBlank(newDefaultPrefix)) {
+            } else if (TempCarefreeAide.isNotBlank(newDefaultPrefix)) {
                 if (config.hasPath(defaultPropertyPath)) {
                     propertyPath = defaultPropertyPath;
                 } else if (config.hasPath(defaultPropertyPathKebab)) {
@@ -154,7 +154,7 @@ public class CarefreeAssistance {
             }
 
             Object configValue = config.getValue(propertyPath).unwrapped();
-            if ((configValue instanceof String) && CarefreeAide.equalsIgnoreCase("force-default", String.valueOf(configValue))) {
+            if ((configValue instanceof String) && TempCarefreeAide.equalsIgnoreCase("force-default", String.valueOf(configValue))) {
                 continue;
             }
 

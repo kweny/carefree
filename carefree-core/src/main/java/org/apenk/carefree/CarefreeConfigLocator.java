@@ -15,7 +15,7 @@
  */
 package org.apenk.carefree;
 
-import org.apenk.carefree.helper.CarefreeAide;
+import org.apenk.carefree.helper.TempCarefreeAide;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -47,9 +47,9 @@ class CarefreeConfigLocator {
         List<CarefreeProperties.Position> allPositions = new LinkedList<>();
 
         // carefree.position
-        if (CarefreeAide.isNotBlank(properties.getPosition())) {
-            String[] sections = CarefreeAide.split(properties.getPosition(), ",");
-            Arrays.stream(sections).filter(CarefreeAide::isNotBlank).map(CarefreeAide::trim).forEach(section -> {
+        if (TempCarefreeAide.isNotBlank(properties.getPosition())) {
+            String[] sections = TempCarefreeAide.split(properties.getPosition(), ",");
+            Arrays.stream(sections).filter(TempCarefreeAide::isNotBlank).map(TempCarefreeAide::trim).forEach(section -> {
                 CarefreeProperties.Position position = new CarefreeProperties.Position();
 
                 // 截取路径部分（如果有的话）
@@ -76,7 +76,7 @@ class CarefreeConfigLocator {
         }
 
         // carefree.positions
-        if (CarefreeAide.isNotEmpty(properties.getPositions())) {
+        if (TempCarefreeAide.isNotEmpty(properties.getPositions())) {
             allPositions.addAll(properties.getPositions());
         }
 
@@ -91,11 +91,11 @@ class CarefreeConfigLocator {
     private static Map<String, List<Resource>> resolveConfigResources(List<CarefreeProperties.Position> positions) {
         Map<String, List<Resource>> resourceMap = new HashMap<>();
 
-        if (CarefreeAide.isNotEmpty(positions)) {
+        if (TempCarefreeAide.isNotEmpty(positions)) {
             positions.forEach(position -> {
                 // 若未限定配置文件所在根目录，则遍历 DEFAULT_PATHS 中的默认根目录进行查找
                 List<String> paths = new LinkedList<>();
-                if (CarefreeAide.isNotBlank(position.getPath())) {
+                if (TempCarefreeAide.isNotBlank(position.getPath())) {
                     paths.add(position.getPath());
                 } else {
                     paths.addAll(Arrays.asList(DEFAULT_PATHS));
@@ -103,15 +103,15 @@ class CarefreeConfigLocator {
 
                 // 若未限定配置文件扩展名，则遍历 DEFAULT_TYPES 中的默认扩展名进行查找
                 List<String> extensions = new LinkedList<>();
-                if (CarefreeAide.isNotBlank(position.getExtension())) {
+                if (TempCarefreeAide.isNotBlank(position.getExtension())) {
                     extensions.add(position.getExtension());
                 } else {
                     extensions.addAll(Arrays.asList(DEFAULT_TYPES));
                 }
 
                 List<Resource> resources = resolveOneKeyResources(position.getName(), paths, extensions);
-                if (CarefreeAide.isNotEmpty(resources)) {
-                    String key = CarefreeAide.defaultIfBlank(position.getKey(), position.getName());
+                if (TempCarefreeAide.isNotEmpty(resources)) {
+                    String key = TempCarefreeAide.defaultIfBlank(position.getKey(), position.getName());
                     resourceMap.put(key, resources);
                 }
             });

@@ -53,20 +53,20 @@ public class CarefreeClassDeclaration {
     private Object[] staticFactoryArgs;
 
     public <T> T instance() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-        if (CarefreeAide.isBlank(className)) {
+        if (TempCarefreeAide.isBlank(className)) {
             return null;
         }
         Object instance = INSTANCE_CACHE.get(className);
         if (instance == null) {
             Class<?> clazz = Class.forName(className);
-            if (CarefreeAide.isNotBlank(staticFactoryMethod)) { // 优先使用静态工厂方法进行实例化
+            if (TempCarefreeAide.isNotBlank(staticFactoryMethod)) { // 优先使用静态工厂方法进行实例化
                 Class<?>[] parameterTypes = getParameterTypes(staticFactoryArgs);
                 instance = clazz.getMethod(staticFactoryMethod, parameterTypes).invoke(null, staticFactoryArgs);
             } else { // 若无工厂方法则使用构造方法
                 Class<?>[] parameterTypes = getParameterTypes(constructorArgs);
                 instance = clazz.getConstructor(parameterTypes).newInstance(constructorArgs);
             }
-            if (CarefreeAide.isNotBlank(initializeMethod) && instance != null) { // 实例化后调用初始化方法（若存在）
+            if (TempCarefreeAide.isNotBlank(initializeMethod) && instance != null) { // 实例化后调用初始化方法（若存在）
                 Class<?>[] parameterTypes = getParameterTypes(initializeArgs);
                 clazz.getMethod(initializeMethod, parameterTypes).invoke(instance, initializeArgs);
             }
@@ -79,7 +79,7 @@ public class CarefreeClassDeclaration {
 
     private Class<?>[] getParameterTypes(Object[] args) {
         Class<?>[] parameterTypes = null;
-        if (CarefreeAide.isNotEmpty(args)) {
+        if (TempCarefreeAide.isNotEmpty(args)) {
             parameterTypes = new Class[args.length];
             for (int i = 0; i < args.length; i++) {
                 parameterTypes[i] = args[i].getClass();

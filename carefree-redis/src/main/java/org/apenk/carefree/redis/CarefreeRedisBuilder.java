@@ -17,7 +17,7 @@ package org.apenk.carefree.redis;
 
 import com.typesafe.config.Config;
 import org.apenk.carefree.aide.GenericPair;
-import org.apenk.carefree.helper.CarefreeAide;
+import org.apenk.carefree.helper.TempCarefreeAide;
 import org.apenk.carefree.helper.CarefreeAssistance;
 import org.apenk.carefree.redis.archetype.CarefreeRedisArchetype;
 import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypePool;
@@ -84,10 +84,10 @@ class CarefreeRedisBuilder implements CarefreeRedisBuilderClient, CarefreeRedisB
                 CarefreeRedisArchetype archetype = pair.first();
                 CarefreeRedisArchetypePool poolArchetype = pair.second();
 
-                if (CarefreeAide.isFalse(archetype.getEnabled())) {
+                if (TempCarefreeAide.isFalse(archetype.getEnabled())) {
                     return; // means continue
                 }
-                if (CarefreeAide.isNotBlank(archetype.getReference())) {
+                if (TempCarefreeAide.isNotBlank(archetype.getReference())) {
                     GenericPair<CarefreeRedisArchetype, CarefreeRedisArchetypePool> refPair = archetypeCache.get(archetype.getReference());
                     CarefreeRedisArchetype refArchetype = refPair.first();
                     CarefreeRedisArchetypePool refPoolArchetype = refPair.second();
@@ -97,7 +97,7 @@ class CarefreeRedisBuilder implements CarefreeRedisBuilderClient, CarefreeRedisB
                     }
 
                     CarefreeAssistance.loadReference(CarefreeRedisArchetype.class, archetype, refArchetype);
-                    if (CarefreeAide.isNotNull(poolArchetype) || CarefreeAide.isNotNull(refPoolArchetype)) {
+                    if (TempCarefreeAide.isNotNull(poolArchetype) || TempCarefreeAide.isNotNull(refPoolArchetype)) {
                         CarefreeAssistance.loadReference(CarefreeRedisArchetypePool.class, poolArchetype, refPoolArchetype);
                     }
                 }
@@ -115,7 +115,7 @@ class CarefreeRedisBuilder implements CarefreeRedisBuilderClient, CarefreeRedisB
                 throw new RuntimeException("[Carefree] error to create redis factory for redis config name: " + key, e);
             }
         });
-        CarefreeAide.clear(archetypeCache);
+        TempCarefreeAide.clear(archetypeCache);
         return map;
     }
 
@@ -129,27 +129,27 @@ class CarefreeRedisBuilder implements CarefreeRedisBuilderClient, CarefreeRedisB
         LettuceClientConfiguration clientConfiguration = createClientConfiguration(archetype, poolArchetype);
 
         LettuceConnectionFactory factory;
-        if (CarefreeAide.equalsIgnoreCase(CONNECT_MODE_Cluster, archetype.getMode())) {
+        if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Cluster, archetype.getMode())) {
 
             RedisClusterConfiguration cluster = createClusterConfiguration(archetype);
             factory = new LettuceConnectionFactory(cluster, clientConfiguration);
 
-        } else if (CarefreeAide.equalsIgnoreCase(CONNECT_MODE_Sentinel, archetype.getMode())) {
+        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Sentinel, archetype.getMode())) {
 
             RedisSentinelConfiguration sentinel = createSentinelConfiguration(archetype);
             factory = new LettuceConnectionFactory(sentinel, clientConfiguration);
 
-        } else if (CarefreeAide.equalsIgnoreCase(CONNECT_MODE_Socket, archetype.getMode())) {
+        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Socket, archetype.getMode())) {
 
             RedisSocketConfiguration socket = createSocketConfiguration(archetype);
             factory = new LettuceConnectionFactory(socket, clientConfiguration);
 
-        } else if (CarefreeAide.equalsIgnoreCase(CONNECT_MODE_StaticMasterReplica, archetype.getMode())) {
+        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_StaticMasterReplica, archetype.getMode())) {
 
             RedisStaticMasterReplicaConfiguration staticMasterReplica = createStaticMasterReplicaConfiguration(archetype);
             factory = new LettuceConnectionFactory(staticMasterReplica, clientConfiguration);
 
-        } else if (CarefreeAide.equalsIgnoreCase(CONNECT_MODE_Standalone, archetype.getMode())) {
+        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Standalone, archetype.getMode())) {
 
             RedisStandaloneConfiguration standalone = createStandaloneConfiguration(archetype);
             factory = new LettuceConnectionFactory(standalone, clientConfiguration);

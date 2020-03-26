@@ -18,8 +18,8 @@ package org.apenk.carefree.druid;
 import com.typesafe.config.Config;
 import org.apenk.carefree.CarefreeOrdered;
 import org.apenk.carefree.CarefreeRegistry;
-import org.apenk.carefree.aide.StringAide;
 import org.apenk.carefree.helper.CarefreeLogger;
+import org.apenk.carefree.helper.TempCarefreeAide;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -70,7 +70,7 @@ public class CarefreeDruidAutoConfiguration implements ApplicationContextAware, 
         }
 
         String configKey = environment.getProperty(PropertyName_Config, String.class, "");
-        if (StringAide.isBlank(configKey)) {
+        if (TempCarefreeAide.isBlank(configKey)) {
             logger.warn("please specify a druid config key: carefree.druid.config-key=xxx[,yyy]");
             return;
         }
@@ -83,7 +83,7 @@ public class CarefreeDruidAutoConfiguration implements ApplicationContextAware, 
         CarefreeRegistry carefreeRegistry = applicationContext.getBean(CarefreeRegistry.BEAN_NAME, CarefreeRegistry.class);
 
         String[] keys = configKey.split(",");
-        Arrays.stream(keys).filter(StringAide::isNotBlank).forEach(key -> {
+        Arrays.stream(keys).filter(TempCarefreeAide::isNotBlank).forEach(key -> {
             Config config = carefreeRegistry.get(key);
             if (config == null) {
                 logger.warn("[Carefree] no druid config for key: {}", key);

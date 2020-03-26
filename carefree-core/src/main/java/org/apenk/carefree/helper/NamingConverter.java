@@ -69,7 +69,7 @@ public class NamingConverter {
      * @return 分隔符标识
      */
     public static String camel2Separated(String name, char separator) {
-        if (CarefreeAide.isBlank(name)) {
+        if (TempCarefreeAide.isBlank(name)) {
             return null;
         }
 
@@ -128,17 +128,17 @@ public class NamingConverter {
      * @return 驼峰标识
      */
     public static String separated2Camel(String name, char separator) {
-        if (CarefreeAide.isBlank(name)) {
+        if (TempCarefreeAide.isBlank(name)) {
             return null;
         }
-        name = CarefreeAide.lowerCase(name);
+        name = TempCarefreeAide.lowerCase(name);
         // 去掉开头的
-        while (CarefreeAide.startsWith(name, String.valueOf(separator))) {
-            name = CarefreeAide.substring(name, 1);
+        while (TempCarefreeAide.startsWith(name, String.valueOf(separator))) {
+            name = TempCarefreeAide.substring(name, 1);
         }
         // 去掉最后的
-        while (CarefreeAide.endsWith(name, String.valueOf(separator))) {
-            name = CarefreeAide.substring(name, 0, name.length() - 1);
+        while (TempCarefreeAide.endsWith(name, String.valueOf(separator))) {
+            name = TempCarefreeAide.substring(name, 0, name.length() - 1);
         }
 
         // 去掉中间的，后面首字母大写

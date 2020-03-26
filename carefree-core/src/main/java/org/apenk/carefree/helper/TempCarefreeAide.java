@@ -24,7 +24,7 @@ import java.util.Objects;
  * @author Kweny
  * @since 0.0.1
  */
-public class CarefreeAide {
+public class TempCarefreeAide {
     // object
     public static boolean isNull(Object object) {
         return Objects.isNull(object);

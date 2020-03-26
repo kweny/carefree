@@ -17,7 +17,7 @@ package org.apenk.carefree.redis;
 
 import io.lettuce.core.ReadFrom;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.apenk.carefree.helper.CarefreeAide;
+import org.apenk.carefree.helper.TempCarefreeAide;
 import org.apenk.carefree.redis.archetype.CarefreeRedisArchetype;
 import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypePool;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
@@ -37,7 +37,7 @@ public interface CarefreeRedisBuilderClient {
         LettuceClientConfiguration clientConfiguration;
         LettuceClientConfiguration.LettuceClientConfigurationBuilder builder;
 
-        if (CarefreeAide.isTrue(archetype.getUsePooling())) {
+        if (TempCarefreeAide.isTrue(archetype.getUsePooling())) {
             builder = LettucePoolingClientConfiguration.builder();
             GenericObjectPoolConfig<?> poolConfig = createPoolConfig(poolArchetype);
             ((LettucePoolingClientConfiguration.LettucePoolingClientConfigurationBuilder) builder).poolConfig(poolConfig);
@@ -45,16 +45,16 @@ public interface CarefreeRedisBuilderClient {
             builder = LettuceClientConfiguration.builder();
         }
 
-        if (CarefreeAide.isNotNull(archetype.getCommandTimeout())) {
+        if (TempCarefreeAide.isNotNull(archetype.getCommandTimeout())) {
             builder.commandTimeout(Duration.ofMillis(archetype.getCommandTimeout()));
         }
-        if (CarefreeAide.isNotNull(archetype.getShutdownTimeout())) {
+        if (TempCarefreeAide.isNotNull(archetype.getShutdownTimeout())) {
             builder.shutdownTimeout(Duration.ofMillis(archetype.getShutdownTimeout()));
         }
-        if (CarefreeAide.isNotNull(archetype.getClientName())) {
+        if (TempCarefreeAide.isNotNull(archetype.getClientName())) {
             builder.clientName(archetype.getClientName());
         }
-        if (CarefreeAide.isNotNull(archetype.getReadFrom())) {
+        if (TempCarefreeAide.isNotNull(archetype.getReadFrom())) {
             builder.readFrom(ReadFrom.valueOf(archetype.getReadFrom()));
         }
 
@@ -66,64 +66,64 @@ public interface CarefreeRedisBuilderClient {
 
     default GenericObjectPoolConfig<?> createPoolConfig(CarefreeRedisArchetypePool poolArchetype) {
         GenericObjectPoolConfig<?> poolConfig = new GenericObjectPoolConfig<>();
-        if (CarefreeAide.isNotNull(poolArchetype.getMaxTotal())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getMaxTotal())) {
             poolConfig.setMaxTotal(poolArchetype.getMaxTotal());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getMaxIdle())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getMaxIdle())) {
             poolConfig.setMaxIdle(poolArchetype.getMaxIdle());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getMinIdle())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getMinIdle())) {
             poolConfig.setMinIdle(poolArchetype.getMinIdle());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getLifo())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getLifo())) {
             poolConfig.setLifo(poolArchetype.getLifo());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getFairness())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getFairness())) {
             poolConfig.setFairness(poolArchetype.getFairness());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getBlockWhenExhausted())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getBlockWhenExhausted())) {
             poolConfig.setBlockWhenExhausted(poolArchetype.getBlockWhenExhausted());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getMaxWaitMillis())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getMaxWaitMillis())) {
             poolConfig.setMaxWaitMillis(poolArchetype.getMaxWaitMillis());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getTestOnCreate())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getTestOnCreate())) {
             poolConfig.setTestOnCreate(poolArchetype.getTestOnCreate());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getTestOnBorrow())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getTestOnBorrow())) {
             poolConfig.setTestOnBorrow(poolArchetype.getTestOnBorrow());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getTestOnReturn())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getTestOnReturn())) {
             poolConfig.setTestOnReturn(poolArchetype.getTestOnReturn());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getTestWhileIdle())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getTestWhileIdle())) {
             poolConfig.setTestWhileIdle(poolArchetype.getTestWhileIdle());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getTimeBetweenEvictionRunsMillis())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getTimeBetweenEvictionRunsMillis())) {
             poolConfig.setTimeBetweenEvictionRunsMillis(poolArchetype.getTimeBetweenEvictionRunsMillis());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getNumTestsPerEvictionRun())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getNumTestsPerEvictionRun())) {
             poolConfig.setNumTestsPerEvictionRun(poolArchetype.getNumTestsPerEvictionRun());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getMinEvictableIdleTimeMillis())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getMinEvictableIdleTimeMillis())) {
             poolConfig.setMinEvictableIdleTimeMillis(poolArchetype.getMinEvictableIdleTimeMillis());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getSoftMinEvictableIdleTimeMillis())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getSoftMinEvictableIdleTimeMillis())) {
             poolConfig.setSoftMinEvictableIdleTimeMillis(poolArchetype.getSoftMinEvictableIdleTimeMillis());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getEvictorShutdownTimeoutMillis())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getEvictorShutdownTimeoutMillis())) {
             poolConfig.setEvictorShutdownTimeoutMillis(poolArchetype.getEvictorShutdownTimeoutMillis());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getEvictionPolicyClassName())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getEvictionPolicyClassName())) {
             poolConfig.setEvictionPolicyClassName(poolArchetype.getEvictionPolicyClassName());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getJmxEnabled())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getJmxEnabled())) {
             poolConfig.setJmxEnabled(poolArchetype.getJmxEnabled());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getJmxNameBase())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getJmxNameBase())) {
             poolConfig.setJmxNameBase(poolArchetype.getJmxNameBase());
         }
-        if (CarefreeAide.isNotNull(poolArchetype.getJmxNamePrefix())) {
+        if (TempCarefreeAide.isNotNull(poolArchetype.getJmxNamePrefix())) {
             poolConfig.setJmxNamePrefix(poolArchetype.getJmxNamePrefix());
         }
         return poolConfig;

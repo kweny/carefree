@@ -16,7 +16,7 @@
 package org.apenk.carefree.redis;
 
 import com.typesafe.config.Config;
-import org.apenk.carefree.helper.CarefreeAide;
+import org.apenk.carefree.helper.TempCarefreeAide;
 import org.apenk.carefree.helper.CarefreeAssistance;
 import org.apenk.carefree.redis.archetype.*;
 
@@ -65,11 +65,11 @@ class CarefreeRedisLathe {
     void build() {
         CarefreeRedisPayload.forEach((root, payload) -> {
             try {
-                if (CarefreeAide.isFalse(payload.redisArchetype.getEnabled())) {
+                if (TempCarefreeAide.isFalse(payload.redisArchetype.getEnabled())) {
                     return; // means continue
                 }
 
-                if (CarefreeAide.isNotBlank(payload.redisArchetype.getReference())) {
+                if (TempCarefreeAide.isNotBlank(payload.redisArchetype.getReference())) {
                     CarefreeRedisPayload refPayload = CarefreeRedisPayload.fetch(payload.redisArchetype.getReference());
                     if (refPayload == null) {
                         CarefreeRedisAutoConfiguration.logger.warn("no reference: {} for redis config root: {}", payload.redisArchetype.getReference(), root);

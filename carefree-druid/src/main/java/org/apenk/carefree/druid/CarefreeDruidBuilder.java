@@ -18,8 +18,8 @@ package org.apenk.carefree.druid;
 import com.alibaba.druid.filter.Filter;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.typesafe.config.Config;
-import org.apenk.carefree.aide.*;
 import org.apenk.carefree.helper.CarefreeAssistance;
+import org.apenk.carefree.helper.TempCarefreeAide;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,12 +43,12 @@ class CarefreeDruidBuilder {
     }
 
     void loadConfig(Config config) throws Exception {
-        Set<String> rootNames = CarefreeAssistance.getConfigRootNames(config);
+        Set<String> roots = CarefreeAssistance.getConfigRoots(config);
 
-        for (String rootName : rootNames) {
-            Config oneConfig = config.getConfig(rootName);
+        for (String root : roots) {
+            Config oneConfig = config.getConfig(root);
             CarefreeDruidArchetype archetype = CarefreeAssistance.fromConfig(CarefreeDruidArchetype.class, oneConfig);
-            this.archetypeCache.put(rootName, archetype);
+            this.archetypeCache.put(root, archetype);
         }
     }
 
@@ -56,10 +56,10 @@ class CarefreeDruidBuilder {
         Map<String, CarefreeDruidWrapper> map = new HashMap<>();
         archetypeCache.forEach((key, archetype) -> {
             try {
-                if (BooleanAide.isFalse(archetype.getEnabled())) {
+                if (TempCarefreeAide.isFalse(archetype.getEnabled())) {
                     return; // means continue
                 }
-                if (StringAide.isNotBlank(archetype.getReference())) {
+                if (TempCarefreeAide.isNotBlank(archetype.getReference())) {
                     CarefreeDruidArchetype refArchetype = archetypeCache.get(archetype.getReference());
                     if (refArchetype == null) {
                         CarefreeDruidAutoConfiguration.logger.warn("no reference: {} for druid config: {}", archetype.getReference(), key);
@@ -75,80 +75,80 @@ class CarefreeDruidBuilder {
                 throw new RuntimeException("[Carefree] error to create druid instance for config name: " + key, e);
             }
         });
-        MapAide.clear(archetypeCache);
+        TempCarefreeAide.clear(archetypeCache);
         return map;
     }
 
     private DruidDataSource createDataSource(CarefreeDruidArchetype archetype) throws Exception {
         DruidDataSource dataSource = new DruidDataSource();
 
-        if (StringAide.isNotBlank(archetype.getName())) {
+        if (TempCarefreeAide.isNotBlank(archetype.getName())) {
             dataSource.setName(archetype.getName());
         }
-        if (StringAide.isNotBlank(archetype.getUrl())) {
+        if (TempCarefreeAide.isNotBlank(archetype.getUrl())) {
             dataSource.setUrl(archetype.getUrl());
         }
-        if (StringAide.isNotBlank(archetype.getUsername())) {
+        if (TempCarefreeAide.isNotBlank(archetype.getUsername())) {
             dataSource.setUsername(archetype.getUsername());
         }
-        if (StringAide.isNotBlank(archetype.getPassword())) {
+        if (TempCarefreeAide.isNotBlank(archetype.getPassword())) {
             dataSource.setPassword(archetype.getPassword());
         }
-        if (StringAide.isNotBlank(archetype.getDriverClassName())) {
+        if (TempCarefreeAide.isNotBlank(archetype.getDriverClassName())) {
             dataSource.setDriverClassName(archetype.getDriverClassName());
         }
-        if (ObjectAide.isNotNull(archetype.getInitialSize())) {
+        if (TempCarefreeAide.isNotNull(archetype.getInitialSize())) {
             dataSource.setInitialSize(archetype.getInitialSize());
         }
-        if (ObjectAide.isNotNull(archetype.getMaxActive())) {
+        if (TempCarefreeAide.isNotNull(archetype.getMaxActive())) {
             dataSource.setMaxActive(archetype.getMaxActive());
         }
-        if (ObjectAide.isNotNull(archetype.getMinIdle())) {
+        if (TempCarefreeAide.isNotNull(archetype.getMinIdle())) {
             dataSource.setMinIdle(archetype.getMinIdle());
         }
-        if (ObjectAide.isNotNull(archetype.getMaxWait())) {
+        if (TempCarefreeAide.isNotNull(archetype.getMaxWait())) {
             dataSource.setMaxWait(archetype.getMaxWait());
         }
-        if (ObjectAide.isNotNull(archetype.getPoolPreparedStatements())) {
+        if (TempCarefreeAide.isNotNull(archetype.getPoolPreparedStatements())) {
             dataSource.setPoolPreparedStatements(archetype.getPoolPreparedStatements());
         }
-        if (ObjectAide.isNotNull(archetype.getMaxPoolPreparedStatementPerConnectionSize())) {
+        if (TempCarefreeAide.isNotNull(archetype.getMaxPoolPreparedStatementPerConnectionSize())) {
             dataSource.setMaxPoolPreparedStatementPerConnectionSize(archetype.getMaxPoolPreparedStatementPerConnectionSize());
         }
-        if (StringAide.isNotBlank(archetype.getValidationQuery())) {
+        if (TempCarefreeAide.isNotBlank(archetype.getValidationQuery())) {
             dataSource.setValidationQuery(archetype.getValidationQuery());
         }
-        if (ObjectAide.isNotNull(archetype.getValidationQueryTimeout())) {
+        if (TempCarefreeAide.isNotNull(archetype.getValidationQueryTimeout())) {
             dataSource.setValidationQueryTimeout(archetype.getValidationQueryTimeout());
         }
-        if (ObjectAide.isNotNull(archetype.getTestOnBorrow())) {
+        if (TempCarefreeAide.isNotNull(archetype.getTestOnBorrow())) {
             dataSource.setTestOnBorrow(archetype.getTestOnBorrow());
         }
-        if (ObjectAide.isNotNull(archetype.getTestOnReturn())) {
+        if (TempCarefreeAide.isNotNull(archetype.getTestOnReturn())) {
             dataSource.setTestOnReturn(archetype.getTestOnReturn());
         }
-        if (ObjectAide.isNotNull(archetype.getTestWhileIdle())) {
+        if (TempCarefreeAide.isNotNull(archetype.getTestWhileIdle())) {
             dataSource.setTestWhileIdle(archetype.getTestWhileIdle());
         }
-        if (ObjectAide.isNotNull(archetype.getKeepAlive())) {
+        if (TempCarefreeAide.isNotNull(archetype.getKeepAlive())) {
             dataSource.setKeepAlive(archetype.getKeepAlive());
         }
-        if (ObjectAide.isNotNull(archetype.getTimeBetweenEvictionRunsMillis())) {
+        if (TempCarefreeAide.isNotNull(archetype.getTimeBetweenEvictionRunsMillis())) {
             dataSource.setTimeBetweenEvictionRunsMillis(archetype.getTimeBetweenEvictionRunsMillis());
         }
-        if (ObjectAide.isNotNull(archetype.getMinEvictableIdleTimeMillis())) {
+        if (TempCarefreeAide.isNotNull(archetype.getMinEvictableIdleTimeMillis())) {
             dataSource.setMinEvictableIdleTimeMillis(archetype.getMinEvictableIdleTimeMillis());
         }
-        if (CollectionAide.isNotEmpty(archetype.getConnectionInitSqls())) {
+        if (TempCarefreeAide.isNotEmpty(archetype.getConnectionInitSqls())) {
             dataSource.setConnectionInitSqls(archetype.getConnectionInitSqls());
         }
-        if (StringAide.isNotBlank(archetype.getExceptionSorter())) {
+        if (TempCarefreeAide.isNotBlank(archetype.getExceptionSorter())) {
             dataSource.setExceptionSorterClassName(archetype.getExceptionSorter());
         }
-        if (StringAide.isNotBlank(archetype.getFilters())) {
+        if (TempCarefreeAide.isNotBlank(archetype.getFilters())) {
             dataSource.setFilters(archetype.getFilters());
         }
-        if (CollectionAide.isNotEmpty(archetype.getProxyFilters())) {
+        if (TempCarefreeAide.isNotEmpty(archetype.getProxyFilters())) {
             List<Filter> proxyFilters = new ArrayList<>();
             for (String proxyFilterName : archetype.getProxyFilters()) {
                 Class<?> filterClass = Class.forName(proxyFilterName);

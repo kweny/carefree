@@ -16,7 +16,7 @@
 package org.apenk.carefree;
 
 import com.typesafe.config.Config;
-import org.apenk.carefree.helper.CarefreeAide;
+import org.apenk.carefree.helper.TempCarefreeAide;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
@@ -114,7 +114,7 @@ public class CarefreeAutoConfiguration implements BeanDefinitionRegistryPostProc
                 // 每当一个 CarefreeProperties#Position 成功创建之后，检查其属性的合法性
                 if (CarefreeProperties.ONE_POSITION_NAME_PATTERN.matcher(nameString).matches()) {
                     CarefreeProperties.Position position = (CarefreeProperties.Position) result;
-                    if (CarefreeAide.isBlank(position.getName())) {
+                    if (TempCarefreeAide.isBlank(position.getName())) {
                         throw new RuntimeException("[Carefree] position id is missing: " + nameString + ".name");
                     }
                 }
