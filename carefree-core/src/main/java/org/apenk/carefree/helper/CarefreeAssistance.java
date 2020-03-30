@@ -212,11 +212,11 @@ public class CarefreeAssistance {
 
             } else if (propertyType.isArray()) {
 
-                writeMethod.invoke(bean, (Object) config.getAnyRefList(propertyPath).toArray());
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Array : (Object) config.getAnyRefList(propertyPath).toArray());
 
             } else {
 
-                writeMethod.invoke(bean, config.getAnyRef(propertyPath));
+                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Object : config.getAnyRef(propertyPath));
 
             }
         }

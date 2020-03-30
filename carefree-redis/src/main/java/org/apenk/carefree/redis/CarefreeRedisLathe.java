@@ -16,9 +16,11 @@
 package org.apenk.carefree.redis;
 
 import com.typesafe.config.Config;
-import org.apenk.carefree.helper.TempCarefreeAide;
 import org.apenk.carefree.helper.CarefreeAssistance;
+import org.apenk.carefree.helper.CarefreeClassDeclaration;
+import org.apenk.carefree.helper.TempCarefreeAide;
 import org.apenk.carefree.redis.archetype.*;
+import org.apenk.carefree.redis.listener.CarefreeRedisConfigureListener;
 
 import java.util.Set;
 
@@ -38,24 +40,38 @@ class CarefreeRedisLathe {
             payload.key = key;
             payload.root = root;
 
-            Config oneConfig = config.getConfig(root);
-            payload.redisArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetype.class, oneConfig);
-
-            if (oneConfig.hasPath("pool")) {
-                Config poolConfig = oneConfig.getConfig("pool");
-                payload.poolArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypePool.class, poolConfig);
+            String referenceRoot = null;
+            String referencePath;
+            if (config.hasPath(referencePath = root.concat(".reference"))) {
+                referenceRoot = config.getString(referencePath);
             }
 
-            if (oneConfig.hasPath("resources")) {
-                payload.resourcesArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypeResources.class, oneConfig.getConfig("resources"));
+            String poolPath = String.join(".", root, "pool");
+            String resourcesPath = String.join(".", root, "resources");
+            String optionsPath = String.join(".", root, "options");
+            String serializerPath = String.join(".", root, "serializer");
+
+            String refPoolPath = null;
+            String refResourcesPath = null;
+            String refOptionsPath = null;
+            String refSerializerPath = null;
+            if (TempCarefreeAide.isNotBlank(referenceRoot)) {
+                refPoolPath = String.join(".", referenceRoot, "pool");
+                refResourcesPath = String.join(".", referenceRoot, "resources");
+                refOptionsPath = String.join(".", referenceRoot, "options");
+                refSerializerPath = String.join(".", referenceRoot, "serializer");
             }
 
-            if (oneConfig.hasPath("options")) {
-                payload.optionsArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypeOptions.class, oneConfig.getConfig("options"));
-            }
+            payload.redisArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetype.class, config, root, referenceRoot);
+            payload.poolArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypePool.class, config, poolPath, refPoolPath);
+            payload.resourcesArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypeResources.class, config, resourcesPath, refResourcesPath);
+            payload.optionsArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypeOptions.class, config, optionsPath, refOptionsPath);
+            payload.serializerArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypeSerializer.class, config, serializerPath, refSerializerPath);
 
-            if (oneConfig.hasPath("serializer")) {
-                payload.serializerArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypeSerializer.class, oneConfig.getConfig("serializer"));
+            CarefreeClassDeclaration declaration = payload.redisArchetype.getConfigureListener();
+            if (declaration != null) {
+                CarefreeRedisConfigureListener listener = declaration.instance();
+                listener.archetype(payload.toConfigureEvent());
             }
 
             CarefreeRedisPayload.cache(root, payload);

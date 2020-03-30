@@ -16,16 +16,17 @@
 package org.apenk.carefree.helper;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Kweny
  * @since 0.0.1
  */
 public class CarefreeClassDeclaration {
-    private static final Map<String, Object> INSTANCE_CACHE = Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<String, Object> INSTANCE_CACHE = new ConcurrentHashMap<>();
+    private static final ReentrantLock lock = new ReentrantLock();
 
     /**
      * 类全名
@@ -51,30 +52,57 @@ public class CarefreeClassDeclaration {
      * 静态工厂方法参数
      */
     private Object[] staticFactoryArgs;
+    /**
+     * singleton/prototype
+     */
+    private String scope;
 
     public <T> T instance() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-        if (TempCarefreeAide.isBlank(className)) {
-            return null;
+        try {
+            lock.lock();
+            if (TempCarefreeAide.isBlank(className)) {
+                return null;
+            }
+            Object instance;
+            if (TempCarefreeAide.equalsIgnoreCase(scope, "prototype")) {
+                instance = newInstance();
+            } else {
+                instance = INSTANCE_CACHE.computeIfAbsent(className, k -> newInstance());
+            }
+            @SuppressWarnings("unchecked")
+            final T result = (T) instance;
+            return result;
+        } finally {
+            lock.unlock();
         }
-        Object instance = INSTANCE_CACHE.get(className);
-        if (instance == null) {
+    }
+
+    private Object newInstance() {
+        try {
+            Object instance;
+
             Class<?> clazz = Class.forName(className);
-            if (TempCarefreeAide.isNotBlank(staticFactoryMethod)) { // 优先使用静态工厂方法进行实例化
+
+            if (TempCarefreeAide.isNotBlank(staticFactoryMethod)) {
+                // 优先使用静态工厂方法进行实例化
                 Class<?>[] parameterTypes = getParameterTypes(staticFactoryArgs);
                 instance = clazz.getMethod(staticFactoryMethod, parameterTypes).invoke(null, staticFactoryArgs);
-            } else { // 若无工厂方法则使用构造方法
+            } else {
+                // 若无工厂方法则使用构造方法
                 Class<?>[] parameterTypes = getParameterTypes(constructorArgs);
                 instance = clazz.getConstructor(parameterTypes).newInstance(constructorArgs);
             }
-            if (TempCarefreeAide.isNotBlank(initializeMethod) && instance != null) { // 实例化后调用初始化方法（若存在）
+
+            // 实例化后调用初始化方法（若存在）
+            if (TempCarefreeAide.isNotBlank(initializeMethod) && instance != null) {
                 Class<?>[] parameterTypes = getParameterTypes(initializeArgs);
                 clazz.getMethod(initializeMethod, parameterTypes).invoke(instance, initializeArgs);
             }
-            INSTANCE_CACHE.put(className, instance);
+
+            return instance;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        @SuppressWarnings("unchecked")
-        final T result = (T) instance;
-        return result;
     }
 
     private Class<?>[] getParameterTypes(Object[] args) {
@@ -134,5 +162,13 @@ public class CarefreeClassDeclaration {
 
     public void setStaticFactoryArgs(Object[] staticFactoryArgs) {
         this.staticFactoryArgs = staticFactoryArgs;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 }

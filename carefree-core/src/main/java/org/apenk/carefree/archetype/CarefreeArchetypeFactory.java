@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apenk.carefree.redis.listener;
-
-import org.apenk.carefree.listener.CarefreeConfigureListener;
+package org.apenk.carefree.archetype;
 
 /**
+ * TODO-Kweny CarefreeArchetypeFactory
+ *
  * @author Kweny
  * @since 0.0.1
  */
-public interface CarefreeRedisConfigureListener extends CarefreeConfigureListener {
-
-    default void archetype(CarefreeRedisConfigureEvent event) {}
-
-    default void configuration(CarefreeRedisConfigureEvent event) {}
-
-    default void factory(CarefreeRedisConfigureEvent event) {}
+public class CarefreeArchetypeFactory {
 
 }

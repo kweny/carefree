@@ -15,7 +15,7 @@
  */
 package org.apenk.carefree.redis.archetype;
 
-import org.apenk.carefree.helper.CarefreeClassDeclaration;
+import org.apenk.carefree.archetype.CarefreeArchetype;
 
 import java.util.List;
 
@@ -25,20 +25,7 @@ import java.util.List;
  * @author Kweny
  * @since 0.0.1
  */
-public class CarefreeRedisArchetype {
-    /**
-     * carefree redis 自动装配过程监听器，
-     * {@link org.apenk.carefree.redis.listener.CarefreeRedisConfigureListener} 接口的实现
-     */
-    private CarefreeClassDeclaration configureListener;
-    /**
-     * 是否启用本配置，若 false 则不会创建对应的 RedisConnectionFactory 对象，但仍然可以被其它配置引用，默认为 true
-     */
-    private Boolean enabled = true;
-    /**
-     * 引用的另一个配置的 key，若本实例的某个属性未配置，则使用所引用配置的相应属性作为默认值
-     */
-    private String reference;
+public class CarefreeRedisArchetype extends CarefreeArchetype {
 
     /**
      * Redis 服务高可用及连接方式
@@ -138,30 +125,6 @@ public class CarefreeRedisArchetype {
      * 客户端优雅关闭静默时间，必须 <= shutdownTimeout
      */
     private Long shutdownQuietPeriod;
-
-    public CarefreeClassDeclaration getConfigureListener() {
-        return configureListener;
-    }
-
-    public void setConfigureListener(CarefreeClassDeclaration configureListener) {
-        this.configureListener = configureListener;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
 
     public String getMode() {
         return mode;
