@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apenk.carefree.redis.archetype;
 
 import org.apenk.carefree.helper.CarefreeClassDeclaration;
