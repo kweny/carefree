@@ -34,6 +34,7 @@ import java.util.*;
  */
 public class CarefreeAssistance {
 
+    private static final String FORCE_DEFAULT = "force-default";
     private static final Map<String, BeanInfo> BEAN_INFO_CACHE = Collections.synchronizedMap(new WeakHashMap<>());
 
     public static BeanInfo getBeanInfo(Class<?> beanClass, Class<?> stopClass) throws IntrospectionException {
@@ -154,70 +155,68 @@ public class CarefreeAssistance {
                 continue;
             }
 
-
             Object configValue = config.getValue(propertyPath).unwrapped();
-            boolean forceDefault =  (configValue instanceof String) && CarefreeAide.isForceDefault((String) configValue);
+            if ((configValue instanceof String)
+                    && TempCarefreeAide.equalsIgnoreCase(FORCE_DEFAULT, (String) configValue)) {
+                continue;
+            }
 
             Class<?> propertyType = beanProperty.getPropertyType();
             if (propertyType == CarefreeClassDeclaration.class) {
 
-                if (forceDefault) {
-                    writeMethod.invoke(bean, CarefreeAide.DEFAULT_Declaration);
+                CarefreeClassDeclaration wrapper = new CarefreeClassDeclaration();
+                Object configAny = config.getAnyRef(propertyPath);
+                if (configAny instanceof String) {
+                    wrapper.setClassName((String) configAny);
                 } else {
-                    CarefreeClassDeclaration wrapper = new CarefreeClassDeclaration();
-                    Object configAny = config.getAnyRef(propertyPath);
-                    if (configAny instanceof String) {
-                        wrapper.setClassName((String) configAny);
-                    } else {
-                        Config wrapperConfig = config.getConfig(propertyPath);
-                        loadBeanProperties(CarefreeClassDeclaration.class, wrapper, wrapperConfig, null, null);
-                    }
-                    writeMethod.invoke(bean, wrapper);
+                    Config wrapperConfig = config.getConfig(propertyPath);
+                    loadBeanProperties(CarefreeClassDeclaration.class, wrapper, wrapperConfig, null, null);
                 }
+                writeMethod.invoke(bean, wrapper);
 
             } else if (propertyType == String.class) {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_String : config.getString(propertyPath));
+                writeMethod.invoke(bean, config.getString(propertyPath));
 
             } else if (propertyType == Byte.class || "byte".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Byte : config.getNumber(propertyPath).byteValue());
+                writeMethod.invoke(bean, config.getNumber(propertyPath).byteValue());
 
             } else if (propertyType == Short.class || "short".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Short : config.getNumber(propertyPath).shortValue());
+                writeMethod.invoke(bean, config.getNumber(propertyPath).shortValue());
 
             } else if (propertyType == Integer.class || "int".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Integer : config.getInt(propertyPath));
+                writeMethod.invoke(bean, config.getInt(propertyPath));
 
             } else if (propertyType == Long.class || "long".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Long : config.getLong(propertyPath));
+                writeMethod.invoke(bean, config.getLong(propertyPath));
 
             } else if (propertyType == Float.class || "float".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Float : config.getNumber(propertyPath).floatValue());
+                writeMethod.invoke(bean, config.getNumber(propertyPath).floatValue());
 
             } else if (propertyType == Double.class || "double".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Double : config.getDouble(propertyPath));
+                writeMethod.invoke(bean, config.getDouble(propertyPath));
 
             } else if (propertyType == Boolean.class || "boolean".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Boolean : config.getBoolean(propertyPath));
+                writeMethod.invoke(bean, config.getBoolean(propertyPath));
 
             } else if (propertyType == Character.class || "char".equals(propertyType.getName())) {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Character : config.getString(propertyPath).charAt(0));
+                writeMethod.invoke(bean, config.getString(propertyPath).charAt(0));
 
             } else if (propertyType.isArray()) {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Array : (Object) config.getAnyRefList(propertyPath).toArray());
+                writeMethod.invoke(bean, (Object) config.getAnyRefList(propertyPath).toArray());
 
             } else {
 
-                writeMethod.invoke(bean, forceDefault ? CarefreeAide.DEFAULT_Object : config.getAnyRef(propertyPath));
+                writeMethod.invoke(bean, config.getAnyRef(propertyPath));
 
             }
         }

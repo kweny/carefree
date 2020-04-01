@@ -22,6 +22,9 @@ import org.apenk.carefree.helper.CarefreeClassDeclaration;
 import org.apenk.carefree.helper.TempCarefreeAide;
 import org.apenk.carefree.redis.archetype.*;
 import org.apenk.carefree.redis.listener.CarefreeRedisConfigureListener;
+import org.springframework.data.redis.connection.*;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 import java.util.Set;
 
@@ -31,7 +34,7 @@ import java.util.Set;
  * @author Kweny
  * @since 0.0.1
  */
-class CarefreeRedisLathe {
+class CarefreeRedisLathe implements CarefreeRedisLatheClientConfiguration, CarefreeRedisLatheModeConfiguration {
 
     void loadConfig(String key, Config config) throws Exception {
         Set<String> roots = CarefreeAssistance.getConfigRoots(config);
@@ -75,7 +78,7 @@ class CarefreeRedisLathe {
                 listener.archetype(payload.toConfigureEvent());
             }
 
-            CarefreeRedisPayload.cache(root, payload);
+//            CarefreeRedisPayload.cache(root, payload);
         }
     }
 
@@ -99,5 +102,52 @@ class CarefreeRedisLathe {
                 throw new RuntimeException("[Carefree] error to create redis factory for redis config root: " + root, e);
             }
         });
+    }
+
+    private static final String CONNECT_MODE_Standalone = "Standalone";
+    private static final String CONNECT_MODE_Cluster = "Cluster";
+    private static final String CONNECT_MODE_Sentinel = "Sentinel";
+    private static final String CONNECT_MODE_Socket = "Socket";
+    private static final String CONNECT_MODE_StaticMasterReplica  = "StaticMasterReplica";
+
+    private LettuceConnectionFactory createConnectionFactory(CarefreeRedisArchetype archetype, CarefreeRedisArchetypePool poolArchetype) {
+        LettuceClientConfiguration clientConfiguration = createClientConfiguration(archetype, poolArchetype);
+
+        LettuceConnectionFactory factory;
+        if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Cluster, archetype.getMode())) {
+
+            RedisClusterConfiguration cluster = createClusterConfiguration(archetype);
+            factory = new LettuceConnectionFactory(cluster, clientConfiguration);
+
+        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Sentinel, archetype.getMode())) {
+
+            RedisSentinelConfiguration sentinel = createSentinelConfiguration(archetype);
+            factory = new LettuceConnectionFactory(sentinel, clientConfiguration);
+
+        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Socket, archetype.getMode())) {
+
+            RedisSocketConfiguration socket = createSocketConfiguration(archetype);
+            factory = new LettuceConnectionFactory(socket, clientConfiguration);
+
+        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_StaticMasterReplica, archetype.getMode())) {
+
+            RedisStaticMasterReplicaConfiguration staticMasterReplica = createStaticMasterReplicaConfiguration(archetype);
+            factory = new LettuceConnectionFactory(staticMasterReplica, clientConfiguration);
+
+        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Standalone, archetype.getMode())) {
+
+            RedisStandaloneConfiguration standalone = createStandaloneConfiguration(archetype);
+            factory = new LettuceConnectionFactory(standalone, clientConfiguration);
+
+        } else {
+
+            RedisStandaloneConfiguration standalone = createStandaloneConfiguration(archetype);
+            factory = new LettuceConnectionFactory(standalone, clientConfiguration);
+
+        }
+
+        factory.afterPropertiesSet();
+
+        return factory;
     }
 }

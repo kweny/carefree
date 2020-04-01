@@ -16,7 +16,6 @@
 
 package org.apenk.carefree.helper;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -27,7 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class CarefreeClassDeclaration {
     private static final Map<String, Object> INSTANCE_CACHE = new ConcurrentHashMap<>();
-    private static final ReentrantLock lock = new ReentrantLock();
+    private static final ReentrantLock INSTANCE_CACHE_LOCK = new ReentrantLock();
 
     /**
      * 类全名
@@ -54,28 +53,42 @@ public class CarefreeClassDeclaration {
      */
     private Object[] staticFactoryArgs;
     /**
-     * singleton/prototype
+     * singleton：默认，对于多个 CarefreeClassDeclaration 所描述的同一个 Class 只创建一个实例；
+     * declaration：为每个 CarefreeClassDeclaration 所描述的 Class 创建一个独立的实例；
+     * prototype：每次调用 CarefreeClassDeclaration.instance() 都会创建一个新的实例。
      */
     private String scope;
+    /**
+     * 每个 CarefreeClassDeclaration 独立的实例
+     */
+    private Object declarationInstance;
+    private ReentrantLock declarationInstanceLock = new ReentrantLock();
 
-    public <T> T instance() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-        try {
-            lock.lock();
-            if (TempCarefreeAide.isBlank(className)) {
-                return null;
-            }
-            Object instance;
-            if (TempCarefreeAide.equalsIgnoreCase(scope, "prototype")) {
-                instance = newInstance();
-            } else {
-                instance = INSTANCE_CACHE.computeIfAbsent(className, k -> newInstance());
-            }
-            @SuppressWarnings("unchecked")
-            final T result = (T) instance;
-            return result;
-        } finally {
-            lock.unlock();
+    public <T> T instance() {
+        if (TempCarefreeAide.isBlank(className)) {
+            return null;
         }
+        Object instance;
+        if (TempCarefreeAide.equalsIgnoreCase(scope, "prototype")) {
+            instance = newInstance();
+        } else if (TempCarefreeAide.equalsIgnoreCase(scope, "declaration")) {
+            try {
+                declarationInstanceLock.lock();
+                instance = this.declarationInstance != null ? this.declarationInstance : (this.declarationInstance = newInstance());
+            } finally {
+                declarationInstanceLock.unlock();
+            }
+        } else {
+            try {
+                INSTANCE_CACHE_LOCK.lock();
+                instance = INSTANCE_CACHE.computeIfAbsent(className, k -> newInstance());
+            } finally {
+                INSTANCE_CACHE_LOCK.unlock();
+            }
+        }
+        @SuppressWarnings("unchecked")
+        final T result = (T) instance;
+        return result;
     }
 
     private Object newInstance() {
