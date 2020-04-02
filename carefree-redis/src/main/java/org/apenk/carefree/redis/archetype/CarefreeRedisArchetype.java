@@ -17,45 +17,28 @@
 package org.apenk.carefree.redis.archetype;
 
 import org.apenk.carefree.archetype.CarefreeArchetype;
-import org.apenk.carefree.helper.TempCarefreeAide;
 
 import java.util.Set;
 
 /**
- * Redis 配置原型
+ * <p>Redis 客户端连接配置描述。</p>
+ *
+ * <p>
+ *     包含对以下类型连接和客户端配置的描述：
+ *     <ul>
+ *         <li>客户端配置：{@link org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration}</li>
+ *         <li>哨兵模式连接配置：{@link org.springframework.data.redis.connection.RedisSentinelConfiguration}</li>
+ *         <li>集群模式连接配置：{@link org.springframework.data.redis.connection.RedisClusterConfiguration}</li>
+ *         <li>静态主从模式连接配置：{@link org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration}</li>
+ *         <li>Socket 模式连接配置：{@link org.springframework.data.redis.connection.RedisSocketConfiguration}</li>
+ *         <li>单机模式连接配置：{@link org.springframework.data.redis.connection.RedisStandaloneConfiguration}</li>
+ *     </ul>
+ * </p>
  *
  * @author Kweny
  * @since 0.0.1
  */
 public class CarefreeRedisArchetype extends CarefreeArchetype {
-
-    private static final String MODE_Standalone = "Standalone";
-    private static final String MODE_Socket = "Socket";
-    private static final String MODE_Cluster = "Cluster";
-    private static final String MODE_Sentinel = "Sentinel";
-    private static final String MODE_StaticMasterReplica  = "StaticMasterReplica";
-
-    public boolean isStandaloneMode() {
-        return TempCarefreeAide.equalsIgnoreCase(mode, MODE_Standalone)
-                || TempCarefreeAide.isBlank(mode);
-    }
-
-    public boolean isSocketMode() {
-        return TempCarefreeAide.equalsIgnoreCase(mode, MODE_Socket);
-    }
-
-    public boolean isSentinelMode() {
-        return TempCarefreeAide.equalsIgnoreCase(mode, MODE_Sentinel);
-    }
-
-    public boolean isClusterMode() {
-        return TempCarefreeAide.equalsIgnoreCase(mode, MODE_Cluster);
-    }
-
-    public boolean isStaticMasterReplica() {
-        return TempCarefreeAide.equalsIgnoreCase(mode, MODE_StaticMasterReplica);
-    }
-
     /**
      * Redis 服务高可用及连接方式
      *
@@ -93,14 +76,17 @@ public class CarefreeRedisArchetype extends CarefreeArchetype {
     /**
      * 连接 URL，将覆盖 host、port、password，如：redis://user:password@example.com:6379，忽略其中的 user 部分。
      * 不支持以 rediss:// 协议头开启 ssl，如果需要请直接使用 {@link #useSsl} 选项。
+     * 当 {@link #mode} 取 <code>Standalone</code> 时有效。
      */
     private String url;
     /**
      * Redis 服务地址
+     * 当 {@link #mode} 取 <code>Standalone</code> 时有效。
      */
     private String host;
     /**
      * Redis 服务端口
+     * 当 {@link #mode} 取 <code>Standalone</code> 时有效。
      */
     private Integer port;
     /**

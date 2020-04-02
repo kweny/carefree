@@ -19,7 +19,9 @@ package org.apenk.carefree.redis.archetype;
 import org.apenk.carefree.helper.CarefreeClassDeclaration;
 
 /**
- * {@link org.springframework.data.redis.core.RedisTemplate} 使用的序列化程序
+ * <p>
+ *     描述 Redis 读写使用的序列化程序。
+ * </p>
  *
  * @author Kweny
  * @since 0.0.1

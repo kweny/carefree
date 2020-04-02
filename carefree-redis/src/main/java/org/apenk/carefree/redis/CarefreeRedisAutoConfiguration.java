@@ -19,8 +19,8 @@ package org.apenk.carefree.redis;
 import com.typesafe.config.Config;
 import org.apenk.carefree.CarefreeOrdered;
 import org.apenk.carefree.CarefreeRegistry;
-import org.apenk.carefree.helper.TempCarefreeAide;
 import org.apenk.carefree.helper.CarefreeLogger;
+import org.apenk.carefree.helper.TempCarefreeAide;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeansException;
@@ -40,6 +40,10 @@ import org.springframework.core.io.ResourceLoader;
 import java.util.Arrays;
 
 /**
+ * <p>
+ *     Carefree Redis 自动配置。
+ * </p>
+ *
  * @author Kweny
  * @since 0.0.1
  */
@@ -91,7 +95,8 @@ public class CarefreeRedisAutoConfiguration implements ApplicationContextAware, 
             }
 
             try {
-                CarefreeRedisBuilder.getInstance().loadConfig(config);
+                // 加载配置并创建 ConnectionFactory、Serializer 等 Redis 相关资源
+                CarefreeRedisLathe.getInstance().load(key, config);
             } catch (Exception e) {
                 throw new BeanCreationException("[Carefree] error to create the redis connection factory instance for config key: " + key, e);
             }
@@ -99,7 +104,11 @@ public class CarefreeRedisAutoConfiguration implements ApplicationContextAware, 
 
         CarefreeRedisRegistry carefreeRedisRegistry = applicationContext.getBean(CarefreeRedisRegistry.BEAN_NAME, CarefreeRedisRegistry.class);
 
-        CarefreeRedisBuilder.getInstance().build().forEach(carefreeRedisRegistry::register);
+        // 注册 ConnectionFactory、Serializer 等 Redis 相关资源
+        CarefreeRedisLathe.getInstance().payloads().forEach(carefreeRedisRegistry::register);
+
+        // 释放中间数据
+        CarefreeRedisLathe.getInstance().payloads().clear();
     }
 
     @Override

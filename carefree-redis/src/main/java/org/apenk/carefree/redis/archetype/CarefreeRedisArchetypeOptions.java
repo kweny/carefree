@@ -17,10 +17,20 @@
 package org.apenk.carefree.redis.archetype;
 
 /**
- * TODO-Kweny CarefreeRedisArchetypeOptions
+ * <p>客户端功能选项描述。</p>
+ *
+ * <p>用于描述 {@link io.lettuce.core.ClientOptions} 对象。</p>
+ *
+ * <p>
+ *     参考：
+ *     <a href="https://github.com/lettuce-io/lettuce-core/wiki/Client-Options">
+ *         https://github.com/lettuce-io/lettuce-core/wiki/Client-Options
+ *     </a>
+ * </p>
  *
  * @author Kweny
  * @since 0.0.1
  */
 public class CarefreeRedisArchetypeOptions {
+    // TODO-Kweny CarefreeRedisArchetypeOptions
 }

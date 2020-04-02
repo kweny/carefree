@@ -22,21 +22,31 @@ import org.apenk.carefree.helper.CarefreeClassDeclaration;
 import org.apenk.carefree.helper.TempCarefreeAide;
 import org.apenk.carefree.redis.archetype.*;
 import org.apenk.carefree.redis.listener.CarefreeRedisConfigureListener;
-import org.springframework.data.redis.connection.*;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * TODO-Kweny CarefreeRedisLathe
- *
  * @author Kweny
  * @since 0.0.1
  */
 class CarefreeRedisLathe implements CarefreeRedisLatheClientConfiguration, CarefreeRedisLatheModeConfiguration {
 
-    void loadConfig(String key, Config config) throws Exception {
+    static final CarefreeRedisLathe INSTANCE = new CarefreeRedisLathe();
+
+    static CarefreeRedisLathe getInstance() {
+        return INSTANCE;
+    }
+
+    private final Map<String, CarefreeRedisPayload> payloads;
+
+    private CarefreeRedisLathe() {
+        this.payloads = new ConcurrentHashMap<>();
+    }
+
+    void load(String key, Config config) throws Exception {
         Set<String> roots = CarefreeAssistance.getConfigRoots(config);
 
         for (String root : roots) {
@@ -66,76 +76,48 @@ class CarefreeRedisLathe implements CarefreeRedisLatheClientConfiguration, Caref
                 refSerializerPath = String.join(".", referenceRoot, "serializer");
             }
 
+            // 解析加载配置数据
             payload.redisArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetype.class, config, root, referenceRoot);
             payload.poolArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypePool.class, config, poolPath, refPoolPath);
             payload.resourcesArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypeResources.class, config, resourcesPath, refResourcesPath);
             payload.optionsArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypeOptions.class, config, optionsPath, refOptionsPath);
             payload.serializerArchetype = CarefreeAssistance.fromConfig(CarefreeRedisArchetypeSerializer.class, config, serializerPath, refSerializerPath);
 
+            // 创建配置数据中指定的监听器
             CarefreeClassDeclaration declaration = payload.redisArchetype.getConfigureListener();
-            if (declaration != null) {
-                CarefreeRedisConfigureListener listener = declaration.instance();
+            CarefreeRedisConfigureListener listener = declaration == null ? null : declaration.instance();
+
+            if (listener != null) {
                 listener.archetype(payload.toConfigureEvent());
             }
 
-//            CarefreeRedisPayload.cache(root, payload);
-        }
-    }
-
-    void build() {
-        CarefreeRedisPayload.forEach((root, payload) -> {
-            try {
-                if (TempCarefreeAide.isFalse(payload.redisArchetype.getEnabled())) {
-                    return; // means continue
-                }
-
-                payload.clientConfiguration = createClientConfiguration(payload);
-            } catch (Exception e) {
-                throw new RuntimeException("[Carefree] error to create redis factory for redis config root: " + root, e);
+            if (TempCarefreeAide.isFalse(payload.redisArchetype.getEnabled())) {
+                continue;
             }
-        });
+
+            // 创建 ClientConfiguration 和 RedisConfiguration 对象
+            payload.clientConfiguration = createClientConfiguration(payload);
+            payload.redisConfiguration = createRedisConfiguration(payload);
+
+            if (listener != null) {
+                listener.configuration(payload.toConfigureEvent());
+            }
+
+            // 创建 ConnectionFactory 对象
+            payload.connectionFactory = new LettuceConnectionFactory(payload.redisConfiguration, payload.clientConfiguration);
+            payload.connectionFactory.afterPropertiesSet();
+
+            if (listener != null) {
+                listener.factory(payload.toConfigureEvent());
+            }
+
+            // 缓存 payload
+//            CarefreeRedisPayload.cache(payload);
+            this.payloads.put(payload.root, payload);
+        }
     }
 
-
-
-    private LettuceConnectionFactory createConnectionFactory(CarefreeRedisArchetype archetype, CarefreeRedisArchetypePool poolArchetype) {
-        LettuceClientConfiguration clientConfiguration = createClientConfiguration(archetype, poolArchetype);
-
-        LettuceConnectionFactory factory;
-        if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Cluster, archetype.getMode())) {
-
-            RedisClusterConfiguration cluster = createClusterConfiguration(archetype);
-            factory = new LettuceConnectionFactory(cluster, clientConfiguration);
-
-        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Sentinel, archetype.getMode())) {
-
-            RedisSentinelConfiguration sentinel = createSentinelConfiguration(archetype);
-            factory = new LettuceConnectionFactory(sentinel, clientConfiguration);
-
-        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Socket, archetype.getMode())) {
-
-            RedisSocketConfiguration socket = createSocketConfiguration(archetype);
-            factory = new LettuceConnectionFactory(socket, clientConfiguration);
-
-        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_StaticMasterReplica, archetype.getMode())) {
-
-            RedisStaticMasterReplicaConfiguration staticMasterReplica = createStaticMasterReplicaConfiguration(archetype);
-            factory = new LettuceConnectionFactory(staticMasterReplica, clientConfiguration);
-
-        } else if (TempCarefreeAide.equalsIgnoreCase(CONNECT_MODE_Standalone, archetype.getMode())) {
-
-            RedisStandaloneConfiguration standalone = createStandaloneConfiguration(archetype);
-            factory = new LettuceConnectionFactory(standalone, clientConfiguration);
-
-        } else {
-
-            RedisStandaloneConfiguration standalone = createStandaloneConfiguration(archetype);
-            factory = new LettuceConnectionFactory(standalone, clientConfiguration);
-
-        }
-
-        factory.afterPropertiesSet();
-
-        return factory;
+    Map<String, CarefreeRedisPayload> payloads() {
+        return this.payloads;
     }
 }

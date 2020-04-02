@@ -22,25 +22,42 @@ import org.springframework.data.redis.connection.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * TODO-Kweny CarefreeRedisLatheModeConfiguration
- *
  * @author Kweny
  * @since 0.0.1
  */
 interface CarefreeRedisLatheModeConfiguration {
 
-    String MODE_Standalone = "Standalone";
-    String MODE_Socket = "Socket";
-    String MODE_Cluster = "Cluster";
     String MODE_Sentinel = "Sentinel";
+    String MODE_Cluster = "Cluster";
     String MODE_StaticMasterReplica  = "StaticMasterReplica";
+    String MODE_Socket = "Socket";
+    String MODE_Standalone = "Standalone";
 
     default RedisConfiguration createRedisConfiguration(CarefreeRedisPayload payload) {
+        String mode = payload.redisArchetype.getMode();
+        if (TempCarefreeAide.equalsIgnoreCase(mode, MODE_Sentinel)) {
+            return createSentinelConfiguration(payload.redisArchetype);
 
+        } else if (TempCarefreeAide.equalsIgnoreCase(mode, MODE_Cluster)) {
+            return createClusterConfiguration(payload.redisArchetype);
+
+        } else if (TempCarefreeAide.equalsIgnoreCase(mode, MODE_StaticMasterReplica)) {
+            return createStaticMasterReplicaConfiguration(payload.redisArchetype);
+
+        } else if (TempCarefreeAide.equalsIgnoreCase(mode, MODE_Socket)) {
+            return createSocketConfiguration(payload.redisArchetype);
+
+        } else if (TempCarefreeAide.equalsIgnoreCase(mode, MODE_Standalone)) {
+            return createStandaloneConfiguration(payload.redisArchetype);
+
+        } else {
+            return createStandaloneConfiguration(payload.redisArchetype);
+
+        }
     }
 
     default RedisSentinelConfiguration createSentinelConfiguration(CarefreeRedisArchetype archetype) {
@@ -69,13 +86,53 @@ interface CarefreeRedisLatheModeConfiguration {
     }
 
     default RedisStaticMasterReplicaConfiguration createStaticMasterReplicaConfiguration(CarefreeRedisArchetype archetype) {
-        Set<RedisStandaloneConfiguration> nodes = archetype.getNodes().stream()
-                                                    .map(str -> str.split(":"))
-                                                    .map(arr -> new RedisStandaloneConfiguration(arr[0], Integer.parseInt(arr[1])))
-                                                    .collect(Collectors.toSet());
-        RedisStaticMasterReplicaConfiguration staticMasterReplica = new RedisStaticMasterReplicaConfiguration();
-        // TODO-Kweny RedisStaticMasterReplicaConfiguration
+        List<RedisStandaloneConfiguration> nodes = new LinkedList<>();
+        if (TempCarefreeAide.isEmpty(archetype.getNodes())) {
+            nodes.add(new RedisStandaloneConfiguration());
+        } else {
+            for (String hostAndPort : archetype.getNodes()) {
+                String[] sections = TempCarefreeAide.split(hostAndPort, ":");
+                if (TempCarefreeAide.getLength(sections) != 2) {
+                    throw new IllegalArgumentException("[Carefree] Host and Port String needs to specified as host:port");
+                }
+                String host = sections[0];
+                int port;
+                try {
+                    port = Integer.parseInt(sections[1]);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("[Carefree] Host and Port String needs to specified as host:port", e);
+                }
+                nodes.add(new RedisStandaloneConfiguration(host, port));
+            }
+        }
+        RedisStaticMasterReplicaConfiguration staticMasterReplica = new RedisStaticMasterReplicaConfiguration(nodes.get(0).getHostName(), nodes.get(0).getPort());
+        if (TempCarefreeAide.isNotNull(archetype.getPassword())) {
+            staticMasterReplica.setPassword(archetype.getPassword());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getDatabase())) {
+            staticMasterReplica.setDatabase(archetype.getDatabase());
+        }
+        if (nodes.size() > 1) {
+            for (int i = 1; i < nodes.size(); i++) {
+                staticMasterReplica.addNode(nodes.get(i).getHostName(), nodes.get(i).getPort());
+            }
+        }
         return staticMasterReplica;
+    }
+
+
+    default RedisSocketConfiguration createSocketConfiguration(CarefreeRedisArchetype archetype) {
+        RedisSocketConfiguration socket = new RedisSocketConfiguration();
+        if (TempCarefreeAide.isNotNull(archetype.getSocket())) {
+            socket.setSocket(archetype.getSocket());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getPassword())) {
+            socket.setPassword(archetype.getPassword());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getDatabase())) {
+            socket.setDatabase(archetype.getDatabase());
+        }
+        return socket;
     }
 
     default RedisStandaloneConfiguration createStandaloneConfiguration(CarefreeRedisArchetype archetype) {
@@ -98,7 +155,7 @@ interface CarefreeRedisLatheModeConfiguration {
                 hostname = uri.getHost();
                 port = uri.getPort();
             } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("Malformed url '" + archetype.getUrl() + "'", e);
+                throw new IllegalArgumentException("[Carefree] Malformed url '" + archetype.getUrl() + "'", e);
             }
         } else {
             hostname = archetype.getHost();
@@ -121,13 +178,5 @@ interface CarefreeRedisLatheModeConfiguration {
 
         return standalone;
     }
-
-    default RedisSocketConfiguration createSocketConfiguration(CarefreeRedisArchetype archetype) {
-        RedisSocketConfiguration socket = new RedisSocketConfiguration();
-        // TODO-Kweny RedisSocketConfiguration
-        return socket;
-    }
-
-
 
 }

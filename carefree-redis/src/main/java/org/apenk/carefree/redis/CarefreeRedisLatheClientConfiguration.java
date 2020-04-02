@@ -28,8 +28,6 @@ import org.springframework.data.redis.connection.lettuce.LettucePoolingClientCon
 import java.time.Duration;
 
 /**
- * TODO-Kweny CarefreeRedisLatheClientConfiguration
- *
  * @author Kweny
  * @since 0.0.1
  */

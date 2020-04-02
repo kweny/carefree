@@ -16,13 +16,19 @@
 
 package org.apenk.carefree.redis.archetype;
 
-import io.lettuce.core.resource.ClientResources;
 import org.apenk.carefree.helper.CarefreeClassDeclaration;
 
 /**
- * {@link ClientResources} configuration
+ * <p>客户端本地资源描述。</p>
  *
- * https://github.com/lettuce-io/lettuce-core/wiki/Configuring-Client-resources
+ * <p>用于描述 {@link io.lettuce.core.resource.ClientResources} 对象。</p>
+ *
+ * <p>
+ *     参考：
+ *     <a href="https://github.com/lettuce-io/lettuce-core/wiki/Configuring-Client-resources">
+ *         https://github.com/lettuce-io/lettuce-core/wiki/Configuring-Client-resources
+ *     </a>
+ * </p>
  *
  * @author Kweny
  * @since 0.0.1
@@ -39,9 +45,9 @@ public class CarefreeRedisArchetypeResources {
 
     /**
      * {@link io.lettuce.core.resource.EventLoopGroupProvider} 接口的实现类的构造描述符。
-     * 可以在 RedisClient 和 RedisClusterClient 的不同实例之间使用的共享事件执行程序提供程序。
+     * 可以在 RedisClient 和 RedisClusterClient 的不同实例之间使用的共享事件执行程序提供者。
      * 如果要对线程池进行总体控制，或者要重用已经构建好的 Netty 框架，则可以配置该项。
-     * 这是一个高级配置，仅在知道自己在做什么的时候使用。
+     * 这是一个高级配置，请在清楚自己意图的情况下使用。
      * 客户端资源关闭时不会释放 EventLoopGroupProvider 实例，若不再需要则应手动释放。
      */
     private CarefreeClassDeclaration eventLoopGroupProvider;
@@ -49,7 +55,7 @@ public class CarefreeRedisArchetypeResources {
     /**
      * {@link io.netty.util.concurrent.EventExecutorGroup} 接口的实现类的构造描述符。
      * 如果要对线程池进行总体控制，或者要重用已经构建好的 Netty 框架，则可以配置该项。
-     * 这是一个高级配置，仅在知道自己在做什么的时候使用。
+     * 这是一个高级配置，请在清楚自己意图的情况下使用。
      * 客户端资源关闭时不会释放 EventExecutorGroup 实例，若不再需要则应手动释放。
      */
     private CarefreeClassDeclaration eventExecutorGroup;
@@ -57,7 +63,7 @@ public class CarefreeRedisArchetypeResources {
     /**
      * {@link io.netty.util.Timer} 接口的实现类的构造描述符。
      * 可以在 RedisClient 和 RedisClusterClient 的不同实例之间使用的共享 Timer。
-     * 这是一个高级配置，仅在知道自己在做什么的时候使用。
+     * 这是一个高级配置，请在清楚自己意图的情况下使用。
      * 客户端资源关闭时不会释放 Timer 实例，若不再需要则应手动释放。
      */
     private CarefreeClassDeclaration timer;
@@ -75,7 +81,7 @@ public class CarefreeRedisArchetypeResources {
     private CarefreeClassDeclaration commandLatencyPublisherOptions;
 
     /**
-     * {@link io.lettuce.core.metrics.CommandLatencyCollectorOptions} 接口的实现类全名，
+     * {@link io.lettuce.core.metrics.CommandLatencyCollectorOptions} 接口的实现类的构造描述符，
      * 命令延迟收集选项
      */
     private CarefreeClassDeclaration commandLatencyCollectorOptions;

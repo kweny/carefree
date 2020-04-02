@@ -16,9 +16,10 @@
 
 package org.apenk.carefree.redis;
 
+import org.apenk.carefree.helper.CarefreeClassDeclaration;
 import org.apenk.carefree.helper.TempCarefreeAide;
+import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypeSerializer;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
@@ -32,10 +33,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 持有 carefree redis 配置及 {@link RedisConnectionFactory} 对象，
- * 以 carefreeDruidRegistry 为 bean name 存在于容器，
- * 可注入到应用程序中，使用 {@link #get(String)} 方法获取指定 {@link RedisConnectionFactory} 对象，
- * 或使用 {@link #getAll()} 方法获取所有 {@link RedisConnectionFactory} 对象。
+ * <p>
+ *     持有 Redis 连接工厂对象，
+ *     以 carefreeRedisRegistry 为 bean name 存在 Spring 于容器，
+ *     可注入到应用程序中，用于创建 Redis 模板对象。
+ * </p>
  *
  * @author Kweny
  * @since 0.0.1
@@ -43,176 +45,178 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CarefreeRedisRegistry {
     public static final String BEAN_NAME = "carefreeRedisRegistry";
 
-    private static final Map<String, RedisSerializer<?>> SERIALIZER_CACHE = new ConcurrentHashMap<>();
-
     private ClassLoader classLoader;
-    private Map<String, CarefreeRedisWrapper> holder;
+    private Map<String, LettuceConnectionFactory> factoryHolder;
+    private Map<String, CarefreeRedisArchetypeSerializer> serializerHolder;
 
     public CarefreeRedisRegistry(ResourceLoader resourceLoader) {
         if (resourceLoader != null) {
             this.classLoader = resourceLoader.getClassLoader();
         }
-        this.holder = new ConcurrentHashMap<>();
+        this.factoryHolder = new ConcurrentHashMap<>();
+        this.serializerHolder = new ConcurrentHashMap<>();
     }
 
-    public void register(String name, CarefreeRedisWrapper wrapper) {
-        this.holder.put(name, wrapper);
+    public void register(String root, CarefreeRedisPayload payload) {
+        this.factoryHolder.put(root, payload.connectionFactory);
+        this.serializerHolder.put(root, payload.serializerArchetype);
     }
 
-    public LettuceConnectionFactory get(String name) {
-        CarefreeRedisWrapper wrapper = this.holder.get(name);
-        return wrapper != null ? wrapper.getFactory() : null;
+    public LettuceConnectionFactory getConnectionFactory(String root) {
+        return this.factoryHolder.get(root);
     }
 
-    public Map<String, LettuceConnectionFactory> getAll() {
-        Map<String, LettuceConnectionFactory> map = new ConcurrentHashMap<>(this.holder.size());
-        this.holder.forEach((key, value) -> map.put(key, value.getFactory()));
-        return Collections.unmodifiableMap(map);
+    public Map<String, LettuceConnectionFactory> getAllConnectionFactories() {
+        return Collections.unmodifiableMap(this.factoryHolder);
     }
 
-    public boolean isDisableDefaultSerializer(String name) {
-        CarefreeRedisWrapper wrapper = this.holder.get(name);
-        return wrapper != null && TempCarefreeAide.isTrue(wrapper.isDisableDefaultSerializer());
+    public Boolean getEnableDefaultSerializer(String root) {
+        CarefreeRedisArchetypeSerializer serializerArchetype = this.serializerHolder.get(root);
+        // enableDefaultSerializer 默认为 true，只要不是 false 就返回 true（如 true 和 null 都认为是 true）
+        return serializerArchetype != null ? serializerArchetype.getEnableDefaultSerializer() : null;
     }
 
-    public String getDefaultSerializer(String name) {
-        CarefreeRedisWrapper wrapper = this.holder.get(name);
-        return wrapper != null ? wrapper.getDefaultSerializer() : null;
-    }
-
-    public String getKeySerializer(String name) {
-        CarefreeRedisWrapper wrapper = this.holder.get(name);
-        return wrapper != null ? wrapper.getKeySerializer() : null;
-    }
-
-    public String getValueSerializer(String name) {
-        CarefreeRedisWrapper wrapper = this.holder.get(name);
-        return wrapper != null ? wrapper.getValueSerializer() : null;
-    }
-
-    public String getHashKeySerializer(String name) {
-        CarefreeRedisWrapper wrapper = this.holder.get(name);
-        return wrapper != null ? wrapper.getHashKeySerializer() : null;
-    }
-
-    public String getHashValueSerializer(String name) {
-        CarefreeRedisWrapper wrapper = this.holder.get(name);
-        return wrapper != null ? wrapper.getHashValueSerializer() : null;
-    }
-
-    public <K, V> ReactiveRedisTemplate<K, V> newReactiveRedisTemplate(String name) {
-        LettuceConnectionFactory factory = get(name);
-        if (factory == null) {
-            throw new RuntimeException("[Carefree] no redis config: " + name);
+    public <T extends RedisSerializer<?>> T getDefaultSerializer(String root) {
+        CarefreeRedisArchetypeSerializer serializerArchetype = this.serializerHolder.get(root);
+        if (serializerArchetype == null) {
+            return null;
         }
-        return new ReactiveRedisTemplate<>(factory, buildSerializationContext(name, false));
+        CarefreeClassDeclaration declaration = serializerArchetype.getDefaultSerializer();
+        return declaration != null ? declaration.instance() : null;
     }
 
-    public ReactiveStringRedisTemplate newReactiveStringRedisTemplate(String name) {
-        LettuceConnectionFactory factory = get(name);
-        if (factory == null) {
-            throw new RuntimeException("[Carefree] no redis config: " + name);
+    public <T extends RedisSerializer<?>> T getKeySerializer(String root) {
+        CarefreeRedisArchetypeSerializer serializerArchetype = this.serializerHolder.get(root);
+        if (serializerArchetype == null) {
+            return null;
         }
-        return new ReactiveStringRedisTemplate(factory, buildSerializationContext(name, true));
+        CarefreeClassDeclaration declaration = serializerArchetype.getKeySerializer();
+        return declaration != null ? declaration.instance() : null;
+    }
+
+    public <T extends RedisSerializer<?>> T getValueSerializer(String root) {
+        CarefreeRedisArchetypeSerializer serializerArchetype = this.serializerHolder.get(root);
+        if (serializerArchetype == null) {
+            return null;
+        }
+        CarefreeClassDeclaration declaration = serializerArchetype.getValueSerializer();
+        return declaration != null ? declaration.instance() : null;
+    }
+
+    public <T extends RedisSerializer<?>> T getHashKeySerializer(String root) {
+        CarefreeRedisArchetypeSerializer serializerArchetype = this.serializerHolder.get(root);
+        if (serializerArchetype == null) {
+            return null;
+        }
+        CarefreeClassDeclaration declaration = serializerArchetype.getHashKeySerializer();
+        return declaration != null ? declaration.instance() : null;
+    }
+
+    public <T extends RedisSerializer<?>> T getHashValueSerializer(String root) {
+        CarefreeRedisArchetypeSerializer serializerArchetype = this.serializerHolder.get(root);
+        if (serializerArchetype == null) {
+            return null;
+        }
+        CarefreeClassDeclaration declaration = serializerArchetype.getHashValueSerializer();
+        return declaration != null ? declaration.instance() : null;
+    }
+
+    public <K, V> ReactiveRedisTemplate<K, V> newReactiveRedisTemplate(String root) {
+        LettuceConnectionFactory factory = getConnectionFactory(root);
+        assertConnectionFactory(factory, root);
+        return new ReactiveRedisTemplate<>(factory, buildSerializationContext(root, false));
+    }
+
+    public ReactiveStringRedisTemplate newReactiveStringRedisTemplate(String root) {
+        LettuceConnectionFactory factory = getConnectionFactory(root);
+        assertConnectionFactory(factory, root);
+        return new ReactiveStringRedisTemplate(factory, buildSerializationContext(root, true));
     }
 
     @SuppressWarnings("unchecked")
-    private <K, V> RedisSerializationContext<K, V> buildSerializationContext(String name, boolean isString) {
+    private <K, V> RedisSerializationContext<K, V> buildSerializationContext(String root, boolean isString) {
         RedisSerializationContext.RedisSerializationContextBuilder<K, V> builder = RedisSerializationContext.newSerializationContext();
 
-        RedisSerializer<?> defaultSerializer;
-        if (TempCarefreeAide.isNotBlank(getDefaultSerializer(name))) {
-            defaultSerializer = serializer(getDefaultSerializer(name));
-        } else {
+        RedisSerializer<?> defaultSerializer = getDefaultSerializer(root);
+        if (defaultSerializer == null) {
             defaultSerializer = isString ? RedisSerializer.string() : RedisSerializer.java(classLoader);
         }
 
-        if (TempCarefreeAide.isNotBlank(getKeySerializer(name))) {
-            builder.key((RedisSerializer<K>) serializer(getKeySerializer(name)));
-        } else {
-            builder.key((RedisSerializer<K>) defaultSerializer);
-        }
+        RedisSerializer<K> keySerializer = getKeySerializer(root);
+        builder.key(keySerializer != null ? keySerializer : (RedisSerializer<K>) defaultSerializer);
 
-        if (TempCarefreeAide.isNotBlank(getValueSerializer(name))) {
-            builder.value((RedisSerializer<V>) serializer(getValueSerializer(name)));
-        } else {
-            builder.value((RedisSerializer<V>) defaultSerializer);
-        }
+        RedisSerializer<V> valueSerializer = getValueSerializer(root);
+        builder.value(valueSerializer != null ? valueSerializer : (RedisSerializer<V>) defaultSerializer);
 
-        if (TempCarefreeAide.isNotBlank(getHashKeySerializer(name))) {
-            builder.hashKey(serializer(getHashKeySerializer(name)));
-        } else {
-            builder.hashKey(defaultSerializer);
-        }
+        RedisSerializer<?> hashKeySerializer = getHashKeySerializer(root);
+        builder.hashKey(hashKeySerializer != null ? hashKeySerializer : defaultSerializer);
 
-        if (TempCarefreeAide.isNotBlank(getHashValueSerializer(name))) {
-            builder.hashValue(serializer(getHashValueSerializer(name)));
-        } else {
-            builder.hashValue(defaultSerializer);
-        }
+        RedisSerializer<?> hashValueSerializer = getHashValueSerializer(root);
+        builder.hashValue(hashValueSerializer != null ? hashValueSerializer : defaultSerializer);
 
         return builder.build();
     }
 
-    public StringRedisTemplate newStringTemplate(String name) {
-        LettuceConnectionFactory factory = get(name);
-        if (factory == null) {
-            throw new RuntimeException("[Carefree] no redis config: " + name);
-        }
+    public StringRedisTemplate newStringTemplate(String root) {
+        LettuceConnectionFactory factory = getConnectionFactory(root);
+        assertConnectionFactory(factory, root);
 
         StringRedisTemplate template = new StringRedisTemplate();
         template.setConnectionFactory(factory);
-        setSerializer(template, name);
+        setSerializer(template, root);
 
         template.afterPropertiesSet();
 
         return template;
     }
 
-    public <K, V> RedisTemplate<K, V> newTemplate(String name) {
-        LettuceConnectionFactory factory = get(name);
-        if (factory == null) {
-            throw new RuntimeException("[Carefree] no redis config: " + name);
-        }
+    public <K, V> RedisTemplate<K, V> newTemplate(String root) {
+        LettuceConnectionFactory factory = getConnectionFactory(root);
+        assertConnectionFactory(factory, root);
 
         RedisTemplate<K, V> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);
-        setSerializer(template, name);
+        setSerializer(template, root);
 
         template.afterPropertiesSet();
 
         return template;
     }
 
-    private void setSerializer(RedisTemplate<?, ?> template, String name) {
-        if (isDisableDefaultSerializer(name)) {
+    private void setSerializer(RedisTemplate<?, ?> template, String root) {
+        if (TempCarefreeAide.isFalse(getEnableDefaultSerializer(root))) {
             template.setEnableDefaultSerializer(false);
         }
 
-        if (TempCarefreeAide.isNotBlank(getDefaultSerializer(name))) {
-            template.setDefaultSerializer(serializer(getDefaultSerializer(name)));
+        RedisSerializer<?> defaultSerializer = getDefaultSerializer(root);
+        if (defaultSerializer != null) {
+            template.setDefaultSerializer(defaultSerializer);
         }
-        if (TempCarefreeAide.isNotBlank(getKeySerializer(name))) {
-            template.setKeySerializer(serializer(getKeySerializer(name)));
+
+        RedisSerializer<?> keySerializer = getKeySerializer(root);
+        if (keySerializer != null) {
+            template.setKeySerializer(keySerializer);
         }
-        if (TempCarefreeAide.isNotBlank(getValueSerializer(name))) {
-            template.setValueSerializer(serializer(getValueSerializer(name)));
+
+        RedisSerializer<?> valueSerializer = getValueSerializer(root);
+        if (valueSerializer != null) {
+            template.setValueSerializer(valueSerializer);
         }
-        if (TempCarefreeAide.isNotBlank(getHashKeySerializer(name))) {
-            template.setHashKeySerializer(serializer(getHashKeySerializer(name)));
+
+        RedisSerializer<?> hashKeySerializer = getHashKeySerializer(root);
+        if (hashKeySerializer != null) {
+            template.setHashKeySerializer(hashKeySerializer);
         }
-        if (TempCarefreeAide.isNotBlank(getHashValueSerializer(name))) {
-            template.setHashValueSerializer(serializer(getHashValueSerializer(name)));
+
+        RedisSerializer<?> hashValueSerializer = getHashValueSerializer(root);
+        if (hashValueSerializer != null) {
+            template.setHashValueSerializer(hashValueSerializer);
         }
     }
 
-    private RedisSerializer<?> serializer(String className) {
-        return SERIALIZER_CACHE.computeIfAbsent(className, k -> {
-            try {
-                return (RedisSerializer<?>) Class.forName(className).getConstructor().newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+    private void assertConnectionFactory(LettuceConnectionFactory factory, String root) {
+        if (factory == null) {
+            throw new IllegalArgumentException("[Carefree] no redis connection factory: " + root);
+        }
     }
 }

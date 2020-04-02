@@ -30,7 +30,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 排除 spring boot 原来的 redis 自动配置
+ * <p>
+ *     用于排除 spring boot 原生 redis 自动配置。
+ * </p>
  *
  * @author Kweny
  * @since 0.0.1

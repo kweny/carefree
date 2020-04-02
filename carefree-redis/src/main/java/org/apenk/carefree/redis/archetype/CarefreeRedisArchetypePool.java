@@ -17,7 +17,9 @@
 package org.apenk.carefree.redis.archetype;
 
 /**
- * Redis 连接池配置原型
+ * <p>Redis 连接池描述。</p>
+ *
+ * <p>使用对象池配置 {@link org.apache.commons.pool2.impl.GenericObjectPoolConfig}，包含了其所有配置项。</p>
  *
  * @author Kweny
  * @since 0.0.1

@@ -22,6 +22,8 @@ import org.springframework.data.redis.connection.lettuce.LettuceClientConfigurat
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 /**
+ * 监听器接口 {@link CarefreeRedisConfigureListener} 的事件对象。
+ *
  * @author Kweny
  * @since 0.0.1
  */
