@@ -16,10 +16,14 @@
 
 package org.apenk.carefree.redis;
 
+import org.apenk.carefree.helper.TempCarefreeAide;
 import org.apenk.carefree.redis.archetype.CarefreeRedisArchetype;
 import org.springframework.data.redis.connection.*;
 
-import java.util.Arrays;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * TODO-Kweny CarefreeRedisLatheModeConfiguration
@@ -29,38 +33,93 @@ import java.util.Arrays;
  */
 interface CarefreeRedisLatheModeConfiguration {
 
+    String MODE_Standalone = "Standalone";
+    String MODE_Socket = "Socket";
+    String MODE_Cluster = "Cluster";
+    String MODE_Sentinel = "Sentinel";
+    String MODE_StaticMasterReplica  = "StaticMasterReplica";
+
+    default RedisConfiguration createRedisConfiguration(CarefreeRedisPayload payload) {
+
+    }
+
+    default RedisSentinelConfiguration createSentinelConfiguration(CarefreeRedisArchetype archetype) {
+        RedisSentinelConfiguration sentinel = new RedisSentinelConfiguration(archetype.getMaster(), archetype.getNodes());
+        if (TempCarefreeAide.isNotNull(archetype.getPassword())) {
+            sentinel.setPassword(archetype.getPassword());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getSentinelPassword())) {
+            sentinel.setSentinelPassword(archetype.getSentinelPassword());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getDatabase())) {
+            sentinel.setDatabase(archetype.getDatabase());
+        }
+        return sentinel;
+    }
+
     default RedisClusterConfiguration createClusterConfiguration(CarefreeRedisArchetype archetype) {
-        RedisClusterConfiguration cluster = new RedisClusterConfiguration(Arrays.asList(archetype.getNodes().split(",")));
-        if (archetype.getMaxRedirects() != null) {
+        RedisClusterConfiguration cluster = new RedisClusterConfiguration(archetype.getNodes());
+        if (TempCarefreeAide.isNotNull(archetype.getMaxRedirects())) {
             cluster.setMaxRedirects(archetype.getMaxRedirects());
         }
-        if (archetype.getPassword() != null) {
+        if (TempCarefreeAide.isNotNull(archetype.getPassword())) {
             cluster.setPassword(archetype.getPassword());
         }
         return cluster;
     }
 
-    default RedisStandaloneConfiguration createStandaloneConfiguration(CarefreeRedisArchetype archetype) {
-        RedisStandaloneConfiguration standalone = new RedisStandaloneConfiguration();
-        if (archetype.getHost() != null) {
-            standalone.setHostName(archetype.getHost());
-        }
-        if (archetype.getPort() != null) {
-            standalone.setPort(archetype.getPort());
-        }
-        if (archetype.getPassword() != null) {
-            standalone.setPassword(archetype.getPassword());
-        }
-        if (archetype.getDatabase() != null) {
-            standalone.setDatabase(archetype.getDatabase());
-        }
-        return standalone;
+    default RedisStaticMasterReplicaConfiguration createStaticMasterReplicaConfiguration(CarefreeRedisArchetype archetype) {
+        Set<RedisStandaloneConfiguration> nodes = archetype.getNodes().stream()
+                                                    .map(str -> str.split(":"))
+                                                    .map(arr -> new RedisStandaloneConfiguration(arr[0], Integer.parseInt(arr[1])))
+                                                    .collect(Collectors.toSet());
+        RedisStaticMasterReplicaConfiguration staticMasterReplica = new RedisStaticMasterReplicaConfiguration();
+        // TODO-Kweny RedisStaticMasterReplicaConfiguration
+        return staticMasterReplica;
     }
 
-    default RedisSentinelConfiguration createSentinelConfiguration(CarefreeRedisArchetype archetype) {
-        RedisSentinelConfiguration sentinel = new RedisSentinelConfiguration();
-        // TODO-Kweny RedisSentinelConfiguration
-        return sentinel;
+    default RedisStandaloneConfiguration createStandaloneConfiguration(CarefreeRedisArchetype archetype) {
+        RedisStandaloneConfiguration standalone = new RedisStandaloneConfiguration();
+
+        String hostname;
+        Integer port;
+        String password = null;
+
+        if (TempCarefreeAide.isNotBlank(archetype.getUrl())) {
+            try {
+                URI uri = new URI(archetype.getUrl());
+                if (uri.getUserInfo() != null) {
+                    password = uri.getUserInfo();
+                    int index = password.indexOf(':');
+                    if (index >= 0) {
+                        password = password.substring(index + 1);
+                    }
+                }
+                hostname = uri.getHost();
+                port = uri.getPort();
+            } catch (URISyntaxException e) {
+                throw new IllegalArgumentException("Malformed url '" + archetype.getUrl() + "'", e);
+            }
+        } else {
+            hostname = archetype.getHost();
+            port = archetype.getPort();
+            password = archetype.getPassword();
+        }
+
+        if (TempCarefreeAide.isNotNull(hostname)) {
+            standalone.setHostName(hostname);
+        }
+        if (TempCarefreeAide.isNotNull(port)) {
+            standalone.setPort(port);
+        }
+        if (TempCarefreeAide.isNotNull(password)) {
+            standalone.setPassword(password);
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getDatabase())) {
+            standalone.setDatabase(archetype.getDatabase());
+        }
+
+        return standalone;
     }
 
     default RedisSocketConfiguration createSocketConfiguration(CarefreeRedisArchetype archetype) {
@@ -69,10 +128,6 @@ interface CarefreeRedisLatheModeConfiguration {
         return socket;
     }
 
-    default RedisStaticMasterReplicaConfiguration createStaticMasterReplicaConfiguration(CarefreeRedisArchetype archetype) {
-        RedisStaticMasterReplicaConfiguration staticMasterReplica = new RedisStaticMasterReplicaConfiguration("localhost", 6379);
-        // TODO-Kweny RedisStaticMasterReplicaConfiguration
-        return staticMasterReplica;
-    }
+
 
 }

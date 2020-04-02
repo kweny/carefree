@@ -22,6 +22,12 @@ import org.springframework.data.redis.connection.RedisConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.function.BiConsumer;
+
 /**
  * TODO-Kweny CarefreeRedisPayload
  *
@@ -29,11 +35,11 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
  * @since 0.0.1
  */
 class CarefreeRedisPayload {
-//    private static final Map<String, CarefreeRedisPayload> PAYLOAD_CACHE = Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<String, CarefreeRedisPayload> PAYLOAD_CACHE = Collections.synchronizedMap(new WeakHashMap<>());
 
-//    static void cache(String name, CarefreeRedisPayload payload) {
-//        PAYLOAD_CACHE.put(name, payload);
-//    }
+    static void cache(String name, CarefreeRedisPayload payload) {
+        PAYLOAD_CACHE.put(name, payload);
+    }
 
 //    static CarefreeRedisPayload fetch(String name) {
 //        return PAYLOAD_CACHE.get(name);
@@ -44,19 +50,19 @@ class CarefreeRedisPayload {
 //        return payload != null ? payload.toConfigureEvent() : new CarefreeRedisConfigureEvent();
 //    }
 
-//    static void forEach(BiConsumer<String, CarefreeRedisPayload> action) {
-//        for (Map.Entry<String, CarefreeRedisPayload> entry : PAYLOAD_CACHE.entrySet()) {
-//            String root;
-//            CarefreeRedisPayload payload;
-//            try {
-//                root = entry.getKey();
-//                payload = entry.getValue();
-//            } catch(IllegalStateException ise) {
-//                throw new ConcurrentModificationException(ise);
-//            }
-//            action.accept(root, payload);
-//        }
-//    }
+    static void forEach(BiConsumer<String, CarefreeRedisPayload> action) {
+        for (Map.Entry<String, CarefreeRedisPayload> entry : PAYLOAD_CACHE.entrySet()) {
+            String root;
+            CarefreeRedisPayload payload;
+            try {
+                root = entry.getKey();
+                payload = entry.getValue();
+            } catch(IllegalStateException ise) {
+                throw new ConcurrentModificationException(ise);
+            }
+            action.accept(root, payload);
+        }
+    }
 
     String key;
     String root;

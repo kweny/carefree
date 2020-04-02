@@ -17,8 +17,9 @@
 package org.apenk.carefree.redis.archetype;
 
 import org.apenk.carefree.archetype.CarefreeArchetype;
+import org.apenk.carefree.helper.TempCarefreeAide;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Redis 配置原型
@@ -27,6 +28,33 @@ import java.util.List;
  * @since 0.0.1
  */
 public class CarefreeRedisArchetype extends CarefreeArchetype {
+
+    private static final String MODE_Standalone = "Standalone";
+    private static final String MODE_Socket = "Socket";
+    private static final String MODE_Cluster = "Cluster";
+    private static final String MODE_Sentinel = "Sentinel";
+    private static final String MODE_StaticMasterReplica  = "StaticMasterReplica";
+
+    public boolean isStandaloneMode() {
+        return TempCarefreeAide.equalsIgnoreCase(mode, MODE_Standalone)
+                || TempCarefreeAide.isBlank(mode);
+    }
+
+    public boolean isSocketMode() {
+        return TempCarefreeAide.equalsIgnoreCase(mode, MODE_Socket);
+    }
+
+    public boolean isSentinelMode() {
+        return TempCarefreeAide.equalsIgnoreCase(mode, MODE_Sentinel);
+    }
+
+    public boolean isClusterMode() {
+        return TempCarefreeAide.equalsIgnoreCase(mode, MODE_Cluster);
+    }
+
+    public boolean isStaticMasterReplica() {
+        return TempCarefreeAide.equalsIgnoreCase(mode, MODE_StaticMasterReplica);
+    }
 
     /**
      * Redis 服务高可用及连接方式
@@ -64,6 +92,7 @@ public class CarefreeRedisArchetype extends CarefreeArchetype {
     private Integer database;
     /**
      * 连接 URL，将覆盖 host、port、password，如：redis://user:password@example.com:6379，忽略其中的 user 部分。
+     * 不支持以 rediss:// 协议头开启 ssl，如果需要请直接使用 {@link #useSsl} 选项。
      */
     private String url;
     /**
@@ -91,7 +120,7 @@ public class CarefreeRedisArchetype extends CarefreeArchetype {
      * Redis 服务节点列表，每个节点为 “host[:port]” 格式，其中 port 缺省为 6379，
      * 当 {@link #mode} 取值 Sentinel/Cluster/StaticMasterReplica 时有效。
      */
-    private List<String> nodes;
+    private Set<String> nodes;
     /**
      * 一条 Redis 命令在整个集群中的最大重定向次数，
      * 当 {@link #mode} 取值 Cluster 时有效。
@@ -103,9 +132,13 @@ public class CarefreeRedisArchetype extends CarefreeArchetype {
      */
     private String sentinelPassword;
     /**
+     * 是否使用连接池，默认 true
+     */
+    private Boolean usePooling = true;
+    /**
      * 是否启用 SSL
      */
-    private Boolean ssl;
+    private Boolean useSsl;
     /**
      * 是否启用对等验证
      */
@@ -207,11 +240,11 @@ public class CarefreeRedisArchetype extends CarefreeArchetype {
         this.master = master;
     }
 
-    public List<String> getNodes() {
+    public Set<String> getNodes() {
         return nodes;
     }
 
-    public void setNodes(List<String> nodes) {
+    public void setNodes(Set<String> nodes) {
         this.nodes = nodes;
     }
 
@@ -231,12 +264,20 @@ public class CarefreeRedisArchetype extends CarefreeArchetype {
         this.sentinelPassword = sentinelPassword;
     }
 
-    public Boolean getSsl() {
-        return ssl;
+    public Boolean getUsePooling() {
+        return usePooling;
     }
 
-    public void setSsl(Boolean ssl) {
-        this.ssl = ssl;
+    public void setUsePooling(Boolean usePooling) {
+        this.usePooling = usePooling;
+    }
+
+    public Boolean getUseSsl() {
+        return useSsl;
+    }
+
+    public void setUseSsl(Boolean useSsl) {
+        this.useSsl = useSsl;
     }
 
     public Boolean getVerifyPeer() {

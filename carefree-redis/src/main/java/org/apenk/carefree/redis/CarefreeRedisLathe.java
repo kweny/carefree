@@ -89,26 +89,14 @@ class CarefreeRedisLathe implements CarefreeRedisLatheClientConfiguration, Caref
                     return; // means continue
                 }
 
-                if (TempCarefreeAide.isNotBlank(payload.redisArchetype.getReference())) {
-                    CarefreeRedisPayload refPayload = CarefreeRedisPayload.fetch(payload.redisArchetype.getReference());
-                    if (refPayload == null) {
-                        CarefreeRedisAutoConfiguration.logger.warn("no reference: {} for redis config root: {}", payload.redisArchetype.getReference(), root);
-                        return; // means continue
-                    }
-
-
-                }
+                payload.clientConfiguration = createClientConfiguration(payload);
             } catch (Exception e) {
                 throw new RuntimeException("[Carefree] error to create redis factory for redis config root: " + root, e);
             }
         });
     }
 
-    private static final String CONNECT_MODE_Standalone = "Standalone";
-    private static final String CONNECT_MODE_Cluster = "Cluster";
-    private static final String CONNECT_MODE_Sentinel = "Sentinel";
-    private static final String CONNECT_MODE_Socket = "Socket";
-    private static final String CONNECT_MODE_StaticMasterReplica  = "StaticMasterReplica";
+
 
     private LettuceConnectionFactory createConnectionFactory(CarefreeRedisArchetype archetype, CarefreeRedisArchetypePool poolArchetype) {
         LettuceClientConfiguration clientConfiguration = createClientConfiguration(archetype, poolArchetype);
