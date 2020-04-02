@@ -32,6 +32,7 @@ public class CarefreeCloudProperties {
 
     private String serviceType;
     private Nacos nacos;
+    private Custom custom;
 
     public String getServiceType() {
         return serviceType;
@@ -49,7 +50,16 @@ public class CarefreeCloudProperties {
         this.nacos = nacos;
     }
 
+    public Custom getCustom() {
+        return custom;
+    }
+
+    public void setCustom(Custom custom) {
+        this.custom = custom;
+    }
+
     public static class Nacos {
+        // TODO-Kweny 除了 custom、http、git 等通用方式，将 nacos、spring config 等需要依赖第三方配置中心的种类独立出去
         public static final String DEFAULT_GROUP = "DEFAULT_GROUP";
 
         private String position;
@@ -103,4 +113,7 @@ public class CarefreeCloudProperties {
         }
     }
 
+    public static class Custom {
+        // TODO-Kweny CarefreeCloudProperties.Custom
+    }
 }
