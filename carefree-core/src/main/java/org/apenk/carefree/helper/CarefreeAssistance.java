@@ -125,8 +125,8 @@ public class CarefreeAssistance {
             String newPrefix = TempCarefreeAide.isNotBlank(prefix) ? prefix + "." : "";
             String newDefaultPrefix = TempCarefreeAide.isNotBlank(defaultPrefix) ? defaultPrefix + "." : "";
 
-            String kebabName = NamingConverter.camel2spinal(name);
-            String snakeName = NamingConverter.camel2Snake(name);
+            String kebabName = NamingConvention.KEBAB.fromCamel(name);
+            String snakeName = NamingConvention.SNAKE.fromCamel(name);
 
             String specifiedPropertyPath = newPrefix + name;
             String specifiedPropertyPathKebab = newPrefix + kebabName;
@@ -221,4 +221,5 @@ public class CarefreeAssistance {
             }
         }
     }
+
 }

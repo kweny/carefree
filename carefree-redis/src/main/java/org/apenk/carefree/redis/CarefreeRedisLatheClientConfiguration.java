@@ -16,15 +16,19 @@
 
 package org.apenk.carefree.redis;
 
-import io.lettuce.core.ReadFrom;
+import io.lettuce.core.*;
 import io.lettuce.core.resource.ClientResources;
+import io.netty.handler.ssl.SslProvider;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apenk.carefree.helper.TempCarefreeAide;
+import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypeOptions;
 import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypePool;
 import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypeResources;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
 
 /**
@@ -67,6 +71,7 @@ interface CarefreeRedisLatheClientConfiguration {
         }
 
         // TODO-Kweny clientOptions
+
 
         if (TempCarefreeAide.isTrue(payload.redisArchetype.getUseSsl())) {
             LettuceClientConfiguration.LettuceSslClientConfigurationBuilder sslBuilder = builder.useSsl();
@@ -150,62 +155,189 @@ interface CarefreeRedisLatheClientConfiguration {
     }
 
     default ClientResources createClientResources(CarefreeRedisArchetypeResources resourcesArchetype) {
-        boolean nonResources = true;
+        boolean configured = false;
         ClientResources.Builder builder = ClientResources.builder();
 
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getIoThreadPoolSize())) {
-            nonResources = false;
+            configured = true;
             builder.ioThreadPoolSize(resourcesArchetype.getIoThreadPoolSize());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getComputationThreadPoolSize())) {
-            nonResources = false;
+            configured = true;
             builder.computationThreadPoolSize(resourcesArchetype.getComputationThreadPoolSize());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getEventLoopGroupProvider())) {
-            nonResources = false;
+            configured = true;
             builder.eventLoopGroupProvider(resourcesArchetype.getEventLoopGroupProvider().instance());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getEventExecutorGroup())) {
-            nonResources = false;
+            configured = true;
             builder.eventExecutorGroup(resourcesArchetype.getEventExecutorGroup().instance());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getTimer())) {
-            nonResources = false;
+            configured = true;
             builder.timer(resourcesArchetype.getTimer().instance());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getEventBus())) {
-            nonResources = false;
+            configured = true;
             builder.eventBus(resourcesArchetype.getEventBus().instance());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getCommandLatencyPublisherOptions())) {
-            nonResources = false;
+            configured = true;
             builder.commandLatencyPublisherOptions(resourcesArchetype.getCommandLatencyPublisherOptions().instance());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getCommandLatencyCollectorOptions())) {
-            nonResources = false;
+            configured = true;
             builder.commandLatencyCollectorOptions(resourcesArchetype.getCommandLatencyCollectorOptions().instance());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getCommandLatencyCollector())) {
-            nonResources = false;
+            configured = true;
             builder.commandLatencyCollector(resourcesArchetype.getCommandLatencyCollector().instance());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getDnsResolver())) {
-            nonResources = false;
+            configured = true;
             builder.dnsResolver(resourcesArchetype.getDnsResolver().instance());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getReconnectDelay())) {
-            nonResources = false;
+            configured = true;
             builder.reconnectDelay(() -> resourcesArchetype.getReconnectDelay().instance());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getNettyCustomizer())) {
-            nonResources = false;
+            configured = true;
             builder.nettyCustomizer(resourcesArchetype.getNettyCustomizer().instance());
         }
         if (TempCarefreeAide.isNotNull(resourcesArchetype.getTracing())) {
-            nonResources = false;
+            configured = true;
             builder.tracing(resourcesArchetype.getTracing().instance());
         }
 
-        return nonResources ? null : builder.build();
+        return configured ? builder.build() : null;
+    }
+
+    default ClientOptions createClientOptions(CarefreeRedisArchetypeOptions optionsArchetype) {
+        // ClientOptions
+        boolean configured = false;
+        ClientOptions.Builder builder = ClientOptions.builder();
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getPingBeforeActivateConnection())) {
+            configured = true;
+            builder.pingBeforeActivateConnection(optionsArchetype.getPingBeforeActivateConnection());
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getAutoReconnect())) {
+            configured = true;
+            builder.autoReconnect(optionsArchetype.getAutoReconnect());
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getCancelCommandsOnReconnectFailure())) {
+            configured = true;
+            builder.cancelCommandsOnReconnectFailure(optionsArchetype.getCancelCommandsOnReconnectFailure());
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getPublishOnScheduler())) {
+            configured = true;
+            builder.publishOnScheduler(optionsArchetype.getPublishOnScheduler());
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getSuspendReconnectOnProtocolFailure())) {
+            configured = true;
+            builder.suspendReconnectOnProtocolFailure(optionsArchetype.getSuspendReconnectOnProtocolFailure());
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getRequestQueueSize())) {
+            configured = true;
+            builder.requestQueueSize(optionsArchetype.getRequestQueueSize());
+        }
+        if (TempCarefreeAide.isNotBlank(optionsArchetype.getDisconnectedBehavior())) {
+            ClientOptions.DisconnectedBehavior behavior = resolveEnumItem(ClientOptions.DisconnectedBehavior.class, optionsArchetype.getDisconnectedBehavior());
+            if (behavior != null) {
+                configured = true;
+                builder.disconnectedBehavior(behavior);
+            }
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getBufferUsageRatio())) {
+            configured = true;
+            builder.bufferUsageRatio(optionsArchetype.getBufferUsageRatio());
+        }
+
+        // ClientOptions.SocketOptions
+        boolean socketConfigured = false;
+        SocketOptions.Builder socketBuilder = SocketOptions.builder();
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getConnectTimeout())) {
+            socketConfigured = true;
+            socketBuilder.connectTimeout(Duration.ofMillis(optionsArchetype.getConnectTimeout()));
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getKeepAlive())) {
+            socketConfigured = true;
+            socketBuilder.keepAlive(optionsArchetype.getKeepAlive());
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getTcpNoDelay())) {
+            socketConfigured = true;
+            socketBuilder.tcpNoDelay(optionsArchetype.getTcpNoDelay());
+        }
+        if (socketConfigured) {
+            configured = true;
+            builder.socketOptions(socketBuilder.build());
+        }
+
+        // ClientOptions.SslOptions
+        boolean sslConfigured = false;
+        SslOptions.Builder sslBuilder = SslOptions.builder();
+        if (TempCarefreeAide.isNotBlank(optionsArchetype.getSslProvider())) {
+            SslProvider provider = resolveEnumItem(SslProvider.class, optionsArchetype.getSslProvider());
+            if (provider == SslProvider.JDK) {
+                sslConfigured = true;
+                sslBuilder.jdkSslProvider();
+            }
+            if (provider == SslProvider.OPENSSL) {
+                sslConfigured = true;
+                sslBuilder.openSslProvider();
+            }
+        }
+        if (TempCarefreeAide.isNotBlank(optionsArchetype.getKeystore())) {
+            sslConfigured = true;
+            try {
+                char[] password = TempCarefreeAide.isEmpty(optionsArchetype.getKeystorePassword()) ? new char[0] : optionsArchetype.getKeystorePassword().toCharArray();
+                sslBuilder.keystore(new URL(optionsArchetype.getKeystore()), password);
+            } catch (MalformedURLException e) {
+                throw new IllegalArgumentException("[Carefree] Malformed url '" + optionsArchetype.getKeystore() + "'", e);
+            }
+        }
+        if (TempCarefreeAide.isNotBlank(optionsArchetype.getTruststore())) {
+            sslConfigured = true;
+            try {
+                sslBuilder.truststore(new URL(optionsArchetype.getTruststore()), optionsArchetype.getTruststorePassword());
+            } catch (MalformedURLException e) {
+                throw new IllegalArgumentException("[Carefree] Malformed url '" + optionsArchetype.getKeystore() + "'", e);
+            }
+        }
+        if (sslConfigured) {
+            configured = true;
+            builder.sslOptions(sslBuilder.build());
+        }
+
+        // ClientOptions.TimeoutOptions
+        boolean timeoutConfigured = false;
+        TimeoutOptions.Builder timeoutBuilder = TimeoutOptions.builder();
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getTimeoutCommands())) {
+            timeoutConfigured = true;
+            timeoutBuilder.timeoutCommands(optionsArchetype.getTimeoutCommands());
+        }
+
+        return configured ? builder.build() : null;
+    }
+
+
+
+    default <T extends Enum<T>> T resolveEnumItem(Class<T> enumClazz, String name) {
+        T[] items = enumClazz.getEnumConstants();
+        for (T item : items) {
+            if (TempCarefreeAide.equalsIgnoreCase(name, item.name())) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Test().resolveEnumItem(ClientOptions.DisconnectedBehavior.class, "default"));
+    }
+
+    public static class Test implements CarefreeRedisLatheClientConfiguration {
+
     }
 }

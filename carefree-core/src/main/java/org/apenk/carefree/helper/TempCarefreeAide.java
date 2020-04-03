@@ -40,6 +40,14 @@ public class TempCarefreeAide {
 
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
+    public static boolean isEmpty(final CharSequence cs) {
+        return cs == null || cs.length() == 0;
+    }
+
+    public static boolean isNotEmpty(final CharSequence cs) {
+        return !isEmpty(cs);
+    }
+
     public static boolean isBlank(final CharSequence cs) {
         int strLen;
         if (cs == null || (strLen = cs.length()) == 0) {
