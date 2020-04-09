@@ -17,19 +17,27 @@
 package org.apenk.carefree.druid;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import org.apenk.carefree.druid.archetype.CarefreeDruidArchetype;
+import org.apenk.carefree.druid.listener.CarefreeDruidConfigureEvent;
 
 /**
  * @author Kweny
  * @since 0.0.1
  */
-class CarefreeDruidWrapper {
-    private DruidDataSource dataSource;
+class CarefreeDruidPayload {
+    String key;
+    String root;
 
-    DruidDataSource getDataSource() {
-        return dataSource;
-    }
+    CarefreeDruidArchetype druidArchetype;
 
-    void setDataSource(DruidDataSource dataSource) {
-        this.dataSource = dataSource;
+    DruidDataSource dataSource;
+
+    CarefreeDruidConfigureEvent toConfigureEvent() {
+        CarefreeDruidConfigureEvent event = new CarefreeDruidConfigureEvent();
+        event.setKey(this.key);
+        event.setRoot(this.root);
+        event.setDruidArchetype(this.druidArchetype);
+        event.setDataSource(this.dataSource);
+        return event;
     }
 }

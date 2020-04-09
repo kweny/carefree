@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package org.apenk.carefree.druid;
+package org.apenk.carefree.druid.archetype;
+
+import org.apenk.carefree.archetype.CarefreeArchetype;
 
 import java.util.List;
 
 /**
- * Druid 配置载体
+ * <p>Druid 数据源配置描述。</p>
  *
  * @author Kweny
  * @since 0.0.1
  */
-public class CarefreeDruidArchetype {
-    /**
-     * 是否启用本配置，若 false 则不会创建对应的 DataSource 对象，但仍然可以被其它配置引用，默认为 true
-     */
-    private Boolean enabled = true;
-    /**
-     * 引用的另一个配置的 key，若本实例的某个属性未配置，则使用所引用配置的相应属性作为默认值
-     */
-    private String reference;
+public class CarefreeDruidArchetype extends CarefreeArchetype {
     /**
      * 配置这个属性的意义在于，
      * 如果存在多个数据源，监控的时候可以通过名字来区分开来。
@@ -156,22 +150,6 @@ public class CarefreeDruidArchetype {
      * com.alibaba.druid.filter.Filter 实现类名集合，如果同时配置了filters和proxyFilters，是组合关系，并非替换关系
      */
     private List<String> proxyFilters;
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
 
     public String getName() {
         return name;

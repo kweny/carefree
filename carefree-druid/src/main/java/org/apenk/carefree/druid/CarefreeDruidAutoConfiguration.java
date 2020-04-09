@@ -38,7 +38,9 @@ import org.springframework.core.env.Environment;
 import java.util.Arrays;
 
 /**
- * druid 自动配置
+ * <p>
+ *     Carefree Druid 自动配置。
+ * </p>
  *
  * @author Kweny
  * @since 0.0.1
@@ -91,7 +93,7 @@ public class CarefreeDruidAutoConfiguration implements ApplicationContextAware, 
                 return; // means continue
             }
             try {
-                CarefreeDruidBuilder.getInstance().loadConfig(config);
+                CarefreeDruidLathe.getInstance().load(key, config);
             } catch (Exception e) {
                 throw new RuntimeException("[Carefree] error to load the druid config for key: " + key, e);
             }
@@ -99,7 +101,11 @@ public class CarefreeDruidAutoConfiguration implements ApplicationContextAware, 
 
         CarefreeDruidRegistry carefreeDruidRegistry = applicationContext.getBean(CarefreeDruidRegistry.BEAN_NAME, CarefreeDruidRegistry.class);
 
-        CarefreeDruidBuilder.getInstance().build().forEach(carefreeDruidRegistry::register);
+        // 注册 DataSource 等资源
+        CarefreeDruidLathe.getInstance().payloads().forEach(carefreeDruidRegistry::register);
+
+        // 释放中间数据
+        CarefreeDruidLathe.getInstance().payloads().clear();
     }
 
     public boolean isDruidEnabled() {

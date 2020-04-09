@@ -18,14 +18,16 @@ package org.apenk.carefree.druid;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 持有 carefree druid 配置及 {@link DruidDataSource} 对象，
- * 以 carefreeDruidRegistry 为 bean name 存在于容器，
- * 可注入到应用程序中，使用 {@link #get(String)} 方法获取指定 {@link DruidDataSource} 对象，
- * 或使用 {@link #getAll()} 方法获取所有 {@link DruidDataSource} 对象。
+ * <p>
+ *     持有 DruidDataSource 对象，
+ *     以 carefreeDruidRegistry 为 bean name 存在 Spring 于容器，
+ *     可注入到应用程序中，用于数据库相关操作。
+ * </p>
  *
  * @author Kweny
  * @since 0.0.1
@@ -33,24 +35,21 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CarefreeDruidRegistry {
     public static final String BEAN_NAME = "carefreeDruidRegistry";
 
-    public Map<String, CarefreeDruidWrapper> holder;
+    public Map<String, DruidDataSource> holder;
 
     public CarefreeDruidRegistry() {
         this.holder = new ConcurrentHashMap<>();
     }
 
-    public void register(String name, CarefreeDruidWrapper wrapper) {
-        this.holder.put(name, wrapper);
+    public void register(String root, CarefreeDruidPayload payload) {
+        this.holder.put(root, payload.dataSource);
     }
 
-    public DruidDataSource get(String name) {
-        CarefreeDruidWrapper wrapper = holder.get(name);
-        return wrapper != null ? wrapper.getDataSource() : null;
+    public DruidDataSource getDataSource(String root) {
+        return this.holder.get(root);
     }
 
-    public Map<String, DruidDataSource> getAll() {
-        Map<String, DruidDataSource> map = new ConcurrentHashMap<>(this.holder.size());
-        this.holder.forEach((key, value) -> map.put(key, value.getDataSource()));
-        return map;
+    public Map<String, DruidDataSource> getAllDataSources() {
+        return Collections.unmodifiableMap(this.holder);
     }
 }

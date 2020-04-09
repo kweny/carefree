@@ -91,28 +91,26 @@ class CarefreeRedisLathe implements CarefreeRedisLatheClientConfiguration, Caref
                 listener.archetype(payload.toConfigureEvent());
             }
 
-            if (TempCarefreeAide.isFalse(payload.redisArchetype.getEnabled())) {
-                continue;
-            }
+            if (TempCarefreeAide.isNotFalse(payload.redisArchetype.getEnabled())) {
+                // 如果该配置启用
+                // 创建 ClientConfiguration 和 RedisConfiguration 对象
+                payload.clientConfiguration = createClientConfiguration(payload);
+                payload.redisConfiguration = createRedisConfiguration(payload);
 
-            // 创建 ClientConfiguration 和 RedisConfiguration 对象
-            payload.clientConfiguration = createClientConfiguration(payload);
-            payload.redisConfiguration = createRedisConfiguration(payload);
+                if (listener != null) {
+                    listener.configuration(payload.toConfigureEvent());
+                }
 
-            if (listener != null) {
-                listener.configuration(payload.toConfigureEvent());
-            }
+                // 创建 ConnectionFactory 对象
+                payload.connectionFactory = new LettuceConnectionFactory(payload.redisConfiguration, payload.clientConfiguration);
+                payload.connectionFactory.afterPropertiesSet();
 
-            // 创建 ConnectionFactory 对象
-            payload.connectionFactory = new LettuceConnectionFactory(payload.redisConfiguration, payload.clientConfiguration);
-            payload.connectionFactory.afterPropertiesSet();
-
-            if (listener != null) {
-                listener.factory(payload.toConfigureEvent());
+                if (listener != null) {
+                    listener.factory(payload.toConfigureEvent());
+                }
             }
 
             // 缓存 payload
-//            CarefreeRedisPayload.cache(payload);
             this.payloads.put(payload.root, payload);
         }
     }

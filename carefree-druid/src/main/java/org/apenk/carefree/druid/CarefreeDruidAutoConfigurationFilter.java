@@ -29,7 +29,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 排除 spring boot 原来的数据源自动配置
+ * <p>
+ *     用于排除 spring boot 原生数据源自动配置。
+ * </p>
  *
  * @author Kweny
  * @since 0.0.1

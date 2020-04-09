@@ -19,65 +19,78 @@ package org.apenk.carefree.druid;
 import com.alibaba.druid.filter.Filter;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.typesafe.config.Config;
+import org.apenk.carefree.druid.archetype.CarefreeDruidArchetype;
+import org.apenk.carefree.druid.listener.CarefreeDruidConfigureListener;
 import org.apenk.carefree.helper.CarefreeAssistance;
+import org.apenk.carefree.helper.CarefreeClassDeclaration;
 import org.apenk.carefree.helper.TempCarefreeAide;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Kweny
  * @since 0.0.1
  */
-class CarefreeDruidBuilder {
+public class CarefreeDruidLathe {
 
-    private static final CarefreeDruidBuilder INSTANCE = new CarefreeDruidBuilder();
+    static final CarefreeDruidLathe INSTANCE = new CarefreeDruidLathe();
 
-    public static CarefreeDruidBuilder getInstance() {
+    static CarefreeDruidLathe getInstance() {
         return INSTANCE;
     }
 
-    private final Map<String, CarefreeDruidArchetype> archetypeCache;
+    private final Map<String, CarefreeDruidPayload> payloads;
 
-    private CarefreeDruidBuilder() {
-        this.archetypeCache = new ConcurrentHashMap<>();
+    private CarefreeDruidLathe() {
+        this.payloads = new ConcurrentHashMap<>();
     }
 
-    void loadConfig(Config config) throws Exception {
+    void load(String key, Config config) throws Exception {
         Set<String> roots = CarefreeAssistance.getConfigRoots(config);
 
         for (String root : roots) {
-            Config oneConfig = config.getConfig(root);
-            CarefreeDruidArchetype archetype = CarefreeAssistance.fromConfig(CarefreeDruidArchetype.class, oneConfig);
-            this.archetypeCache.put(root, archetype);
+            CarefreeDruidPayload payload = new CarefreeDruidPayload();
+            payload.key = key;
+            payload.root = root;
+
+            String referenceRoot = null;
+            String referencePath;
+            if (config.hasPath(referencePath = root.concat(".reference"))) {
+                referenceRoot = config.getString(referencePath);
+            }
+
+            // 解析加载配置数据
+            payload.druidArchetype = CarefreeAssistance.fromConfig(CarefreeDruidArchetype.class, config, root, referenceRoot);
+
+            // 创建配置数据中指定的监听器
+            CarefreeClassDeclaration declaration = payload.druidArchetype.getConfigureListener();
+            CarefreeDruidConfigureListener listener = declaration == null ? null : declaration.instance();
+
+            if (listener != null) {
+                listener.archetype(payload.toConfigureEvent());
+            }
+
+            if (TempCarefreeAide.isNotFalse(payload.druidArchetype.getEnabled())) {
+                // 如果该配置启用
+                // 创建 DataSource 对象
+                payload.dataSource = createDataSource(payload.druidArchetype);
+
+                if (listener != null) {
+                    listener.dataSource(payload.toConfigureEvent());
+                }
+            }
+
+            // 缓存 payload
+            this.payloads.put(payload.root, payload);
         }
     }
 
-    Map<String, CarefreeDruidWrapper> build() {
-        Map<String, CarefreeDruidWrapper> map = new HashMap<>();
-        archetypeCache.forEach((key, archetype) -> {
-            try {
-                if (TempCarefreeAide.isFalse(archetype.getEnabled())) {
-                    return; // means continue
-                }
-                if (TempCarefreeAide.isNotBlank(archetype.getReference())) {
-                    CarefreeDruidArchetype refArchetype = archetypeCache.get(archetype.getReference());
-                    if (refArchetype == null) {
-                        CarefreeDruidAutoConfiguration.logger.warn("no reference: {} for druid config: {}", archetype.getReference(), key);
-                        return; // means continue
-                    }
-
-                    CarefreeAssistance.loadReference(CarefreeDruidArchetype.class, archetype, refArchetype);
-                }
-                CarefreeDruidWrapper wrapper = new CarefreeDruidWrapper();
-                wrapper.setDataSource(createDataSource(archetype));
-                map.put(key, wrapper);
-            } catch (Exception e) {
-                throw new RuntimeException("[Carefree] error to create druid instance for config name: " + key, e);
-            }
-        });
-        TempCarefreeAide.clear(archetypeCache);
-        return map;
+    Map<String, CarefreeDruidPayload> payloads() {
+        return this.payloads;
     }
 
     private DruidDataSource createDataSource(CarefreeDruidArchetype archetype) throws Exception {
