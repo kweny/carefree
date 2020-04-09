@@ -17,10 +17,13 @@
 package org.apenk.carefree.redis;
 
 import io.lettuce.core.*;
+import io.lettuce.core.cluster.ClusterClientOptions;
+import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.resource.ClientResources;
 import io.netty.handler.ssl.SslProvider;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apenk.carefree.helper.TempCarefreeAide;
+import org.apenk.carefree.redis.archetype.CarefreeRedisArchetype;
 import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypeOptions;
 import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypePool;
 import org.apenk.carefree.redis.archetype.CarefreeRedisArchetypeResources;
@@ -30,6 +33,9 @@ import org.springframework.data.redis.connection.lettuce.LettucePoolingClientCon
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Kweny
@@ -70,8 +76,13 @@ interface CarefreeRedisLatheClientConfiguration {
             builder.clientResources(clientResources);
         }
 
-        // TODO-Kweny clientOptions
-
+        ClientOptions clientOptions = createClientOptions(payload.redisArchetype, payload.optionsArchetype);
+        ClusterClientOptions clusterClientOptions = createClusterClientOptions(clientOptions, payload.optionsArchetype);
+        if (clusterClientOptions != null) {
+            builder.clientOptions(clusterClientOptions);
+        } else if (clientOptions != null) {
+            builder.clientOptions(clientOptions);
+        }
 
         if (TempCarefreeAide.isTrue(payload.redisArchetype.getUseSsl())) {
             LettuceClientConfiguration.LettuceSslClientConfigurationBuilder sslBuilder = builder.useSsl();
@@ -214,7 +225,7 @@ interface CarefreeRedisLatheClientConfiguration {
         return configured ? builder.build() : null;
     }
 
-    default ClientOptions createClientOptions(CarefreeRedisArchetypeOptions optionsArchetype) {
+    default ClientOptions createClientOptions(CarefreeRedisArchetype archetype, CarefreeRedisArchetypeOptions optionsArchetype) {
         // ClientOptions
         boolean configured = false;
         ClientOptions.Builder builder = ClientOptions.builder();
@@ -316,12 +327,94 @@ interface CarefreeRedisLatheClientConfiguration {
         if (TempCarefreeAide.isNotNull(optionsArchetype.getTimeoutCommands())) {
             timeoutConfigured = true;
             timeoutBuilder.timeoutCommands(optionsArchetype.getTimeoutCommands());
+
+            if (TempCarefreeAide.isTrue(optionsArchetype.getTimeoutCommands())) {
+                // 如果开启了命令超时，则按照配置构建 TimeoutSource
+                // 若未配置 TimeoutSource，则根据基础配置中的 commandTimeout 构建 FixedTimeoutSource
+                // 若基础配置中未设置 commandTimeout，则使用默认的 DefaultTimeoutSource
+                if (TempCarefreeAide.isNotNull(optionsArchetype.getTimeoutSource())) {
+                    timeoutBuilder.timeoutSource(optionsArchetype.getTimeoutSource().instance());
+                } else {
+                    if (TempCarefreeAide.isNotNull(archetype.getCommandTimeout()) && archetype.getCommandTimeout() > 0) {
+                        timeoutBuilder.fixedTimeout(Duration.ofMillis(archetype.getCommandTimeout()));
+                    } else {
+                        timeoutBuilder.connectionTimeout();
+                    }
+                }
+            }
+        }
+        if (timeoutConfigured) {
+            configured = true;
+            builder.timeoutOptions(timeoutBuilder.build());
         }
 
         return configured ? builder.build() : null;
     }
 
+    default ClusterClientOptions createClusterClientOptions(ClientOptions options, CarefreeRedisArchetypeOptions optionsArchetype) {
+        boolean configured = false;
+        ClusterClientOptions.Builder builder = options != null ? ClusterClientOptions.builder(options) : ClusterClientOptions.builder();
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getValidateClusterNodeMembership())) {
+            configured = true;
+            builder.validateClusterNodeMembership(optionsArchetype.getValidateClusterNodeMembership());
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getMaxRedirects())) {
+            configured = true;
+            builder.maxRedirects(optionsArchetype.getMaxRedirects());
+        }
 
+        boolean refreshConfigured = false;
+        ClusterTopologyRefreshOptions.Builder refreshBuilder = ClusterTopologyRefreshOptions.builder();
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getPeriodicRefreshEnabled())) {
+            refreshConfigured = true;
+            refreshBuilder.enablePeriodicRefresh(optionsArchetype.getPeriodicRefreshEnabled());
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getRefreshPeriod())) {
+            refreshConfigured = true;
+            refreshBuilder.refreshPeriod(Duration.ofMillis(optionsArchetype.getRefreshPeriod()));
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getCloseStaleConnections())) {
+            refreshConfigured = true;
+            refreshBuilder.closeStaleConnections(optionsArchetype.getCloseStaleConnections());
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getDynamicRefreshSources())) {
+            refreshConfigured = true;
+            refreshBuilder.dynamicRefreshSources(optionsArchetype.getDynamicRefreshSources());
+        }
+        if (TempCarefreeAide.isNotEmpty(optionsArchetype.getAdaptiveRefreshTriggers())) {
+            if (containsIgnoreCase(optionsArchetype.getAdaptiveRefreshTriggers(), "all")) {
+                refreshConfigured = true;
+                refreshBuilder.enableAllAdaptiveRefreshTriggers();
+            } else {
+                Set<ClusterTopologyRefreshOptions.RefreshTrigger> triggers = new HashSet<>();
+                for (String triggerString : optionsArchetype.getAdaptiveRefreshTriggers()) {
+                    ClusterTopologyRefreshOptions.RefreshTrigger trigger = resolveEnumItem(ClusterTopologyRefreshOptions.RefreshTrigger.class, triggerString);
+                    if (trigger == null) {
+                        continue;
+                    }
+                    triggers.add(trigger);
+                }
+                if (TempCarefreeAide.isNotEmpty(triggers)) {
+                    refreshConfigured = true;
+                    refreshBuilder.enableAdaptiveRefreshTrigger(triggers.toArray(new ClusterTopologyRefreshOptions.RefreshTrigger[0]));
+                }
+            }
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getAdaptiveRefreshTimeout())) {
+            refreshConfigured = true;
+            refreshBuilder.adaptiveRefreshTriggersTimeout(Duration.ofMillis(optionsArchetype.getAdaptiveRefreshTimeout()));
+        }
+        if (TempCarefreeAide.isNotNull(optionsArchetype.getRefreshTriggersReconnectAttempts())) {
+            refreshConfigured = true;
+            refreshBuilder.refreshTriggersReconnectAttempts(optionsArchetype.getRefreshTriggersReconnectAttempts());
+        }
+        if (refreshConfigured) {
+            configured = true;
+            builder.topologyRefreshOptions(refreshBuilder.build());
+        }
+
+        return configured ? builder.build() : null;
+    }
 
     default <T extends Enum<T>> T resolveEnumItem(Class<T> enumClazz, String name) {
         T[] items = enumClazz.getEnumConstants();
@@ -333,11 +426,12 @@ interface CarefreeRedisLatheClientConfiguration {
         return null;
     }
 
-    public static void main(String[] args) {
-        System.out.println(new Test().resolveEnumItem(ClientOptions.DisconnectedBehavior.class, "default"));
-    }
-
-    public static class Test implements CarefreeRedisLatheClientConfiguration {
-
+    default boolean containsIgnoreCase(Collection<String> coll, String value) {
+        for (String s : coll) {
+            if (TempCarefreeAide.equalsIgnoreCase(s, value)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

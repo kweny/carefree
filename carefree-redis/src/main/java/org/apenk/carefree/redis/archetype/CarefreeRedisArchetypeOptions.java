@@ -86,33 +86,108 @@ public class CarefreeRedisArchetypeOptions {
     private Integer bufferUsageRatio;
 
     // ----- ClientOptions.SocketOptions
+    /**
+     * 连接超时时间，单位毫秒，
+     * 默认 10000（10 秒）
+     */
     private Long connectTimeout;
+    /**
+     * 是否启用 TCP keep-alive，
+     * 默认 false
+     */
     private Boolean keepAlive;
+    /**
+     * 是否禁用 Nagle 算法，
+     * 默认 false，即启用 Nagle 算法
+     */
     private Boolean tcpNoDelay;
 
     // ----- ClientOptions.SslOptions
+    /**
+     * SSL 提供程序，可选值为 JDK、OPENSSL，
+     * 默认 JDK
+     */
     private String sslProvider;
+    /**
+     * 用以加载客户端证书的密钥库文件路径，密钥库文件必须由 {@link java.security.KeyStore} 支持，默认情况下为 jks。
+     */
     private String keystore;
+    /**
+     * 密钥库文件的密码。
+     */
     private String keystorePassword;
+    /**
+     * 用以加载受信任证书的信任库文件路径，信任库文件必须由 {@link java.security.KeyStore} 支持，默认情况下为 jks。
+     */
     private String truststore;
+    /**
+     * 信任库文件的密码。
+     */
     private String truststorePassword;
 
     // ----- ClientOptions.TimeoutOptions
+    /**
+     * 是否启用命令超时，
+     * 默认 false
+     */
     private Boolean timeoutCommands;
-    private Boolean applyConnectionTimeout;
+    /**
+     * {@link io.lettuce.core.TimeoutOptions.TimeoutSource} 实现类的构造描述符。
+     * 用于描述命令超时时间
+     */
     private CarefreeClassDeclaration timeoutSource;
 
     // ----- ClusterClientOptions
+    /**
+     * 在连接集群节点之前是否验证集群成员身份，
+     * 默认 true
+     */
     private Boolean validateClusterNodeMembership;
-    private Boolean maxRedirects;
+    /**
+     * 集群最大重定向次数，
+     * 默认 5
+     */
+    private Integer maxRedirects;
 
     // ----- ClusterClientOptions.ClusterTopologyRefreshOptions
+    /**
+     * 是否启用定期集群拓扑更新，
+     * 默认 false
+     */
     private Boolean periodicRefreshEnabled;
+    /**
+     * 集群拓扑更新周期，单位为毫秒，
+     * 默认 60000（60 秒）
+     */
     private Long refreshPeriod;
+    /**
+     * 是否在更新集群拓扑时关闭陈旧的连接，
+     * 默认 true
+     */
     private Boolean closeStaleConnections;
+    /**
+     * 是否从拓扑中发现集群节点并将其作为拓扑发现的源，启用后将查询所有发现的节点已获取集群拓扑，并计算每个节点的客户端数量。
+     * 如果设为 false，则仅将初始种子节点用作拓扑发现的源，并且仅针对初始种子节点获得客户端的数量。
+     * 默认 true
+     */
     private Boolean dynamicRefreshSources;
+    /**
+     * 使用一个或多个触发器启用自适应拓扑更新。
+     * 自适应更新触发器根据 Redis 集群操作期间发生的事件启动拓扑视图更新。
+     * 允许的值包括：MOVED_REDIRECT、ASK_REDIRECT、PERSISTENT_RECONNECTS、UNCOVERED_SLOT、UNKNOWN_NODE，可以指定多个，
+     * 可以设置为 all 来启用所有触发器
+     */
     private Set<String> adaptiveRefreshTriggers;
+    /**
+     * 自适应拓扑更新触发器的超时时间，用于限制由触发器发起的拓扑更新速率，
+     * 单位为毫秒，
+     * 默认 30000（30 秒）
+     */
     private Long adaptiveRefreshTimeout;
+    /**
+     * PERSISTENT_RECONNECTS 更新触发器的触发阈值，若重连尝试次数达到该阈值，则触发 PERSISTENT_RECONNECTS 进行拓扑更新。
+     * 默认 5
+     */
     private Integer refreshTriggersReconnectAttempts;
 
     public Boolean getPingBeforeActivateConnection() {
@@ -251,14 +326,6 @@ public class CarefreeRedisArchetypeOptions {
         this.timeoutCommands = timeoutCommands;
     }
 
-    public Boolean getApplyConnectionTimeout() {
-        return applyConnectionTimeout;
-    }
-
-    public void setApplyConnectionTimeout(Boolean applyConnectionTimeout) {
-        this.applyConnectionTimeout = applyConnectionTimeout;
-    }
-
     public CarefreeClassDeclaration getTimeoutSource() {
         return timeoutSource;
     }
@@ -275,11 +342,11 @@ public class CarefreeRedisArchetypeOptions {
         this.validateClusterNodeMembership = validateClusterNodeMembership;
     }
 
-    public Boolean getMaxRedirects() {
+    public Integer getMaxRedirects() {
         return maxRedirects;
     }
 
-    public void setMaxRedirects(Boolean maxRedirects) {
+    public void setMaxRedirects(Integer maxRedirects) {
         this.maxRedirects = maxRedirects;
     }
 
