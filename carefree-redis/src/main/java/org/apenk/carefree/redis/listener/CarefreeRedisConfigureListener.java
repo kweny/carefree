@@ -23,8 +23,7 @@ import org.apenk.carefree.listener.CarefreeConfigureListener;
  *     若要监听 Carefree Redis 的构建过程，或者对构建过程进行干预，可以实现该接口。
  * </p>
  *
- * <p>
- *      Carefree Redis 的构建过程大体分为三个步骤——
+ * <p>Carefree Redis 的构建过程大体分为三个步骤——</p>
  *      <ul>
  *          <li>
  *              1. 加载配置文件并创建相应的 Java 对象，它们与配置文件中的配置项对应，包括：
@@ -57,7 +56,6 @@ import org.apenk.carefree.listener.CarefreeConfigureListener;
  *              至此构建过程全部完成，可以利用 {@link org.apenk.carefree.redis.CarefreeRedisRegistry} Bean 获取指定的工厂对象、序列化器、以及直接创建 Redis 模板对象。
  *          </li>
  *      </ul>
- * </p>
  *
  * @author Kweny
  * @since 0.0.1

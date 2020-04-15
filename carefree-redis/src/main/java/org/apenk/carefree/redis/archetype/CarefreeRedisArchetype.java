@@ -23,8 +23,7 @@ import java.util.Set;
 /**
  * <p>Redis 客户端连接配置描述。</p>
  *
- * <p>
- *     包含对以下类型连接和客户端配置的描述：
+ * <p>包含对以下类型连接和客户端配置的描述：</p>
  *     <ul>
  *         <li>客户端配置：{@link org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration}</li>
  *         <li>哨兵模式连接配置：{@link org.springframework.data.redis.connection.RedisSentinelConfiguration}</li>
@@ -33,7 +32,6 @@ import java.util.Set;
  *         <li>Socket 模式连接配置：{@link org.springframework.data.redis.connection.RedisSocketConfiguration}</li>
  *         <li>单机模式连接配置：{@link org.springframework.data.redis.connection.RedisStandaloneConfiguration}</li>
  *     </ul>
- * </p>
  *
  * @author Kweny
  * @since 0.0.1

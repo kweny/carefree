@@ -69,7 +69,7 @@ public class TestConfigurer {
     }
 
     private void printCarefreeDruid() {
-        carefreeDruidRegistry.getAll().forEach((key, druid) -> {
+        carefreeDruidRegistry.getAllDataSources().forEach((key, druid) -> {
             System.out.println("===== druid " + key + " =====");
             System.out.println(druid);
             System.out.println("===== druid " + key + " =====\n");
@@ -77,7 +77,7 @@ public class TestConfigurer {
     }
 
     private void printCarefreeRedis() {
-        carefreeRedisRegistry.getAll().forEach((key, factory) -> {
+        carefreeRedisRegistry.getAllConnectionFactories().forEach((key, factory) -> {
             System.out.println("===== redis " + key + " =====");
             System.out.println(factory);
             System.out.println("===== redis " + key + " =====\n");

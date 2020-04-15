@@ -21,8 +21,7 @@ package org.apenk.carefree.druid.listener;
  *     若要监听 Carefree Druid 的构建过程，或者对构建过程进行干预，可以实现该接口。
  * </p>
  *
- * <p>
- *      Carefree Redis 的构建过程大体分为两个步骤——
+ * <p>Carefree Redis 的构建过程大体分为两个步骤——</p>
  *      <ul>
  *          <li>
  *              1. 加载配置文件并创建相应的 Java 对象，用于描述配置文件中的配置选项：
@@ -42,7 +41,6 @@ package org.apenk.carefree.druid.listener;
  *              至此构建过程全部完成，可以利用 {@link org.apenk.carefree.druid.CarefreeDruidRegistry} Bean 获取指定数据源对象。
  *          </li>
  *      </ul>
- * </p>
  *
  * @author Kweny
  * @since 0.0.1

@@ -76,53 +76,15 @@ public class NamingConvention {
     }
 
     public static class Snake {
-        /**
-         * <p>
-         *     <ul>
-         *         <li>MAC to mac</li>
-         *         <li>remoteURL to remote_url</li>
-         *         <li>remoteURLID to remote_urlid</li>
-         *         <li>randomSQLText to random_sql_text</li>
-         *         <li>ONETestString to one_test_string</li>
-         *         <li>ONEtestString to on_etest_string</li>
-         *         <li>oneTestSTRING to one_test_string</li>
-         *     </ul>
-         * </p>
-         */
+
         public String fromCamel(String input) {
             return camel2Separator(input, SEPARATOR_SNAKE, MODE_LOWER);
         }
 
-        /**
-         * <p>
-         *     <ul>
-         *         <li>MAC to MAC</li>
-         *         <li>remoteURL to REMOTE_URL</li>
-         *         <li>remoteURLID to REMOTE_URLID</li>
-         *         <li>randomSQLText to RANDOM_SQL_TEXT</li>
-         *         <li>ONETestString to ONE_TEST_STRING</li>
-         *         <li>ONEtestString to ON_ETEST_STRING</li>
-         *         <li>oneTestSTRING to ONE_TEST_STRING</li>
-         *     </ul>
-         * </p>
-         */
         public String fromCamelInUpperCase(String input) {
             return camel2Separator(input, SEPARATOR_SNAKE, MODE_UPPER);
         }
 
-        /**
-         * <p>
-         *     <ul>
-         *         <li>MAC to MAC</li>
-         *         <li>remoteURL to remote_URL</li>
-         *         <li>remoteURLID to remote_URLID</li>
-         *         <li>randomSQLText to random_SQL_Text</li>
-         *         <li>ONETestString to ONE_Test_String</li>
-         *         <li>ONEtestString to ON_Etest_String</li>
-         *         <li>oneTestSTRING to one_Test_STRING</li>
-         *     </ul>
-         * </p>
-         */
         public String fromCamelKeepCase(String input) {
             return camel2Separator(input, SEPARATOR_SNAKE, MODE_KEEP);
         }
