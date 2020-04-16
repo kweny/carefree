@@ -70,7 +70,7 @@ class CarefreeCloudConfigNacosLoader extends CarefreeCloudConfigLoader {
             try {
                 configData = configService.getConfig(position.getDataId(), position.getGroup(), timeout);
                 if (StringUtils.isNotBlank(configData)) {
-                    carefreeRegistry.register(position.getKey(), ConfigFactory.parseString(configData));
+                    carefreeRegistry.register(position.getKey(), ConfigFactory.parseString(configData).resolve());
                 }
             } catch (NacosException e) {
                 logger.error(e,"get data from Nacos error, dataId:{}", position.getDataId());

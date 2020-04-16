@@ -44,7 +44,7 @@ class CarefreeConfigLoader {
 
         resourceMap.forEach((key, resources) -> resources.forEach(resource -> {
             try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
-                Config config = ConfigFactory.parseReader(reader);
+                Config config = ConfigFactory.parseReader(reader).resolve();
                 Config cachedConfig = configCache.get(key);
                 if (cachedConfig == null) {
                     configCache.put(key, config);
