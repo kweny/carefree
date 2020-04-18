@@ -1,19 +1,16 @@
-archivesBaseName = 'carefree-redis'
+archivesBaseName = 'carefree-elasticsearch'
 
 dependencies {
     api project(':carefree-core')
-
-    api 'org.apache.commons:commons-pool2:2.8.0'
-    api 'org.springframework.boot:spring-boot-starter-data-redis:2.2.5.RELEASE'
 
     implementation 'org.springframework.boot:spring-boot-configuration-processor:2.2.5.RELEASE'
     implementation 'org.springframework.boot:spring-boot-autoconfigure:2.2.5.RELEASE'
 }
 
 ext {
-    BINTRAY_NAME = 'carefree-redis'
-    PUBLISHED_ARTIFACT_ID = 'carefree-redis'
-    PROJECT_DESCRIPTION = 'Auto-configure Radis in Spring Boot.'
+    BINTRAY_NAME = 'carefree-elasticsearch'
+    PUBLISHED_ARTIFACT_ID = 'carefree-elasticsearch'
+    PROJECT_DESCRIPTION = 'Auto-configure Elasticsearch in Spring Boot.'
 }
 
 //apply from: 'https://raw.githubusercontent.com/kweny/assets/master/gradle/bintray-upload-normal.gradle'

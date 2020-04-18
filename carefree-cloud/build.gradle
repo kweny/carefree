@@ -13,7 +13,7 @@ dependencies {
 ext {
     BINTRAY_NAME = 'carefree-cloud'
     PUBLISHED_ARTIFACT_ID = 'carefree-cloud'
-    PROJECT_DESCRIPTION = 'Auto-configure cloud config files in Spring Boot.'
+    PROJECT_DESCRIPTION = 'Auto-configure config-server config files in Spring Boot.'
 }
 
 //apply from: 'https://raw.githubusercontent.com/kweny/assets/master/gradle/bintray-upload-normal.gradle'

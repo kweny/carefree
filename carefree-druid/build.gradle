@@ -12,7 +12,7 @@ dependencies {
 ext {
     BINTRAY_NAME = 'carefree-druid'
     PUBLISHED_ARTIFACT_ID = 'carefree-druid'
-    PROJECT_DESCRIPTION = 'Auto-configure druid in Spring Boot.'
+    PROJECT_DESCRIPTION = 'Auto-configure Druid in Spring Boot.'
 }
 
 //apply from: 'https://raw.githubusercontent.com/kweny/assets/master/gradle/bintray-upload-normal.gradle'
