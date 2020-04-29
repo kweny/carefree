@@ -6,9 +6,9 @@
       "description": "Description for carefree.cloud.enabled."
     },
     {
-      "name": "carefree.cloud.service-type",
+      "name": "carefree.cloud.server-type",
       "type": "java.lang.String",
-      "description": "Description for carefree.cloud.service-type."
+      "description": "Description for carefree.cloud.server-type."
     },
     {
       "name": "carefree.cloud.nacos.position",

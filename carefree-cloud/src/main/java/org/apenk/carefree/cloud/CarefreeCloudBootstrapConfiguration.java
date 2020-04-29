@@ -44,7 +44,7 @@ public class CarefreeCloudBootstrapConfiguration implements Ordered {
     @Bean
     public CarefreeCloudConfigLoader carefreeCloudConfigLoader(CarefreeCloudProperties carefreeCloudProperties,
                                                                @Nullable NacosConfigManager nacosConfigManager) {
-        if (TempCarefreeAide.equalsAnyIgnoreCase("nacos", carefreeCloudProperties.getServiceType())) {
+        if (TempCarefreeAide.equalsAnyIgnoreCase("nacos", carefreeCloudProperties.getServerType())) {
             return new CarefreeCloudConfigNacosLoader(carefreeCloudProperties, nacosConfigManager);
         }
         return new CarefreeCloudConfigLoader._NoLoader(carefreeCloudProperties);
