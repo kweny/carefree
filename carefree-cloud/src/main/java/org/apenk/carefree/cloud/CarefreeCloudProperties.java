@@ -30,7 +30,7 @@ import java.util.List;
 public class CarefreeCloudProperties {
     public static final String PREFIX = "carefree.cloud";
 
-    private String serviceType;
+    private String serviceType;// TODO-Kweny serverType
     private Nacos nacos;
     private Custom custom;
 
@@ -111,6 +111,14 @@ public class CarefreeCloudProperties {
             }
 
         }
+    }
+
+    public static class Http {
+        // TODO-Kweny CarefreeCloudProperties.Http
+    }
+
+    public static class Git {
+        // TODO-Kweny CarefreeCloudProperties.Git
     }
 
     public static class Custom {
