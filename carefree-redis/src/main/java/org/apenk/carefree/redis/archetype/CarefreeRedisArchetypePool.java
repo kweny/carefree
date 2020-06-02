@@ -39,7 +39,7 @@ public class CarefreeRedisArchetypePool {
     private Integer maxIdle;
     /**
      * 池中维持的最小空闲连接数，
-     * 负值表示无效值，
+     * 负值表示无限制，
      * 默认 0
      */
     private Integer minIdle;
