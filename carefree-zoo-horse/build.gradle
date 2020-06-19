@@ -24,6 +24,7 @@ dependencies {
     implementation project(':carefree-cloud')
     implementation project(':carefree-druid')
     implementation project(':carefree-redis')
+    implementation project(':carefree-rabbitmq')
 
 //    implementation 'com.typesafe:config:1.4.0'
 //    implementation 'com.alibaba:druid:1.1.21'

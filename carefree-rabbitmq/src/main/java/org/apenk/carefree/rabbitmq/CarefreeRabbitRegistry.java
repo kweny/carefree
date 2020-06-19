@@ -22,5 +22,5 @@ package org.apenk.carefree.rabbitmq;
  * @author Kweny
  * @since 0.0.1
  */
-public class CarefreeRabbitmqRegistry {
+public class CarefreeRabbitRegistry {
 }

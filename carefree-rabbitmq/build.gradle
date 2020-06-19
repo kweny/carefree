@@ -3,6 +3,8 @@ archivesBaseName = 'carefree-rabbitmq'
 dependencies {
     api project(':carefree-core')
 
+    api 'org.springframework.boot:spring-boot-starter-amqp:2.2.5.RELEASE'
+
     implementation 'org.springframework.boot:spring-boot-configuration-processor:2.2.5.RELEASE'
     implementation 'org.springframework.boot:spring-boot-autoconfigure:2.2.5.RELEASE'
 }

@@ -22,7 +22,6 @@ import org.apenk.carefree.redis.CarefreeRedisRegistry;
 import org.apenk.carefree.test.entity.Horse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -38,7 +37,7 @@ import java.awt.*;
  * @author Kweny
  * @since 0.0.1
  */
-@Configuration
+//@Configuration
 public class TestConfigurer {
 
     private final CarefreeRegistry carefreeRegistry;
