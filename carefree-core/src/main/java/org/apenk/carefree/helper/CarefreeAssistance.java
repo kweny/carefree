@@ -33,7 +33,6 @@ import java.util.*;
  * @since 0.0.1
  */
 public class CarefreeAssistance {
-
     private static final String FORCE_DEFAULT = "force-default";
     private static final Map<String, BeanInfo> BEAN_INFO_CACHE = Collections.synchronizedMap(new WeakHashMap<>());
 
@@ -167,12 +166,28 @@ public class CarefreeAssistance {
                 CarefreeClassDeclaration wrapper = new CarefreeClassDeclaration();
                 Object configAny = config.getAnyRef(propertyPath);
                 if (configAny instanceof String) {
-                    wrapper.setClassName((String) configAny);
+                    String stringValue = (String) configAny;
+                    String upperCase = stringValue.toUpperCase().trim();
+                    if (upperCase.startsWith("DEFINED(") && upperCase.endsWith(")")) {
+                        String definedValue = stringValue.trim().substring(8, stringValue.trim().length() - 1);
+                        wrapper.setDefinedValue(definedValue);
+                    } else {
+                        wrapper.setClassName(stringValue);
+                    }
                 } else {
                     Config wrapperConfig = config.getConfig(propertyPath);
                     loadBeanProperties(CarefreeClassDeclaration.class, wrapper, wrapperConfig, null, null);
                 }
                 writeMethod.invoke(bean, wrapper);
+
+            } else if (Map.class.isAssignableFrom(propertyType)) {
+
+                @SuppressWarnings("unchecked")
+                Map<Object, Object> map = (Map<Object, Object>) propertyType.getConstructor().newInstance();
+                for (Map.Entry<String, ConfigValue> entry : config.entrySet()) {
+                    map.put(entry.getKey(), entry.getValue().unwrapped());
+                }
+                writeMethod.invoke(bean, map);
 
             } else if (propertyType == String.class) {
 

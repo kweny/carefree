@@ -17,6 +17,9 @@
 package org.apenk.carefree.rabbitmq;
 
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DefaultSaslConfig;
+import org.apenk.carefree.helper.TempCarefreeAide;
+import org.apenk.carefree.rabbitmq.archetype.CarefreeRabbitArchetype;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 
@@ -57,5 +60,68 @@ public class CarefreeRabbitLathe {
             throw new RuntimeException();
         }
         CachingConnectionFactory factory = new CachingConnectionFactory(rabbitFactory);
+    }
+
+    public void buildRabbitConnectionFactory(CarefreeRabbitArchetype archetype) throws Exception {
+
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+
+        if (TempCarefreeAide.isNotNull(archetype.getHost())) {
+            connectionFactory.setHost(archetype.getHost());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getPort())) {
+            connectionFactory.setPort(archetype.getPort());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getVirtualHost())) {
+            connectionFactory.setVirtualHost(archetype.getVirtualHost());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getUsername())) {
+            connectionFactory.setUsername(archetype.getUsername());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getPassword())) {
+            connectionFactory.setPassword(archetype.getPassword());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getCredentialsProvider())) {
+            connectionFactory.setCredentialsProvider(archetype.getCredentialsProvider().instance());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getUri())) {
+            connectionFactory.setUri(archetype.getUri());
+        }
+
+        if (TempCarefreeAide.isNotNull(archetype.getRequestedChannelMax())) {
+            connectionFactory.setRequestedChannelMax(archetype.getRequestedChannelMax());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getRequestedFrameMax())) {
+            connectionFactory.setRequestedFrameMax(archetype.getRequestedFrameMax());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getRequestedHeartbeat())) {
+            connectionFactory.setRequestedHeartbeat(archetype.getRequestedHeartbeat());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getConnectionTimeout())) {
+            connectionFactory.setConnectionTimeout(archetype.getConnectionTimeout());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getHandshakeTimeout())) {
+            connectionFactory.setHandshakeTimeout(archetype.getHandshakeTimeout());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getShutdownTimeout())) {
+            connectionFactory.setShutdownTimeout(archetype.getShutdownTimeout());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getClientProperties())) {
+            connectionFactory.setClientProperties(archetype.getClientProperties());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getSocketFactory())) {
+            connectionFactory.setSocketFactory(archetype.getSocketFactory().instance());
+        }
+        if (TempCarefreeAide.isNotNull(archetype.getSaslConfig())) {
+            if (archetype.getSaslConfig().getDefinedValue() != null) {
+                if ("external".equalsIgnoreCase(archetype.getSaslConfig().getDefinedValue())) {
+                    connectionFactory.setSaslConfig(DefaultSaslConfig.EXTERNAL);
+                } else {
+                    connectionFactory.setSaslConfig(DefaultSaslConfig.PLAIN);
+                }
+            } else {
+                connectionFactory.setSaslConfig(archetype.getSaslConfig().instance());
+            }
+        }
     }
 }

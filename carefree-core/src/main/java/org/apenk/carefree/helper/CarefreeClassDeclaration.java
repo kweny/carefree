@@ -21,6 +21,32 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * <pre>
+ *     main = {
+ *         ...
+ *         listener = {
+ *             className = "org.xxx.XXXListener"
+ *             staticFactoryMethod = "xxx"
+ *         }
+ *         ...
+ *     }
+ * </pre>
+ *
+ * <pre>
+ *     main = {
+ *         ...
+ *         listener = "org.xxx.XXXListener"
+ *         ...
+ *     }
+ * </pre>
+ *
+ * <pre>
+ *     main = {
+ *         ...
+ *         listener = "defined(xxx)"
+ *         ...
+ *     }
+ * </pre>
  * @author Kweny
  * @since 0.0.1
  */
@@ -28,6 +54,10 @@ public class CarefreeClassDeclaration {
     private static final Map<String, Object> INSTANCE_CACHE = new ConcurrentHashMap<>();
     private static final ReentrantLock INSTANCE_CACHE_LOCK = new ReentrantLock();
 
+    /**
+     * 已约定的值
+     */
+    private String definedValue;
     /**
      * 类全名
      */
@@ -64,7 +94,7 @@ public class CarefreeClassDeclaration {
     private Object declarationInstance;
     private ReentrantLock declarationInstanceLock = new ReentrantLock();
 
-    public <T> T instance() {
+    public <T> T instance(Class<T> clazz) {
         if (TempCarefreeAide.isBlank(className)) {
             return null;
         }
@@ -115,7 +145,7 @@ public class CarefreeClassDeclaration {
 
             return instance;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("[Carefree] '" + className + "' Instantiation failed.", e);
         }
     }
 
@@ -128,6 +158,14 @@ public class CarefreeClassDeclaration {
             }
         }
         return parameterTypes;
+    }
+
+    public String getDefinedValue() {
+        return definedValue;
+    }
+
+    public void setDefinedValue(String definedValue) {
+        this.definedValue = definedValue;
     }
 
     public String getClassName() {
