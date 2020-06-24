@@ -94,7 +94,7 @@ public class CarefreeClassDeclaration {
     private Object declarationInstance;
     private ReentrantLock declarationInstanceLock = new ReentrantLock();
 
-    public <T> T instance(Class<T> clazz) {
+    public <T> T instance() {
         if (TempCarefreeAide.isBlank(className)) {
             return null;
         }
