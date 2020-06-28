@@ -73,7 +73,7 @@ public class CarefreeRedisRegistry {
     public Boolean getEnableDefaultSerializer(String root) {
         CarefreeRedisArchetypeSerializer serializerArchetype = this.serializerHolder.get(root);
         // enableDefaultSerializer 默认为 true，只要不是 false 就返回 true（如 true 和 null 都认为是 true）
-        return serializerArchetype != null ? serializerArchetype.getEnableDefaultSerializer() : true;
+        return serializerArchetype != null ? serializerArchetype.getEnableDefaultSerializer() : Boolean.TRUE;
     }
 
     public <T extends RedisSerializer<?>> T getDefaultSerializer(String root) {
