@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "carefree.remote.enabled",
+      "type": "java.lang.String",
+      "description": "Description for carefree.cloud.enabled."
+    },
+    {
+      "name": "carefree.remote.server-type",
+      "type": "java.lang.String",
+      "description": "Description for carefree.cloud.server-type."
+    }
+  ]
+}

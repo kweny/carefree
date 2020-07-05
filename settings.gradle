@@ -8,3 +8,5 @@ include 'carefree-rabbitmq'
 include 'carefree-activemq'
 include 'carefree-elasticsearch'
 include 'carefree-zoo-horse'
+include 'carefree-remote'
+

@@ -1,0 +1,20 @@
+archivesBaseName = 'carefree-remote'
+
+dependencies {
+    api project(':carefree-core')
+
+//    implementation 'org.springframework.cloud:spring-cloud-context:2.2.2.RELEASE'
+//    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:2.2.1.RELEASE'
+
+    implementation 'org.springframework.boot:spring-boot-configuration-processor:2.2.5.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.2.5.RELEASE'
+}
+
+ext {
+    BINTRAY_NAME = 'carefree-remote'
+    PUBLISHED_ARTIFACT_ID = 'carefree-remote'
+    PROJECT_DESCRIPTION = 'Auto-configure remote config files in Spring Boot.'
+}
+
+//apply from: 'https://raw.githubusercontent.com/kweny/assets/master/gradle/bintray-upload-normal.gradle'
+apply from: '../bintray-upload-normal.gradle'
