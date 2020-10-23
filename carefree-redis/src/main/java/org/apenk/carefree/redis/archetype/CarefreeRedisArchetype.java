@@ -18,8 +18,6 @@ package org.apenk.carefree.redis.archetype;
 
 import org.apenk.carefree.archetype.CarefreeArchetype;
 
-import java.util.Set;
-
 /**
  * <p>Redis 客户端连接配置描述。</p>
  *
@@ -101,10 +99,10 @@ public class CarefreeRedisArchetype extends CarefreeArchetype {
      */
     private String master;
     /**
-     * Redis 服务节点列表，每个节点为 “host[:port]” 格式，其中 port 缺省为 6379，
+     * Redis 服务节点列表，每个节点为 “host[:port]” 格式，其中 port 缺省为 6379，多个节点地址已 , 分隔，
      * 当 {@link #mode} 取值 Sentinel/Cluster/StaticMasterReplica 时有效。
      */
-    private Set<String> nodes;
+    private String nodes;
     /**
      * 一条 Redis 命令在整个集群中的最大重定向次数，
      * 当 {@link #mode} 取值 Cluster 时有效。
@@ -224,11 +222,11 @@ public class CarefreeRedisArchetype extends CarefreeArchetype {
         this.master = master;
     }
 
-    public Set<String> getNodes() {
+    public String getNodes() {
         return nodes;
     }
 
-    public void setNodes(Set<String> nodes) {
+    public void setNodes(String nodes) {
         this.nodes = nodes;
     }
 

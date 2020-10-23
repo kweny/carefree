@@ -22,8 +22,11 @@ import org.springframework.data.redis.connection.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Kweny
@@ -60,8 +63,13 @@ interface CarefreeRedisLatheModeConfiguration {
         }
     }
 
+    default Set<String> parseNodeAddresses(String nodes) {
+        return Arrays.stream(nodes.split(",")).map(TempCarefreeAide::trim).collect(Collectors.toSet());
+    }
+
     default RedisSentinelConfiguration createSentinelConfiguration(CarefreeRedisArchetype archetype) {
-        RedisSentinelConfiguration sentinel = new RedisSentinelConfiguration(archetype.getMaster(), archetype.getNodes());
+
+        RedisSentinelConfiguration sentinel = new RedisSentinelConfiguration(archetype.getMaster(), parseNodeAddresses(archetype.getNodes()));
         if (TempCarefreeAide.isNotNull(archetype.getPassword())) {
             sentinel.setPassword(archetype.getPassword());
         }
@@ -75,7 +83,7 @@ interface CarefreeRedisLatheModeConfiguration {
     }
 
     default RedisClusterConfiguration createClusterConfiguration(CarefreeRedisArchetype archetype) {
-        RedisClusterConfiguration cluster = new RedisClusterConfiguration(archetype.getNodes());
+        RedisClusterConfiguration cluster = new RedisClusterConfiguration(parseNodeAddresses(archetype.getNodes()));
         if (TempCarefreeAide.isNotNull(archetype.getMaxRedirects())) {
             cluster.setMaxRedirects(archetype.getMaxRedirects());
         }
@@ -90,7 +98,7 @@ interface CarefreeRedisLatheModeConfiguration {
         if (TempCarefreeAide.isEmpty(archetype.getNodes())) {
             nodes.add(new RedisStandaloneConfiguration());
         } else {
-            for (String hostAndPort : archetype.getNodes()) {
+            for (String hostAndPort : parseNodeAddresses(archetype.getNodes())) {
                 String[] sections = TempCarefreeAide.split(hostAndPort, ":");
                 if (TempCarefreeAide.getLength(sections) != 2) {
                     throw new IllegalArgumentException("[Carefree] Host and Port String needs to specified as host:port");
