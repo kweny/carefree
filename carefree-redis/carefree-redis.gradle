@@ -1,0 +1,10 @@
+
+dependencies {
+    api project(':carefree-core')
+
+    api 'org.apache.commons:commons-pool2:2.9.0'
+    api 'org.springframework.boot:spring-boot-starter-data-redis:2.4.3'
+
+    implementation 'org.springframework.boot:spring-boot-configuration-processor:2.4.3'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.4.3'
+}

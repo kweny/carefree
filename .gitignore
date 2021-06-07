@@ -22,8 +22,8 @@ pom.xml.*
 out/
 build
 .gradle
-local.properties
 gradle-local.properties
+local.properties
 release.properties
 
 # jrebel

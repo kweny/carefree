@@ -3,10 +3,9 @@ include 'carefree-core'
 include 'carefree-cloud'
 include 'carefree-druid'
 include 'carefree-redis'
-include 'carefree-kafka'
-include 'carefree-rabbitmq'
-include 'carefree-activemq'
-include 'carefree-elasticsearch'
 include 'carefree-zoo-horse'
-include 'carefree-remote'
 
+rootProject.name = 'carefree'
+rootProject.children.each {project ->
+    project.buildFileName = "${project.name}.gradle"
+}

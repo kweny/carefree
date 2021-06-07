@@ -1,0 +1,72 @@
+apply plugin: 'java-library'
+apply plugin: 'me.champeau.gradle.jmh'
+apply from: "${rootDir}/gradle/publications.gradle"
+
+dependencies {
+    jmh 'org.openjdk.jmh:jmh-core:1.29'
+    jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.29'
+    jmh 'net.sf.jopt-simple:jopt-simple:5.0.4'
+}
+
+jmh {
+    duplicateClassesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+jar {
+    manifest.attributes.put('Implementation-Title', project.name)
+    manifest.attributes.put('Implementation-Version', project.version)
+    manifest.attributes.put('Automatic-Module-Name', project.name.replace('-', '.'))  // for Jigsaw
+    manifest.attributes.put('Build-Jdk-Spec', project.sourceCompatibility)
+    manifest.attributes.put('Build-Jdk', "${System.getProperty("java.version")} (${System.getProperty("java.specification.vendor")})")
+    manifest.attributes.put('Built-By', 'Kweny')
+    manifest.attributes.put('Created-By', 'Gradle ' + gradle.gradleVersion)
+
+    from("${rootDir}") {
+        include "LICENSE.txt"
+        include "NOTICE.txt"
+        into "META-INF"
+        expand(copyright: new Date().format("yyyy"), version: project.version)
+    }
+}
+
+normalization {
+    runtimeClasspath {
+        ignore "META-INF/MANIFEST.MF"
+    }
+}
+
+javadoc {
+    description = "Generates project-level javadoc for use in -javadoc jar"
+
+    options.encoding = "UTF-8"
+    options.memberLevel = JavadocMemberLevel.PROTECTED
+    options.author = true
+    options.header = project.name
+    options.use = true
+    options.links(project.ext.javadocLinks)
+    options.addStringOption("Xdoclint:none", "-quiet")
+
+    logging.captureStandardError LogLevel.INFO
+    logging.captureStandardOutput LogLevel.INFO
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier.set("sources")
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+    archiveClassifier.set("javadoc")
+    from javadoc
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+}

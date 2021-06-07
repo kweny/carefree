@@ -21,7 +21,6 @@ import com.alibaba.cloud.nacos.NacosConfigProperties;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.typesafe.config.ConfigFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.apenk.carefree.CarefreeRegistry;
 import org.apenk.carefree.helper.TempCarefreeAide;
 
@@ -69,7 +68,7 @@ class CarefreeCloudConfigNacosLoader extends CarefreeCloudConfigLoader {
             String configData = null;
             try {
                 configData = configService.getConfig(position.getDataId(), position.getGroup(), timeout);
-                if (StringUtils.isNotBlank(configData)) {
+                if (TempCarefreeAide.isNotBlank(configData)) {
                     carefreeRegistry.register(position.getKey(), ConfigFactory.parseString(configData).resolve());
                 }
             } catch (NacosException e) {
@@ -91,9 +90,9 @@ class CarefreeCloudConfigNacosLoader extends CarefreeCloudConfigLoader {
         }
 
         // carefree.cloud.nacos.position
-        if (StringUtils.isNotBlank(nacos.getPosition())) {
-            String[] sections = StringUtils.split(nacos.getPosition(), ",");
-            Arrays.stream(sections).filter(StringUtils::isNotBlank).forEach(section -> {
+        if (TempCarefreeAide.isNotBlank(nacos.getPosition())) {
+            String[] sections = TempCarefreeAide.split(nacos.getPosition(), ",");
+            Arrays.stream(sections).filter(TempCarefreeAide::isNotBlank).forEach(section -> {
                 CarefreeCloudProperties.Nacos.Position position = new CarefreeCloudProperties.Nacos.Position();
 
                 int separatorIndex = section.indexOf("/");
@@ -122,7 +121,7 @@ class CarefreeCloudConfigNacosLoader extends CarefreeCloudConfigLoader {
         // carefree.cloud.nacos.positions
         if (TempCarefreeAide.isNotEmpty(nacos.getPositions())) {
             for (CarefreeCloudProperties.Nacos.Position position : nacos.getPositions()) {
-                if (StringUtils.isBlank(position.getKey())) {
+                if (TempCarefreeAide.isBlank(position.getKey())) {
                     String key = position.getDataId();
                     int lastPointIndex = key.lastIndexOf(".");
                     if (lastPointIndex > 0) {

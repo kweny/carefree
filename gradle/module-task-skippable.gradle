@@ -1,0 +1,28 @@
+// https://raw.githubusercontent.com/kweny/doraket/master/gradle/module-task-skippable.gradle
+
+Properties localProps = new Properties()
+if (project.rootProject.file('gradle.properties').exists()) {
+    localProps.load(project.rootProject.file('gradle.properties').newDataInputStream())
+}
+if (project.rootProject.file('local.properties').exists()) {
+    localProps.load(project.rootProject.file('local.properties').newDataInputStream())
+}
+if (project.rootProject.file('local.properties').exists()) {
+    localProps.load(project.rootProject.file('local.properties').newDataInputStream())
+}
+
+gradle.taskGraph.whenReady {
+    tasks.each {task ->
+        if (!task.project.hasProperty("force-tasks")) {
+            def projectKey = "gradle.task." + task.project.name + ".enabled"
+            def projectValue = localProps.getProperty(projectKey)
+            def projectTaskKey = "gradle.task." + task.name + "." + task.project.name + ".enabled"
+            def projectTaskValue = localProps.getProperty(projectTaskKey)
+            def taskKey = "gradle.task." + task.name + ".enabled"
+            def taskValue = localProps.getProperty(taskKey)
+            if ("false".equalsIgnoreCase(projectValue) || "false".equalsIgnoreCase(projectTaskValue) || "false".equalsIgnoreCase(taskValue)) {
+                task.enabled(false)
+            }
+        }
+    }
+}

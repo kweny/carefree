@@ -1,87 +1,137 @@
+plugins {
+    id "me.champeau.gradle.jmh" version "0.5.3" apply false
+}
 
+ext {
+    moduleProjects = subprojects.findAll {it.name.startsWith('carefree') }
+    javaProjects = subprojects
 
-// 子模块通用配置
-allprojects {
+    // ------------------------------ dependencies ------------------------------
+    DependencyVersions = [
+    ]
+}
+
+configure(allprojects) { project ->
     buildscript {
         repositories {
-            maven { url "https://dl.bintray.com/apenk/maven/" }
-            maven { url "https://dl.bintray.com/apenk/maven-test/" }
-            maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
-            jcenter()
+            maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
+            maven { url "https://plugins.gradle.org/m2/" }
             mavenCentral()
         }
-        dependencies {
-            classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
-        }
+
+        apply from: "${rootDir}/gradle/module-task-skippable.gradle"
     }
 
     repositories {
-        maven { url "https://dl.bintray.com/apenk/maven/" }
-        maven { url "https://dl.bintray.com/apenk/maven-test/" }
-        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
-        jcenter()
+        maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
         mavenCentral()
     }
 
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 0, "seconds"
+            cacheDynamicVersionsFor 0, "seconds"
+        }
+    }
+}
+
+configure([rootProject] + javaProjects) { project ->
+    group = 'org.apenk.carefree'
+
     apply plugin: 'java-library'
     apply plugin: 'idea'
+    apply plugin: "checkstyle"
 
     sourceCompatibility = 8
     targetCompatibility = 8
 
-    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+    compileJava {
+        options.encoding = "UTF-8"
+    }
+    compileTestJava {
+        options.encoding = "UTF-8"
+    }
 
-    group 'org.apenk.carefree'
-    version = '0.0.2'
+    checkstyle {
+        toolVersion = "8.41"
+        configDirectory.set(rootProject.file("src/checkstyle"))
+        checkstyleMain.enabled = false
+        checkstyleTest.enabled = false
+    }
 
     configurations {
-//        developmentOnly
-//        runtimeClasspath {
-//            extendsFrom developmentOnly
-//        }
+        all*.exclude module: 'spring-boot-starter-tomcat'
+        all*.exclude module: 'spring-boot-starter-logging'
+        all*.exclude module: 'tomcat-jdbc'
+        all*.exclude module: 'junit'
+        all*.exclude module: 'junit-vintage-engine'
+        all*.exclude module: 'logback-core'
+        all*.exclude module: 'logback-classic'
+        all*.exclude module: 'spring-jcl'
+        all*.exclude group: 'commons-logging'
+        all*.exclude group: 'log4j', module: 'log4j'
+        all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 0, "seconds"
+            cacheDynamicVersionsFor 0, "seconds"
+        }
     }
 
     dependencies {
-        implementation group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
+        implementation 'org.jetbrains:annotations:20.1.0'
 
-        testImplementation group: 'junit', name: 'junit', version: '4.12'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+        testImplementation 'org.hamcrest:hamcrest:2.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+        testRuntimeOnly 'org.apache.logging.log4j:log4j-core:2.13.3'
+        testRuntimeOnly 'org.apache.logging.log4j:log4j-slf4j-impl:2.13.3'
+        testRuntimeOnly 'org.apache.logging.log4j:log4j-jul:2.13.3'
+
+        checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:0.0.15")
     }
 
-    ext {
-        buildTime = {
-            return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
-        }
-
-        BINTRAY_REPO = 'maven-test'
-        BINTRAY_NAME = 'carefree'
-        BINTRAY_PUBLISH = true
-        BINTRAY_OVERRIDE = false
-        BINTRAY_DRY_RUN = false
-
-        PUBLISHED_PACKAGING = 'jar'
-        PUBLISHED_GROUP_ID = 'org.apenk.carefree'
-        PUBLISHED_ARTIFACT_ID = 'carefree-project'
-        PUBLISHED_VERSION = rootProject.version
-        PUBLISHED_VCS_TAG = rootProject.version
-
-        PROJECT_NAME = 'Carefree'
-        PROJECT_DESCRIPTION = 'Some auto-configuration starters for SpringBoot.'
-        PROJECT_LABELS = ['Carefree', 'Spring', 'SpringBoot']
-        PROJECT_WEBSITE_URL = 'https://github.com/kweny/carefree'
-        PROJECT_VCS_URL = 'https://github.com/kweny/carefree.git'
-        PROJECT_ISSUE_TRACKER_URL = 'https://github.com/kweny/carefree/issues'
-
-        DEVELOPER_ID = 'kweny'
-        DEVELOPER_NAME = 'Kweny'
-        DEVELOPER_EMAIL = 'iamkweny@gmail.com'
-
-        LICENSE_NAME = 'The Apache Software License, Version 2.0'
-        LICENSE_URL = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-        LICENSE_DISTRIBUTION = 'rebo'
-        ALL_LICENSES = ["Apache-2.0"]
-
-        // mavenCentralSync
-        MCS_ENABLED = false
-        MCS_CLOSE = '0'
+    test {
+        useJUnitPlatform()
+        include(["**/*Tests.class", "**/*Test.class"])
+        systemProperty("java.awt.headless", "true")
     }
+
+    ext.javadocLinks = [
+            "https://docs.oracle.com/javase/8/docs/api/",
+            "https://docs.oracle.com/javaee/7/api/",
+            "https://docs.oracle.com/cd/E13222_01/wls/docs90/javadocs/",  // CommonJ
+            "https://www.ibm.com/support/knowledgecenter/SS7JFU_8.5.5/com.ibm.websphere.javadoc.doc/web/apidocs/",
+            "https://glassfish.java.net/nonav/docs/v3/api/",
+            "https://docs.jboss.org/jbossas/javadoc/4.0.5/connector/",
+            "https://docs.jboss.org/jbossas/javadoc/7.1.2.Final/",
+            "https://tiles.apache.org/tiles-request/apidocs/",
+            "https://tiles.apache.org/framework/apidocs/",
+            "https://www.eclipse.org/jetty/javadoc/jetty-9/index.html",
+            "https://www.eclipse.org/aspectj/doc/released/aspectj5rt-api/",
+            "https://www.ehcache.org/apidocs/2.10.4/",
+            "https://www.quartz-scheduler.org/api/2.3.0/",
+            "https://fasterxml.github.io/jackson-core/javadoc/2.11/",
+            "https://fasterxml.github.io/jackson-databind/javadoc/2.11/",
+            "https://fasterxml.github.io/jackson-dataformat-xml/javadoc/2.11/",
+            "https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/",
+            "https://projectreactor.io/docs/test/release/api/",
+            "https://junit.org/junit4/javadoc/4.13.2/",
+            "https://junit.org/junit5/docs/5.7.1/api/",
+            "https://docs.spring.io/spring-framework/docs/5.3.4/javadoc-api/",
+            "https://docs.spring.io/spring-boot/docs/2.4.3/api/"
+    ] as String[]
+
+}
+
+configure(moduleProjects) { project ->
+    apply from: "${rootDir}/gradle/carefree-module.gradle"
+}
+
+configure(rootProject) {
+    description = 'Carefree Framework'
+
+    apply from: "${rootDir}/gradle/publications.gradle"
 }

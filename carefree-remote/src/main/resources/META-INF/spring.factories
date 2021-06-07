@@ -1,4 +1,0 @@
-org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-  org.apenk.carefree.remote.CarefreeRemoteBootstrapConfiguration
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  org.apenk.carefree.remote.CarefreeRemoteAutoConfiguration

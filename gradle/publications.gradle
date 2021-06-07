@@ -1,0 +1,66 @@
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                afterEvaluate {
+                    name = project.description
+                    description = project.description
+                }
+                url = "https://github.com/kweny/carefree"
+                organization {
+                    name = "Apenk"
+                    url = "https://github.com/kweny/carefree"
+                }
+                licenses {
+                    license {
+                        name = "Apache License, Version 2.0"
+                        url = "https://www.apache.org/licenses/LICENSE-2.0"
+                        distribution = "repo"
+                    }
+                }
+                scm {
+                    url = "https://github.com/kweny/carefree"
+                }
+                developers {
+                    developer {
+                        id = "kweny"
+                        name = "Kweny"
+                        email = "iamkweny@gmail.com"
+                    }
+                }
+                issueManagement {
+                    system = "DevCloud"
+                    url = "https://github.com/kweny/carefree/issues"
+                }
+            }
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionResult()
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            Properties properties = new Properties()
+            properties.load(project.rootProject.file('gradle-local.properties').newDataInputStream())
+            def releaseRepoUrl = properties.getProperty('repository.release.url')
+            def releaseRepoUsername = properties.getProperty('repository.release.username')
+            def releaseRepoPassword = properties.getProperty('repository.release.password')
+            def snapshotRepoUrl = properties.getProperty('repository.snapshot.url')
+            def snapshotRepoUsername = properties.getProperty('repository.snapshot.username')
+            def snapshotRepoPassword = properties.getProperty('repository.snapshot.password')
+
+            url version.endsWith('SNAPSHOT') ? snapshotRepoUrl : releaseRepoUrl
+            credentials {
+                username version.endsWith('SNAPSHOT') ? snapshotRepoUsername : releaseRepoUsername
+                password version.endsWith('SNAPSHOT') ? snapshotRepoPassword : releaseRepoPassword
+            }
+        }
+    }
+}

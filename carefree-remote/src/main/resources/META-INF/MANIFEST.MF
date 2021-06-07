@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: Apenk Carefree Remote
-Automatic-Module-Name: org.apenk.carefree.remote
-Implementation-Version: 0.0.1
-

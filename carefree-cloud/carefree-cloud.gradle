@@ -1,0 +1,10 @@
+
+dependencies {
+    api project(':carefree-core')
+
+    implementation 'org.springframework.cloud:spring-cloud-context:3.0.2'
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:2021.1'
+
+    implementation 'org.springframework.boot:spring-boot-configuration-processor:2.4.3'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.4.3'
+}

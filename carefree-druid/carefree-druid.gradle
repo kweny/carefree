@@ -1,0 +1,9 @@
+
+dependencies {
+    api project(':carefree-core')
+
+    api 'com.alibaba:druid:1.2.6'
+
+    implementation 'org.springframework.boot:spring-boot-configuration-processor:2.4.3'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.4.3'
+}
